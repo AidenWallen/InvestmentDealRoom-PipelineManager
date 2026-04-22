@@ -57,7 +57,7 @@ public class DealServiceTest {
             4_200_000_000L,
             Currency.USD,
             "manager-01",
-            PipelineStage.DUE_DILIGENCE
+            PipelineStage.PROSPECTING
         );
     }
 
@@ -76,11 +76,16 @@ public class DealServiceTest {
 
         when(dealRepository.save(any(Deal.class))).thenReturn(savedDeal);
 
-        DealResponseDto result = dealService.createDeal(requestDto, "user-01");
+        DealResponseDto result = dealService.createDeal(requestDto, "manager-01");
 
    
         assertNotNull(result);
         assertThat(result.dealName()).isEqualTo(requestDto.dealName());
+        assertThat(result.dealType()).isEqualTo(requestDto.dealType());
+        assertThat(result.targetCompany()).isEqualTo(requestDto.targetCompany());
+        assertThat(result.estimatedValue()).isEqualTo(requestDto.estimatedValue());
+        assertThat(result.currency()).isEqualTo(requestDto.currency());
+        assertThat(result.assignedManagerId()).isEqualTo("manager-01");
         assertThat(result.pipelineStage()).isEqualTo(requestDto.pipelineStage());
 
         verify(dealRepository, times(1)).save(any(Deal.class));
