@@ -124,4 +124,9 @@ public class DealServiceTest {
             .isInstanceOf(Exception.class);
     }
 
+    /**
+     * 
+     * Tests for staging pipeline
+     */
+
 }
