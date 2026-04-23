@@ -1,1 +1,22 @@
-<p>deal-table works!</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Target Company</th>
+            <th>Estimated Value</th>
+            <th>Currency</th>
+            <th>Pipeline Stage</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <app-deal-table-row
+            *ngFor="let deal of deals"
+            [deal]="deal"
+            (edit)="onEdit($event)"
+            (delete)="onDelete($event)">
+        </app-deal-table-row>
+    </tbody>
+</table>
