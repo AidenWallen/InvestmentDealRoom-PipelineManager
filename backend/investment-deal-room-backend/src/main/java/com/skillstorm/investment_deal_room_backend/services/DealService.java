@@ -1,5 +1,7 @@
 package com.skillstorm.investment_deal_room_backend.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateDealRequestDto;
@@ -21,5 +23,18 @@ public class DealService {
         Deal deal = request.toEntity(createdByUserId);
         Deal savedDeal = dealRepository.save(deal);
         return DealResponseDto.fromEntity(savedDeal);
+    }
+
+    public List<DealResponseDto> getAllDeals() {
+        List<Deal> deals = dealRepository.findAll();
+        return deals.stream()
+            .map(DealResponseDto::fromEntity)
+            .toList();
+    }
+
+    public DealResponseDto getDealById(String id) {
+        Deal deal = dealRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Deal not found with id: " + id));
+        return DealResponseDto.fromEntity(deal);
     }
 }

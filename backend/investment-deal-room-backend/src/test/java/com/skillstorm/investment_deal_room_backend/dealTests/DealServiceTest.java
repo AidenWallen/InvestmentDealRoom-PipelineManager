@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,5 +96,32 @@ public class DealServiceTest {
 
 
 
+
+    /**
+     * 
+     * Tests for getDeal
+     * 
+     */
+
+    @Test
+    @DisplayName("getDealById: existing id returns DealResponseDto")
+    void getDealById_existingId_returnsDeal() {
+        Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
+        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+
+        DealResponseDto response = dealService.getDealById("deal-01");
+
+        assertThat(response.id()).isEqualTo("deal-01");
+        assertThat(response.dealName()).isEqualTo("Project Falcon");
+    }
+
+    @Test
+    @DisplayName("getDealById: unknown id throws DealNotFoundException")
+    void getDealById_unknownId_throwsDealNotFoundException() {
+        when(dealRepository.findById("bad-id")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> dealService.getDealById("bad-id"))
+            .isInstanceOf(Exception.class);
+    }
 
 }
