@@ -1,22 +1,27 @@
-<table>
+<table class="w-full border-collapse">
+
     <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Target Company</th>
-            <th>Estimated Value</th>
-            <th>Currency</th>
-            <th>Pipeline Stage</th>
-            <th>Actions</th>
+        <tr class="border-b border-border">
+            <th class="text-left p-3">Name</th>
+            <th class="text-left p-3">Type</th>
+            <th class="text-left p-3">Target Company</th>
+            <th class="text-left p-3">Estimated Value</th>
+            <th class="text-left p-3">Currency</th>
+            <th class="text-left p-3">Pipeline Stage</th>
+            <th class="text-left p-3">Actions</th>
         </tr>
     </thead>
 
     <tbody>
-        <app-deal-table-row
-            *ngFor="let deal of deals"
-            [deal]="deal"
-            (edit)="onEdit($event)"
-            (delete)="onDelete($event)">
-        </app-deal-table-row>
+        @for (deal of deals; track deal.id) {
+            <tr class="border-b border-border hover:bg-surface-2">
+                <app-deal-table-row
+                    [deal]="deal"
+                    (edit)="onEdit($event)"
+                    (delete)="onDelete($event)">
+                </app-deal-table-row>
+            </tr>
+        }
     </tbody>
+
 </table>

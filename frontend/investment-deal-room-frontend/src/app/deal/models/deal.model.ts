@@ -3,7 +3,7 @@ import { DealType } from "./deal-type.enum";
 import { PipelineStage } from "./pipeline-stage.enum";
 
 export interface Deal {
-  id: number;
+  id: string;
   name: string;
   type: DealType;
   targetCompany: string;
