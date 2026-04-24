@@ -13,7 +13,7 @@ public record CreateDealRequestDto(
     @NotNull DealType dealType,
     @NotBlank String targetCompany,
     @NotNull Long estimatedValue,
-    @NotBlank Currency currency,
+    @NotNull Currency currency,
     @NotBlank String assignedManagerId,
     PipelineStage pipelineStage
     
