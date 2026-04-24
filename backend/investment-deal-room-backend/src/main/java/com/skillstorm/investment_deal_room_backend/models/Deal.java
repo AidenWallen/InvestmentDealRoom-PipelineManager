@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @Document(collection = "deals")
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Deal {
     @Id
     private String id;
@@ -29,6 +29,8 @@ public class Deal {
     private Currency currency;
     private PipelineStage pipelineStage;
     private String assignedManagerId;
-
-
+    
+    @Builder.Default
+    private boolean deleted = false;
+    
 }
