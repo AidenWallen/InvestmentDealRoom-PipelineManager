@@ -2,6 +2,7 @@ package com.skillstorm.investment_deal_room_backend.models;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
@@ -19,18 +20,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Deal {
+    
     @Id
     private String id;
-
     private String dealName;
     private DealType dealType;
     private String targetCompany;
     private long estimatedValue;
     private Currency currency;
     private PipelineStage pipelineStage;
+
+    @Indexed
     private String assignedManagerId;
     
+    @Indexed
     @Builder.Default
     private boolean deleted = false;
     
 }
+ 

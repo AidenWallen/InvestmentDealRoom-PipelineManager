@@ -41,6 +41,11 @@ public class DealController {
         return ResponseEntity.ok(dealService.getAllDeals());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<DealResponseDto> getDealById(@PathVariable String id) {
+        return ResponseEntity.ok(dealService.getDealById(id));
+    }
+
 
     @PostMapping
     public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request, @RequestParam String userId) {
