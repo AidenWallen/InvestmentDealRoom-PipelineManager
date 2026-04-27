@@ -10,7 +10,6 @@ import { DealForm } from "../../components/deal-form/deal-form";
   imports: [DealTable, DealForm]
 })
 export class DealPage {
-
   deals: Deal[] = [];
 
   showCreateModal = false;
@@ -32,11 +31,15 @@ export class DealPage {
     this.closeCreateModal();
   }
 
-  onEdit(id: string) {
-    console.log('edit deal:', id);
+  onRowClick(deal: Deal) {
+    console.log('view deal:', deal.id);
   }
 
-  onDelete(id: string) {
-    console.log('delete deal:', id);
+  onEdit(deal: Deal) {
+    console.log('edit deal:', deal.id);
+  }
+
+  onDelete(deal: Deal) {
+    console.log('delete deal:', deal.id);
   }
 }

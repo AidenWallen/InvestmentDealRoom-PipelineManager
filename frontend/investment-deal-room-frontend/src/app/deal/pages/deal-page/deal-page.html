@@ -17,6 +17,7 @@
   <div class="bg-surface rounded-md shadow-glow p-4">
     <app-deal-table
       [deals]="deals"
+      (rowClick)="onRowClick($event)"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)">
     </app-deal-table>
