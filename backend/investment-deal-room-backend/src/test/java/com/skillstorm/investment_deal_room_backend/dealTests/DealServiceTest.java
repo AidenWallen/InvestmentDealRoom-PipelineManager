@@ -114,7 +114,7 @@ public class DealServiceTest {
 
         DealResponseDto response = dealService.getDealById("1");
 
-        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.id()).isEqualTo("1");
         assertThat(response.dealName()).isEqualTo("Project Falcon");
     }
 
@@ -136,7 +136,7 @@ public class DealServiceTest {
     @DisplayName("advanceStage: PROSPECTING -> DUE_DILIGENCE succeeds")
     void advanceStage_prospectingToDueDiligence_succeeds() {
         Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         DealResponseDto response = dealService.updatePipelineStage("deal-01", PipelineStage.DUE_DILIGENCE);
@@ -150,7 +150,7 @@ public class DealServiceTest {
     @DisplayName("advanceStage: PROSPECTING -> CLOSING throws InvalidStageTransitionException")
     void updateStage_prospectingToClosing_throwsInvalidTransition() {
         Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
         assertThatThrownBy(() ->
             dealService.updatePipelineStage("deal-01", PipelineStage.CLOSING)
@@ -164,7 +164,7 @@ public class DealServiceTest {
     @DisplayName("advanceStage: CLOSED_WON is terminal,  any transition throws")
     void updateStage_fromClosedWon_throwsInvalidStageTransitionException() {
         Deal deal = buildDeal("deal-01", PipelineStage.CLOSED_WON);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
         assertThatThrownBy(() ->
             dealService.updatePipelineStage("deal-01", PipelineStage.NEGOTIATION)
@@ -177,7 +177,7 @@ public class DealServiceTest {
     @Test
     @DisplayName("advanceStage: deal not found throws DealNotFoundException")
     void updateStage_dealNotFound_throwsDealNotFoundException() {
-        when(dealRepository.findById("bad-id")).thenReturn(Optional.empty());
+        when(dealRepository.findByIdAndDeletedFalse("bad-id")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
             dealService.updatePipelineStage("bad-id", PipelineStage.DUE_DILIGENCE)
@@ -188,7 +188,7 @@ public class DealServiceTest {
     @DisplayName("advanceStage: NEGOTIATION -> DUE_DILIGENCE revert succeeds")
     void updateStage_revertNegotiationToDueDiligence_succeeds() {
         Deal deal = buildDeal("deal-01", PipelineStage.NEGOTIATION);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         DealResponseDto response = dealService.updatePipelineStage("deal-01", PipelineStage.DUE_DILIGENCE);
@@ -207,7 +207,7 @@ public class DealServiceTest {
     @DisplayName("updateDeal: valid request updates and saves deal")
     void updateDeal_validRequest_returnsUpdatedDeal() {
         Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         UpdateDealRequestDto update = new UpdateDealRequestDto(
@@ -224,7 +224,7 @@ public class DealServiceTest {
     @DisplayName("updateDeal: partial update only modifies provided fields")
     void updateDeal_partialUpdate_onlyChangesProvidedFields() {
         Deal deal = buildDeal("deal-01", PipelineStage.DUE_DILIGENCE);
-        when(dealRepository.findById("deal-01")).thenReturn(Optional.of(deal));
+        when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Only update currency, everything else should stay the same
@@ -249,15 +249,21 @@ public class DealServiceTest {
         ).isInstanceOf(DealNotFoundException.class);
     }
 
+    /**
+     * 
+     * Test for deleteDeal (soft delete)
+     */
+
     @Test
-    @DisplayName("deleteDeal: existing deal is deleted without error")
+    @DisplayName("deleteDeal: existing deal soft is deleted without error")
     void deleteDeal_existingId_deletesSuccessfully() {
         Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
         when(dealRepository.findByIdAndDeletedFalse("deal-001")).thenReturn(Optional.of(deal));
+        when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         assertThatNoException().isThrownBy(() -> dealService.deleteDeal("deal-001"));
-
-        verify(dealRepository).deleteById("deal-001");
+        assertThat(deal.isDeleted()).isTrue();
+        verify(dealRepository).save(deal);
     }
 
     @Test
