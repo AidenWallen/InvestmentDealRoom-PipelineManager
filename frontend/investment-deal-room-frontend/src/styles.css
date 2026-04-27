@@ -1,3 +1,156 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap');
 
 @import 'tailwindcss';
+@import "primeicons/primeicons.css";
+
+@theme {
+    --color-bg:             #0a0a0a;
+    --color-surface:        #0f0f0f;
+    --color-surface-2:      #141414;
+    --color-border:         #1a2e1a;
+    --color-border-bright:  #234d23;
+
+    --color-green:          #39ff14;
+    --color-green-dim:      #22c55e;
+    --color-green-muted:    #166534;
+    --color-green-glow:     rgba(57, 255, 20, 0.15);
+    --color-green-glow-sm:  rgba(57, 255, 20, 0.07);
+
+    --color-text:           #b0f0b0;
+    --color-text-bright:    #39ff14;
+    --color-text-muted:     #4a7a4a;
+    --color-text-dim:       #2d5a2d;
+
+    --color-danger:         #ff3b3b;
+    --color-danger-dim:     #7f1d1d;
+    --color-warning:        #f59e0b;
+    --color-info:           #22d3ee;
+    --color-success:        #39ff14;
+
+    --font-mono: 'Fira Code', 'Share Tech Mono', 'Courier New', monospace;
+
+    --radius: 4px;
+
+    --shadow-glow: 0 0 12px rgba(57, 255, 20, 0.08);
+    --shadow-glow-lg: 0 0 24px rgba(57, 255, 20, 0.12);
+}
+
+:root {
+    --p-inputtext-border-color: var(--color-border);
+    --p-inputtext-focus-border-color: var(--color-green);
+    --p-inputtext-background: var(--color-surface);
+    --p-inputtext-color: var(--color-text);
+    --p-inputtext-placeholder-color: var(--color-text-muted);
+}
+
+@layer base {
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--color-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-green-muted);
+        border-radius: 2px;
+    }
+
+    body {
+        font-family: var(--font-mono);
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-size: 13px;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--color-text-bright);
+    }
+
+    /* tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    thead {
+        background-color: var(--color-surface-2);
+    }
+
+    tbody tr:hover {
+        background-color: var(--color-surface-2);
+    }
+}
+
+@layer components {
+    /* deal-form */
+    .deal-form input,
+    .deal-form select {
+        @apply bg-white text-black border border-gray-300 rounded px-2 py-1;
+    }
+
+    .deal-form option {
+        @apply bg-white text-black;
+    }
+
+    .deal-form label {
+        @apply block font-semibold mb-1;
+    }
+
+    .deal-form div {
+        @apply mb-3;
+    }
+
+    .deal-form button {
+        @apply mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer;
+    }
+
+    /* table action buttons */
+    .table-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .table-actions button {
+        background: var(--color-surface-2);
+        color: var(--color-green);
+        border: 1px solid var(--color-border);
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .table-actions button:hover {
+        border-color: var(--color-border-bright);
+        box-shadow: var(--shadow-glow);
+    }
+
+    .table-actions button.delete {
+        color: var(--color-danger);
+        border-color: var(--color-danger-dim);
+    }
+
+    .table-actions button.delete:hover {
+        border-color: var(--color-danger);
+    }
+}

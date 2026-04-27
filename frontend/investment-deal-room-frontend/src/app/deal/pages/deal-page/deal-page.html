@@ -1,1 +1,48 @@
-<p>deal-page works!</p>
+<div class="min-h-screen p-6 bg-bg text-text">
+
+  <div class="flex justify-between items-center mb-6">
+
+    <h1 class="text-2xl font-semibold text-(--color-text-bright)">
+      Deals
+    </h1>
+
+    <button
+      class="px-4 py-2 rounded bg-(--color-green) text-black hover:opacity-90 cursor-pointer"
+      (click)="openCreateModal()">
+      Create New Transaction
+    </button>
+
+  </div>
+
+  <div class="bg-surface rounded-md shadow-glow p-4">
+    <app-deal-table
+      [deals]="deals"
+      (rowClick)="onRowClick($event)"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)">
+    </app-deal-table>
+  </div>
+
+  @if (showCreateModal) {
+    <div class="fixed inset-0 bg-black/60 flex items-center justify-center">
+
+      <div class="bg-surface p-6 rounded-md w-125 shadow-glow-lg">
+
+        <app-deal-form
+          (create)="onCreateDeal($event)">
+        </app-deal-form>
+
+        <div class="flex justify-end mt-4">
+          <button
+            class="px-3 py-1 text-sm rounded bg-border hover:opacity-90 cursor-pointer"
+            (click)="closeCreateModal()">
+            Close
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+</div>
