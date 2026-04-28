@@ -1,4 +1,4 @@
-import { Component, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, SimpleChanges } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
@@ -15,11 +15,15 @@ export class DealPage {
 
   showCreateModal = false;
 
-  constructor(private dealService: DealService) {}
+  constructor(
+    private dealService: DealService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.dealService.getDeals().subscribe(data => {
       this.deals = data;
+      this.cdr.detectChanges();
     });
   }
 
