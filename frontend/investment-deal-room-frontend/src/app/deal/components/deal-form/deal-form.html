@@ -5,7 +5,7 @@
     <input
       type="text"
       name="name"
-      [(ngModel)]="deal.name"
+      [(ngModel)]="deal.dealName"
       required
     />
   </div>
@@ -14,7 +14,7 @@
     <label>Type</label>
     <select
       name="type"
-      [(ngModel)]="deal.type"
+      [(ngModel)]="deal.dealType"
       required
     >
     @for (t of dealTypes; track t) {

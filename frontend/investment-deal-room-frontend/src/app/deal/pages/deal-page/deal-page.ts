@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, SimpleChanges } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";

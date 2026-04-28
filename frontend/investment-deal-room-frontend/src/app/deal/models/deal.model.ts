@@ -4,8 +4,8 @@ import { PipelineStage } from "./pipeline-stage.enum";
 
 export interface Deal {
   id: string;
-  name: string;
-  type: DealType;
+  dealName: string;
+  dealType: DealType;
   targetCompany: string;
   estimatedValue: number;
   currency: Currency;

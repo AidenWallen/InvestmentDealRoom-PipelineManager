@@ -11,7 +11,7 @@ export class DealService {
   constructor(private http: HttpClient) {}
 
   getDeals(): Observable<Deal[]> {
-    return this.http.get<Deal[]>('/api/v1/deals');
+    return this.http.get<Deal[]>('http://localhost:8080/api/v1/deals');
   }
 
 }

@@ -26,8 +26,8 @@ export class DealForm {
 
   deal: Deal = {
     id: '',
-    name: '',
-    type: DealType.M_AND_A,
+    dealName: '',
+    dealType: DealType.M_AND_A,
     targetCompany: '',
     estimatedValue: 0,
     currency: Currency.USD,
@@ -40,8 +40,8 @@ export class DealForm {
     // reset form after submit
     this.deal = {
       id: '',
-      name: '',
-      type: DealType.M_AND_A,
+      dealName: '',
+      dealType: DealType.M_AND_A,
       targetCompany: '',
       estimatedValue: 0,
       currency: Currency.USD,
