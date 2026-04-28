@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.Mockito.never;
@@ -49,7 +50,7 @@ public class DealServiceTest {
         deal.setDealName("Project Falcon");
         deal.setDealType(DealType.MERGER_ACQUISITION);
         deal.setTargetCompany("Horizon Capital LLC");
-        deal.setEstimatedValue(4_200_000_000L);
+        deal.setEstimatedValue(new BigDecimal("4200000000"));
         deal.setCurrency(Currency.USD);
         deal.setAssignedManagerId("manager-01");
         deal.setPipelineStage(stage);
@@ -61,9 +62,8 @@ public class DealServiceTest {
             "Project Falcon",
             DealType.MERGER_ACQUISITION,
             "Horizon Capital LLC",
-            4_200_000_000L,
+            new BigDecimal("4200000000"),
             Currency.USD,
-            "manager-01",
             PipelineStage.PROSPECTING
         );
     }

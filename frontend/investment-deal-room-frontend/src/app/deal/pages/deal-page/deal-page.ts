@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
+import { DealService } from '../../services/deal';
 
 @Component({
   selector: 'app-deal-page',
@@ -13,6 +14,14 @@ export class DealPage {
   deals: Deal[] = [];
 
   showCreateModal = false;
+
+  constructor(private dealService: DealService) {}
+
+  ngOnInit() {
+    this.dealService.getDeals().subscribe(data => {
+      this.deals = data;
+    });
+  }
 
   openCreateModal() {
     this.showCreateModal = true;
