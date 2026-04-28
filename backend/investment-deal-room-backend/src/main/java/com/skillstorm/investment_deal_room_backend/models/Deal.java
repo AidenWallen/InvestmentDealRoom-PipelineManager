@@ -1,6 +1,8 @@
 package com.skillstorm.investment_deal_room_backend.models;
 
 
+import java.math.BigDecimal;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,7 +28,7 @@ public class Deal {
     private String dealName;
     private DealType dealType;
     private String targetCompany;
-    private long estimatedValue;
+    private BigDecimal estimatedValue;
     private Currency currency;
     private PipelineStage pipelineStage;
 

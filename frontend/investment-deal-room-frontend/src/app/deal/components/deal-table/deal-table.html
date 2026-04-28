@@ -1,1 +1,43 @@
-<p>deal-table works!</p>
+<table class="w-full border-collapse">
+
+  <thead>
+    <tr class="border-b border-border">
+      <th class="text-left p-3">Name</th>
+      <th class="text-left p-3">Type</th>
+      <th class="text-left p-3">Target Company</th>
+      <th class="text-left p-3">Estimated Value</th>
+      <th class="text-left p-3">Currency</th>
+      <th class="text-left p-3">Pipeline Stage</th>
+      <th class="text-left p-3">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (deal of deals; track deal.id) {
+      <tr
+        class="border-b border-border hover:bg-surface-2 cursor-pointer"
+        (click)="onRowClick(deal)"
+      >
+        <td class="p-3">{{ deal.dealName }}</td>
+        <td class="p-3">{{ deal.dealType }}</td>
+        <td class="p-3">{{ deal.targetCompany }}</td>
+        <td class="p-3">{{ deal.estimatedValue }}</td>
+        <td class="p-3">{{ deal.currency }}</td>
+        <td class="p-3">{{ deal.pipelineStage }}</td>
+
+        <td class="p-3" (click)="$event.stopPropagation()">
+            <div class="table-actions">
+                <button (click)="onEdit($event, deal)">
+                    Edit
+                </button>
+
+                <button (click)="onDelete($event, deal)">
+                    Delete
+                </button>
+            </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+
+</table>

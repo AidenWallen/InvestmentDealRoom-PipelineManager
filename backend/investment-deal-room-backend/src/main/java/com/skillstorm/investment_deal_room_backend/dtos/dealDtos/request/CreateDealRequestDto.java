@@ -1,5 +1,7 @@
 package com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request;
 
+import java.math.BigDecimal;
+
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
 import com.skillstorm.investment_deal_room_backend.enums.DealType;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
@@ -12,9 +14,9 @@ public record CreateDealRequestDto(
     @NotBlank String dealName,
     @NotNull DealType dealType,
     @NotBlank String targetCompany,
-    @NotNull Long estimatedValue,
+    @NotNull BigDecimal estimatedValue,
     @NotNull Currency currency,
-    @NotBlank String assignedManagerId,
+    // @NotBlank String assignedManagerId,
     PipelineStage pipelineStage
     
 ) {
