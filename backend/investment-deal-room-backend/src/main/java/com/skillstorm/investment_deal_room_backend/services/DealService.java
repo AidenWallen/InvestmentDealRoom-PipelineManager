@@ -85,7 +85,7 @@ public class DealService {
         return DealResponseDto.fromEntity(updatedDeal);
     }
 
-
+    @Transactional
     public DealResponseDto updatePipelineStage(String id, PipelineStage newStage) {
         Deal deal = getDealEntityById(id);
         PipelineStage currentStage = deal.getPipelineStage();
@@ -101,7 +101,7 @@ public class DealService {
         return DealResponseDto.fromEntity(updatedDeal);
     }
 
-
+    
     public void deleteDeal(String id) {
         Deal deal = getDealEntityById(id);
         deal.setDeleted(true);
