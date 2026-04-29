@@ -19,6 +19,7 @@ import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 @Service
 public class DealService {
     private final DealRepository dealRepository;
+    private final DealActivityService dealActivityService;
 
     // Define valid pipeline stage transitions
     private static final Map<PipelineStage, List<PipelineStage>> PIPELINE_TRANSITIONS = Map.of(
@@ -30,15 +31,18 @@ public class DealService {
         PipelineStage.CLOSED_LOST, List.of()
     );
 
-    public DealService(DealRepository dealRepository) {
+    public DealService(DealRepository dealRepository, DealActivityService dealActivityService) {
         this.dealRepository = dealRepository;
+        this.dealActivityService = dealActivityService;
     }
-
 
     @Transactional
     public DealResponseDto createDeal(CreateDealRequestDto request, String createdByUserId) {
         Deal deal = request.toEntity(createdByUserId);
         Deal savedDeal = dealRepository.save(deal);
+
+        dealActivityService.recordDealCreation(savedDeal.getId(), createdByUserId, createdByUserId);
+
         return DealResponseDto.fromEntity(savedDeal);
     }
 
@@ -81,7 +85,7 @@ public class DealService {
         return DealResponseDto.fromEntity(updatedDeal);
     }
 
-
+    @Transactional
     public DealResponseDto updatePipelineStage(String id, PipelineStage newStage) {
         Deal deal = getDealEntityById(id);
         PipelineStage currentStage = deal.getPipelineStage();
@@ -93,10 +97,11 @@ public class DealService {
 
         deal.setPipelineStage(newStage);
         Deal updatedDeal = dealRepository.save(deal);
+
         return DealResponseDto.fromEntity(updatedDeal);
     }
 
-
+    
     public void deleteDeal(String id) {
         Deal deal = getDealEntityById(id);
         deal.setDeleted(true);
