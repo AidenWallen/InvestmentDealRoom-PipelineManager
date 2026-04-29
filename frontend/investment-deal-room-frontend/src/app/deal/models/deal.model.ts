@@ -9,5 +9,6 @@ export interface Deal {
   targetCompany: string;
   estimatedValue: number;
   currency: Currency;
+  assignedManagerId: string;
   pipelineStage: PipelineStage;
 }

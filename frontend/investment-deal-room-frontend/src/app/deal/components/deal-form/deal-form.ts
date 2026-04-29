@@ -40,7 +40,6 @@ export class DealForm implements OnChanges {
 
   onSubmitDeal() {
     this.submit.emit({ ...this.formDeal });
-    this.formDeal = this.getEmptyDeal();
   }
 
   private getEmptyDeal(): Deal {
@@ -51,6 +50,7 @@ export class DealForm implements OnChanges {
       targetCompany: '',
       estimatedValue: 0,
       currency: Currency.USD,
+      assignedManagerId: '',
       pipelineStage: PipelineStage.PROSPECTING
     };
   }

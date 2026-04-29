@@ -3,6 +3,7 @@ import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
 import { DealService } from '../../services/deal';
+import { exhaustMap, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-deal-page',
@@ -19,6 +20,8 @@ export class DealPage implements OnInit {
 
   selectedDeal: Deal | undefined;
 
+  private submitDeal$ = new Subject<Deal>();
+
   constructor(
     private dealService: DealService,
     private cdr: ChangeDetectorRef
@@ -30,6 +33,37 @@ export class DealPage implements OnInit {
 
       this.cdr.detectChanges();
     });
+
+    this.submitDeal$
+      .pipe(
+        exhaustMap(deal => {
+
+          const request$ = deal.id
+            ? this.dealService.updateDeal(deal.id, {
+                dealName: deal.dealName,
+                dealType: deal.dealType,
+                targetCompany: deal.targetCompany,
+                estimatedValue: deal.estimatedValue,
+                currency: deal.currency
+              })
+            : this.dealService.createDeal('PLACEHOLDER', deal);
+
+          return request$;
+        })
+      )
+      .subscribe({
+        next: (res: Deal) => {
+
+          if (this.deals.find(d => d.id === res.id)) {
+            this.deals = this.deals.map(d => d.id === res.id ? res : d);
+          } else {
+            this.deals = [...this.deals, res];
+          }
+
+          this.closeModal();
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   openModal(deal?: Deal) {
@@ -53,35 +87,7 @@ export class DealPage implements OnInit {
   }
 
   onSubmitDeal(deal: Deal) {
-
-    if (deal.id) {
-      // UPDATE
-      this.dealService.updateDeal(deal.id, {
-        dealName: deal.dealName,
-        dealType: deal.dealType,
-        targetCompany: deal.targetCompany,
-        estimatedValue: deal.estimatedValue,
-        currency: deal.currency
-      }).subscribe(updated => {
-
-        this.deals = this.deals.map(d =>
-          d.id === updated.id ? updated : d
-        );
-
-        this.closeModal();
-        this.cdr.detectChanges();
-      });
-
-    } else {
-      // CREATE
-      this.dealService.createDeal('0', deal).subscribe(newDeal => {
-
-        this.deals = [...this.deals, newDeal];
-
-        this.closeModal();
-        this.cdr.detectChanges();
-      });
-    }
+    this.submitDeal$.next(deal);
   }
 
   confirmDelete() {

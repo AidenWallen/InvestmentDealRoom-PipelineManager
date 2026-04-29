@@ -17,7 +17,7 @@ public record CreateDealRequestDto(
     @NotNull BigDecimal estimatedValue,
     @NotNull Currency currency,
     // @NotBlank String assignedManagerId,
-    PipelineStage pipelineStage
+    @NotNull PipelineStage pipelineStage
     
 ) {
     public Deal toEntity(String createdByUserId) {

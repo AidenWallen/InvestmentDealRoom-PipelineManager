@@ -1,7 +1,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* VERY important */
+  table-layout: fixed;
 }
 
 th,
