@@ -1,11 +1,11 @@
-<form (ngSubmit)="submit()" #dealForm="ngForm" class="deal-form">
+<form (ngSubmit)="onSubmitDeal()" #dealForm="ngForm" class="deal-form">
 
   <div>
     <label>Name</label>
     <input
       type="text"
-      name="name"
-      [(ngModel)]="deal.dealName"
+      name="dealName"
+      [(ngModel)]="formDeal.dealName"
       required
     />
   </div>
@@ -13,13 +13,13 @@
   <div>
     <label>Type</label>
     <select
-      name="type"
-      [(ngModel)]="deal.dealType"
+      name="dealType"
+      [(ngModel)]="formDeal.dealType"
       required
     >
-    @for (t of dealTypes; track t) {
+      @for (t of dealTypes; track t) {
         <option [value]="t">{{ t }}</option>
-    }
+      }
     </select>
   </div>
 
@@ -28,7 +28,7 @@
     <input
       type="text"
       name="targetCompany"
-      [(ngModel)]="deal.targetCompany"
+      [(ngModel)]="formDeal.targetCompany"
       required
     />
   </div>
@@ -38,7 +38,7 @@
     <input
       type="number"
       name="estimatedValue"
-      [(ngModel)]="deal.estimatedValue"
+      [(ngModel)]="formDeal.estimatedValue"
       min="0"
     />
   </div>
@@ -47,12 +47,12 @@
     <label>Currency</label>
     <select
       name="currency"
-      [(ngModel)]="deal.currency"
+      [(ngModel)]="formDeal.currency"
       required
     >
-    @for (c of currencyValues; track c) {
+      @for (c of currencyValues; track c) {
         <option [value]="c">{{ c }}</option>
-    }
+      }
     </select>
   </div>
 
@@ -60,17 +60,21 @@
     <label>Pipeline Stage</label>
     <select
       name="pipelineStage"
-      [(ngModel)]="deal.pipelineStage"
+      [(ngModel)]="formDeal.pipelineStage"
+      [disabled]="!!formDeal.id"
       required
+      [ngClass]="{
+        'bg-gray-200 text-gray-500 cursor-not-allowed': !!formDeal.id
+      }"
     >
-    @for (p of pipelineStages; track p) {
+      @for (p of pipelineStages; track p) {
         <option [value]="p">{{ p }}</option>
-    }
+      }
     </select>
   </div>
 
   <button type="submit" [disabled]="!dealForm.form.valid">
-    Create Deal
+    {{ formDeal.id ? 'Update Deal' : 'Create Deal' }}
   </button>
 
 </form>

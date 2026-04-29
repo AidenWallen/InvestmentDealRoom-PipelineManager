@@ -8,7 +8,7 @@
 
     <button
       class="px-4 py-2 rounded bg-(--color-green) text-black hover:opacity-90 cursor-pointer"
-      (click)="openCreateModal()">
+      (click)="onCreate()">
       Create New Transaction
     </button>
 
@@ -23,21 +23,59 @@
     </app-deal-table>
   </div>
 
-  @if (showCreateModal) {
+  @if (showDealModal) {
     <div class="fixed inset-0 bg-black/60 flex items-center justify-center">
 
       <div class="bg-surface p-6 rounded-md w-125 shadow-glow-lg">
 
         <app-deal-form
-          (create)="onCreateDeal($event)">
+          [deal]="selectedDeal"
+          (submit)="onSubmitDeal($event)">
         </app-deal-form>
 
         <div class="flex justify-end mt-4">
           <button
             class="px-3 py-1 text-sm rounded bg-border hover:opacity-90 cursor-pointer"
-            (click)="closeCreateModal()">
+            (click)="closeModal()">
             Close
           </button>
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+  @if (showDeleteModal) {
+    <div class="fixed inset-0 bg-black/60 flex items-center justify-center">
+
+      <div class="bg-surface p-6 rounded-md w-96 shadow-glow-lg">
+
+        <h2 class="text-lg font-semibold mb-4">
+          Delete Deal?
+        </h2>
+
+        <p class="mb-6">
+          Are you sure you want to delete
+          <span class="font-semibold">
+            {{ selectedDeal?.dealName }}
+          </span>?
+        </p>
+
+        <div class="flex justify-end gap-2">
+
+          <button
+            class="px-3 py-1 text-sm rounded bg-border hover:opacity-90 cursor-pointer"
+            (click)="closeDeleteModal()">
+            Cancel
+          </button>
+
+          <button
+            class="px-3 py-1 text-sm rounded bg-red-600 text-white hover:opacity-90 cursor-pointer"
+            (click)="confirmDelete()">
+            Delete
+          </button>
+
         </div>
 
       </div>

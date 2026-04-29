@@ -1,20 +1,22 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Deal } from '../../models/deal.model';
 import { Currency } from '../../models/currency.enum';
 import { PipelineStage } from '../../models/pipeline-stage.enum';
 import { DealType } from '../../models/deal-type.enum';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-deal-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './deal-form.html'
 })
-export class DealForm {
+export class DealForm implements OnChanges {
 
-  @Output()
-  create = new EventEmitter<Deal>();
+  @Input() deal?: Deal;
+
+  @Output() submit = new EventEmitter<Deal>();
 
   Currency = Currency;
   PipelineStage = PipelineStage;
@@ -24,24 +26,28 @@ export class DealForm {
   pipelineStages = Object.values(PipelineStage);
   dealTypes = Object.values(DealType);
 
-  deal: Deal = {
-    id: '',
-    dealName: '',
-    dealType: DealType.M_AND_A,
-    targetCompany: '',
-    estimatedValue: 0,
-    currency: Currency.USD,
-    pipelineStage: PipelineStage.PROSPECTING
-  };
+  formDeal: Deal = this.getEmptyDeal();
 
-  submit() {
-    this.create.emit({...this.deal});
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['deal']) {
+      if (this.deal) {
+        this.formDeal = { ...this.deal };
+      } else {
+        this.formDeal = this.getEmptyDeal();
+      }
+    }
+  }
 
-    // reset form after submit
-    this.deal = {
+  onSubmitDeal() {
+    this.submit.emit({ ...this.formDeal });
+    this.formDeal = this.getEmptyDeal();
+  }
+
+  private getEmptyDeal(): Deal {
+    return {
       id: '',
       dealName: '',
-      dealType: DealType.M_AND_A,
+      dealType: DealType.MERGER_ACQUISITION,
       targetCompany: '',
       estimatedValue: 0,
       currency: Currency.USD,

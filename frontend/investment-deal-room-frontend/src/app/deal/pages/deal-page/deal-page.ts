@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
@@ -10,10 +10,14 @@ import { DealService } from '../../services/deal';
   templateUrl: './deal-page.html',
   imports: [DealTable, DealForm]
 })
-export class DealPage {
+export class DealPage implements OnInit {
+
   deals: Deal[] = [];
 
-  showCreateModal = false;
+  showDealModal = false;
+  showDeleteModal = false;
+
+  selectedDeal: Deal | undefined;
 
   constructor(
     private dealService: DealService,
@@ -23,25 +27,80 @@ export class DealPage {
   ngOnInit() {
     this.dealService.getDeals().subscribe(data => {
       this.deals = data;
+
       this.cdr.detectChanges();
     });
   }
 
-  openCreateModal() {
-    this.showCreateModal = true;
+  openModal(deal?: Deal) {
+    this.selectedDeal = deal;
+    this.showDealModal = true;
   }
 
-  closeCreateModal() {
-    this.showCreateModal = false;
+  openDeleteModal(deal: Deal) {
+    this.selectedDeal = deal;
+    this.showDeleteModal = true;
   }
 
-  onCreateDeal(deal: Deal) {
-    this.dealService.createDeal(deal).subscribe(newDeal => {
+  closeModal() {
+    this.showDealModal = false;
+    this.selectedDeal = undefined;
+  }
 
-      this.deals = [...this.deals, newDeal];
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.selectedDeal = undefined;
+  }
 
-      this.closeCreateModal();
-    })
+  onSubmitDeal(deal: Deal) {
+
+    if (deal.id) {
+      // UPDATE
+      this.dealService.updateDeal(deal.id, {
+        dealName: deal.dealName,
+        dealType: deal.dealType,
+        targetCompany: deal.targetCompany,
+        estimatedValue: deal.estimatedValue,
+        currency: deal.currency
+      }).subscribe(updated => {
+
+        this.deals = this.deals.map(d =>
+          d.id === updated.id ? updated : d
+        );
+
+        this.closeModal();
+        this.cdr.detectChanges();
+      });
+
+    } else {
+      // CREATE
+      this.dealService.createDeal('0', deal).subscribe(newDeal => {
+
+        this.deals = [...this.deals, newDeal];
+
+        this.closeModal();
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  confirmDelete() {
+    if (!this.selectedDeal) return;
+
+    this.dealService.deleteDeal(this.selectedDeal.id)
+      .subscribe(() => {
+
+        this.deals = this.deals.filter(
+          d => d.id !== this.selectedDeal!.id
+        );
+
+        this.closeDeleteModal();
+        this.cdr.detectChanges();
+      });
+  }
+
+  onCreate() {
+    this.openModal(undefined);
   }
 
   onRowClick(deal: Deal) {
@@ -49,33 +108,10 @@ export class DealPage {
   }
 
   onEdit(deal: Deal) {
-
-    const request = {
-      dealName: deal.dealName,
-      dealType: deal.dealType,
-      targetCompany: deal.targetCompany,
-      estimatedValue: deal.estimatedValue,
-      currency: deal.currency
-    };
-
-    this.dealService
-      .updateDeal(deal.id, request)
-      .subscribe(updatedDeal => {
-
-        this.deals = this.deals.map(d =>
-          d.id === updatedDeal.id ? updatedDeal : d
-        );
-
-      });
+    this.openModal(deal);
   }
 
   onDelete(deal: Deal) {
-    this.dealService.deleteDeal(deal.id).subscribe(() => {
-
-      this.deals = this.deals.filter(d =>
-        d.id !== deal.id
-      );
-
-    });
+    this.openDeleteModal(deal);
   }
 }

@@ -14,9 +14,9 @@ export class DealService {
     return this.http.get<Deal[]>('http://localhost:8080/api/v1/deals');
   }
 
-  createDeal(deal: Deal): Observable<Deal> {
+  createDeal(userId: string, deal: Deal): Observable<Deal> {
     return this.http.post<Deal>(
-      'http://localhost:8080/api/v1/deals',
+      `http://localhost:8080/api/v1/deals?userId=${userId}`,
       deal
     );
   }
