@@ -36,12 +36,12 @@ export class DealPage {
   }
 
   onCreateDeal(deal: Deal) {
-    this.deals = [
-      ...this.deals,
-      { ...deal, id: crypto.randomUUID() }
-    ];
+    this.dealService.createDeal(deal).subscribe(newDeal => {
 
-    this.closeCreateModal();
+      this.deals = [...this.deals, newDeal];
+
+      this.closeCreateModal();
+    })
   }
 
   onRowClick(deal: Deal) {
@@ -49,10 +49,33 @@ export class DealPage {
   }
 
   onEdit(deal: Deal) {
-    console.log('edit deal:', deal.id);
+
+    const request = {
+      dealName: deal.dealName,
+      dealType: deal.dealType,
+      targetCompany: deal.targetCompany,
+      estimatedValue: deal.estimatedValue,
+      currency: deal.currency
+    };
+
+    this.dealService
+      .updateDeal(deal.id, request)
+      .subscribe(updatedDeal => {
+
+        this.deals = this.deals.map(d =>
+          d.id === updatedDeal.id ? updatedDeal : d
+        );
+
+      });
   }
 
   onDelete(deal: Deal) {
-    console.log('delete deal:', deal.id);
+    this.dealService.deleteDeal(deal.id).subscribe(() => {
+
+      this.deals = this.deals.filter(d =>
+        d.id !== deal.id
+      );
+
+    });
   }
 }
