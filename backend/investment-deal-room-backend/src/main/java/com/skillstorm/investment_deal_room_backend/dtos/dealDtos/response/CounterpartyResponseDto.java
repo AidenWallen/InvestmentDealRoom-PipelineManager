@@ -6,14 +6,16 @@ public record CounterpartyResponseDto(
     String id,
     String organizationName,
     String primaryContactName,
-    String contactDetails
+    String contactEmail,
+    String contactPhone
 ) {
     public static CounterpartyResponseDto fromEntity(Counterparty counterparty){
         return new CounterpartyResponseDto(
             counterparty.getId(),
             counterparty.getOrganizationName(),
             counterparty.getPrimaryContactName(),
-            counterparty.getContactDetails()
+            counterparty.getContactEmail(),
+            counterparty.getContactPhone()
         );
     }
 }

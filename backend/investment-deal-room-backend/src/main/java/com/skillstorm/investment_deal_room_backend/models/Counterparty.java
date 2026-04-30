@@ -20,7 +20,8 @@ public class Counterparty {
     private String id;
     private String organizationName;
     private String primaryContactName;
-    private String contactDetails;
+    private String contactEmail;
+    private String contactPhone;
 
     @Indexed
     @Builder.Default
