@@ -10,8 +10,8 @@ import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateD
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealResponseDto;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
@@ -116,7 +116,7 @@ public class DealService {
      */
     private final Deal getDealEntityById(String id) {
         return dealRepository.findByIdAndDeletedFalse(id)
-            .orElseThrow(() -> new DealNotFoundException("Deal not found"));
+            .orElseThrow(() -> new DealNotFoundException(id));
     }
 
 

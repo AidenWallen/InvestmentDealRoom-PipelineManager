@@ -1,11 +1,16 @@
 package com.skillstorm.investment_deal_room_backend.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.CounterpartyResponseDto;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
+import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
 
 @Service
@@ -23,5 +28,23 @@ public class CounterpartyService {
         Counterparty savedCounterparty = counterpartyRepository.save(counterparty);
 
         return CounterpartyResponseDto.fromEntity(savedCounterparty);
+    }
+
+    public List<CounterpartyResponseDto> getAllCounterparties(){
+        return counterpartyRepository.findByDeletedFalse()
+            .stream()
+            .map(CounterpartyResponseDto::fromEntity)
+            .toList();
+    }
+
+    public CounterpartyResponseDto getCounterpartyById(String id){
+        return CounterpartyResponseDto.fromEntity(
+            getCounterpartyEntityById(id)
+        );
+    }
+
+    private final Counterparty getCounterpartyEntityById(String id) {
+        return counterpartyRepository.findByIdAndDeletedFalse(id)
+            .orElseThrow(() -> new CounterpartyNotFoundException(id));
     }
 }
