@@ -5,7 +5,7 @@ import { Deal } from '../../models/deal.model';
 import { Currency } from '../../models/enums/currency.enum';
 import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
 import { DealType } from '../../models/enums/deal-type.enum';
-import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-deal-form',

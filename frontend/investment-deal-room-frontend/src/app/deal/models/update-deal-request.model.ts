@@ -1,5 +1,5 @@
-import { Currency } from "./currency.enum";
-import { DealType } from "./deal-type.enum";
+import { Currency } from "./enums/currency.enum";
+import { DealType } from "./enums/deal-type.enum";
 
 export interface UpdateDealRequest {
   dealName: string;
