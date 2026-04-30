@@ -1,20 +1,39 @@
-<div class="min-h-screen p-6 bg-bg text-text">
+<div class="min-h-screen p-6 bg-bg text-text-primary">
 
-  <div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-semibold flex  pb-3">
+      Deal Pipeline
+  </h1>
 
-    <h1 class="text-2xl font-semibold text-(--color-text-bright)">
-      Deals
-    </h1>
+  <div class="flex justify-between items-center mb-4 border-t-accent">
+
+    <div class="justify-center flex flex-wrap pb-2">
+        <input
+            pInputText
+            [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
+            placeholder="Search Deals..."
+        />
+
+        <p-select
+            [options]="dealTypes"
+             optionLabel="label"
+             optionValue="value"
+            placeholder="DEAL TYPE"
+            class="ml-4 w-48"
+        ></p-select>
+
+
+
+    </div>
 
     <button
-      class="px-4 py-2 rounded bg-(--color-green) text-black hover:opacity-90 cursor-pointer"
+      class="px-3  py-2 text-xs bg-bg text-text-primary border border-accent rounded hover:bg-accent-soft transition-colors cursor-pointer"
       (click)="openCreateModal()">
-      Create New Transaction
+      + New Deal
     </button>
 
   </div>
 
-  <div class="bg-surface rounded-md shadow-glow p-4">
+  <div class="bg-surface rounded-md shadow-md p-4">
     <app-deal-table
       [deals]="deals"
       (rowClick)="onRowClick($event)"
@@ -24,9 +43,11 @@
   </div>
 
   @if (showCreateModal) {
-    <div class="fixed inset-0 bg-black/60 flex items-center justify-center">
+    <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
-      <div class="bg-surface p-6 rounded-md w-125 shadow-glow-lg">
+      <div class="bg-surface-2 border border-border p-6 rounded-md w-125 shadow-modal">
+
+        <h2 class="text-base font-semibold text-text-primary mb-4">New Deal</h2>
 
         <app-deal-form
           (create)="onCreateDeal($event)">
@@ -34,9 +55,9 @@
 
         <div class="flex justify-end mt-4">
           <button
-            class="px-3 py-1 text-sm rounded bg-border hover:opacity-90 cursor-pointer"
+            class="px-3 py-1 text-sm rounded border border-border text-text-secondary hover:text-text-primary hover:border-border-strong transition-colors cursor-pointer"
             (click)="closeCreateModal()">
-            Close
+            Cancel
           </button>
         </div>
 

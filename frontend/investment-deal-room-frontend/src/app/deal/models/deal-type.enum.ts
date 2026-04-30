@@ -1,6 +1,0 @@
-export enum DealType {
-  M_AND_A = 'M_AND_A',
-  IPO = 'IPO',
-  DEBT_ISSUANCE = 'DEBT_ISSUANCE',
-  PRIVATE_PLACEMENT = 'PRIVATE_PLACEMENT'
-}

@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap');
 
 @import 'tailwindcss';
+@import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 
 @theme {
