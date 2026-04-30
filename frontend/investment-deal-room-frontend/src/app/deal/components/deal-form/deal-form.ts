@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Deal } from '../../models/deal.model';
-import { Currency } from '../../models/currency.enum';
-import { PipelineStage } from '../../models/pipeline-stage.enum';
-import { DealType } from '../../models/deal-type.enum';
+import { Currency } from '../../models/enums/currency.enum';
+import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
+import { DealType } from '../../models/enums/deal-type.enum';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-deal-form',

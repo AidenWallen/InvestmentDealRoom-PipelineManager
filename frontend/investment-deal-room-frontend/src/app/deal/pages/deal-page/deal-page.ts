@@ -1,19 +1,35 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, signal, OnInit } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
 import { DealService } from '../../services/deal';
+import { Button, ButtonModule } from "primeng/button";
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from "primeng/select";
+import { DealType } from '../../models/enums/deal-type.enum';
+import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
 import { exhaustMap, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-deal-page',
   standalone: true,
   templateUrl: './deal-page.html',
-  imports: [DealTable, DealForm]
+  imports: [DealTable, DealForm, ButtonModule, InputTextModule, SelectModule]
 })
 export class DealPage implements OnInit {
 
   deals: Deal[] = [];
+
+  showCreateModal = false;
+  /** filtering deals */
+  searchQuery = signal('');
+  filterActivityType = signal<DealType | null>(null);
+  filterPipelineStage = signal<PipelineStage | null>(null);
+  
+
+  /** Enum options */
+  dealTypes = Object.values(DealType);
+  pipelineStages = Object.values(PipelineStage);
 
   showDealModal = false;
   showDeleteModal = false;
@@ -21,7 +37,6 @@ export class DealPage implements OnInit {
   selectedDeal: Deal | undefined;
 
   private submitDeal$ = new Subject<Deal>();
-
   constructor(
     private dealService: DealService,
     private cdr: ChangeDetectorRef
@@ -108,6 +123,19 @@ export class DealPage implements OnInit {
   onCreate() {
     this.openModal(undefined);
   }
+
+  filteredDeals(): Deal[] {
+    const query = this.searchQuery().trim().toLowerCase();
+
+    return this.deals.filter(deal => {
+      const matchesSearch = this.searchQuery().trim() === '' || deal.dealName.toLowerCase().includes(this.searchQuery().toLowerCase());
+      const matchesType = this.filterActivityType() === null || deal.dealType === this.filterActivityType();
+      const matchesStage = this.filterPipelineStage() === null || deal.pipelineStage === this.filterPipelineStage();
+
+      return matchesSearch && matchesType && matchesStage;
+    });
+  }
+
 
   onRowClick(deal: Deal) {
     console.log('view deal:', deal.id);

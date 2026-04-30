@@ -1,0 +1,38 @@
+<aside
+  class="flex flex-col h-screen border-r border-border bg-bg transition-all duration-300 overflow-hidden"
+  [class.w-56]="!collapsed()"
+  [class.w-16]="collapsed()"
+>
+  <!-- Header -->
+  <div class="flex items-center px-4 py-5 min-h-[60px]">
+    @if (!collapsed()) {
+      <span class="text-accent font-semibold text-base whitespace-nowrap">
+        DealFlow
+      </span>
+    }
+    <button
+      class="ml-auto text-text-tertiary hover:text-text-primary p-1 rounded cursor-pointer transition-colors"
+      (click)="toggleSidebar()"
+    >
+      <i [class]="collapsed() ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></i>
+    </button>
+  </div>
+
+  <!-- Nav Items -->
+  <nav class="flex flex-col gap-1 px-2">
+    @for (item of navItems; track item.route) {
+      <a
+        class="flex items-center gap-3 px-4 py-3 rounded text-text-tertiary no-underline whitespace-nowrap transition-all duration-150 hover:bg-surface-2 hover:text-text-primary"
+        routerLinkActive="!bg-accent-soft !text-accent !border-l-2 !border-accent"
+        [routerLink]="item.route"
+        [pTooltip]="collapsed() ? item.label : ''"
+        tooltipPosition="right"
+      >
+        <i [class]="item.icon + ' text-base shrink-0'"></i>
+        @if (!collapsed()) {
+          <span>{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+</aside>

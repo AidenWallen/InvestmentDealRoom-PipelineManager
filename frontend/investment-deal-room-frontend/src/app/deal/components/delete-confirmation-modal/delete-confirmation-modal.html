@@ -1,0 +1,29 @@
+<p-dialog
+    [modal]="true"
+    header="Confirm Delete"
+    [visible]= visible()
+    [style]="{ width: '400px' }"
+    [pt]="{header: 'text-green'}"
+>
+    <p class="text-text-muted"> Are you sure you want to delete
+        <span class="text-danger font-bold"> {{recordName()}}</span>
+        ? This action cannot be undone.
+    </p>
+
+    <div class="flex justify-end gap-2 pt-5">
+        <p-button
+            label="CANCEL"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="cancelled.emit()"
+        />
+            
+        <p-button
+            label="DELETE"
+            severity="danger"
+            [outlined]="true"
+            (onClick)="confirmed.emit()"
+        />
+    </div>
+
+</p-dialog>

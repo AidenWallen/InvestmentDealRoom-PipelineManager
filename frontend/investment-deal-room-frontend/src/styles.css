@@ -1,68 +1,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap');
 
 @import 'tailwindcss';
+@import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 
 @theme {
-    --color-bg:             #0a0a0a;
-    --color-surface:        #0f0f0f;
-    --color-surface-2:      #141414;
-    --color-border:         #1a2e1a;
-    --color-border-bright:  #234d23;
+    /* Surfaces */
+    --color-bg-canvas:          #0b0f17;
+    --color-bg:                 #0f1421;
+    --color-surface:            #151b2b;
+    --color-surface-2:          #1b2236;
+    --color-elevated:           #212940;
+    --color-bg-hover:           rgba(255, 255, 255, 0.04);
+    --color-bg-active:          rgba(255, 255, 255, 0.07);
 
-    --color-green:          #39ff14;
-    --color-green-dim:      #22c55e;
-    --color-green-muted:    #166534;
-    --color-green-glow:     rgba(57, 255, 20, 0.15);
-    --color-green-glow-sm:  rgba(57, 255, 20, 0.07);
+    /* Borders */
+    --color-border:             rgba(255, 255, 255, 0.10);
+    --color-border-subtle:      rgba(255, 255, 255, 0.06);
+    --color-border-strong:      rgba(255, 255, 255, 0.16);
 
-    --color-text:           #b0f0b0;
-    --color-text-bright:    #39ff14;
-    --color-text-muted:     #4a7a4a;
-    --color-text-dim:       #2d5a2d;
+    /* Text */
+    --color-text-primary:       #e7ebf3;
+    --color-text-secondary:     #a3acc2;
+    --color-text-tertiary:      #6b7591;
+    --color-text-disabled:      #4a5169;
 
-    --color-danger:         #ff3b3b;
-    --color-danger-dim:     #7f1d1d;
-    --color-warning:        #f59e0b;
-    --color-info:           #22d3ee;
-    --color-success:        #39ff14;
+    /* Accent */
+    --color-accent:             #5b8def;
+    --color-accent-hover:       #7aa2ff;
+    --color-accent-soft:        rgba(91, 141, 239, 0.14);
+    --color-accent-strong:      rgba(91, 141, 239, 0.28);
 
+  
+    /* Typography */
     --font-mono: 'Fira Code', 'Share Tech Mono', 'Courier New', monospace;
 
     --radius: 4px;
 
-    --shadow-glow: 0 0 12px rgba(57, 255, 20, 0.08);
-    --shadow-glow-lg: 0 0 24px rgba(57, 255, 20, 0.12);
+    --shadow-sm:                0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md:                0 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow-lg:                0 16px 40px rgba(0, 0, 0, 0.5);
+    --shadow-modal:             0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
+/* Safelist dynamic classes used in routerLinkActive / string bindings */
+@source inline("bg-accent-soft text-accent border-accent bg-surface-2 text-text-primary text-text-tertiary text-text-secondary hover:bg-surface-2 hover:text-text-primary bg-bg-canvas bg-bg border-border");
+
 :root {
-    --p-inputtext-border-color: var(--color-border);
-    --p-inputtext-focus-border-color: var(--color-green);
-    --p-inputtext-background: var(--color-surface);
-    --p-inputtext-color: var(--color-text);
-    --p-inputtext-placeholder-color: var(--color-text-muted);
+    --p-inputtext-border-color:       var(--color-border);
+    --p-inputtext-focus-border-color: var(--color-accent);
+    --p-inputtext-background:         var(--color-surface);
+    --p-inputtext-color:              var(--color-text-primary);
+    --p-inputtext-placeholder-color:  var(--color-text-tertiary);
 }
+
 
 @layer base {
 
-    ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
+    ::-webkit-scrollbar              { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track        { background: var(--color-bg); }
+    ::-webkit-scrollbar-thumb        { background: var(--color-border-strong); border-radius: 2px; }
 
-    ::-webkit-scrollbar-track {
-        background: var(--color-bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--color-green-muted);
-        border-radius: 2px;
-    }
 
     body {
         font-family: var(--font-mono);
         background-color: var(--color-bg);
-        color: var(--color-text);
+        color: var(--color-text-primary);
         font-size: 13px;
         line-height: 1.6;
         min-height: 100vh;
@@ -72,7 +75,7 @@
         font-family: var(--font-mono);
         font-weight: 600;
         line-height: 1.25;
-        color: var(--color-text-bright);
+        color: var(--color-text-primary);
     }
 
     /* tables */
