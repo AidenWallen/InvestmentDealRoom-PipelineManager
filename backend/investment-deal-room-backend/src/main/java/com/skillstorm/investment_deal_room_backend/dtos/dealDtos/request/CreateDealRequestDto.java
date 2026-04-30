@@ -9,12 +9,13 @@ import com.skillstorm.investment_deal_room_backend.models.Deal;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateDealRequestDto(
     @NotBlank String dealName,
     @NotNull DealType dealType,
     @NotBlank String targetCompany,
-    @NotNull BigDecimal estimatedValue,
+    @NotNull @PositiveOrZero BigDecimal estimatedValue,
     @NotNull Currency currency,
     // @NotBlank String assignedManagerId,
     @NotNull PipelineStage pipelineStage
