@@ -1,8 +1,9 @@
-import { Component, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { DealForm } from "../../components/deal-form/deal-form";
 import { DealService } from '../../services/deal';
+import { exhaustMap, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-deal-page',
@@ -10,34 +11,102 @@ import { DealService } from '../../services/deal';
   templateUrl: './deal-page.html',
   imports: [DealTable, DealForm]
 })
-export class DealPage {
+export class DealPage implements OnInit {
+
   deals: Deal[] = [];
 
-  showCreateModal = false;
+  showDealModal = false;
+  showDeleteModal = false;
 
-  constructor(private dealService: DealService) {}
+  selectedDeal: Deal | undefined;
+
+  private submitDeal$ = new Subject<Deal>();
+
+  constructor(
+    private dealService: DealService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.dealService.getDeals().subscribe(data => {
       this.deals = data;
+
+      this.cdr.detectChanges();
     });
+
+    this.submitDeal$
+      .pipe(
+        exhaustMap(deal => {
+
+          const request$ = deal.id
+            ? this.dealService.updateDeal(deal.id, {
+                dealName: deal.dealName,
+                dealType: deal.dealType,
+                targetCompany: deal.targetCompany,
+                estimatedValue: deal.estimatedValue,
+                currency: deal.currency
+              })
+            : this.dealService.createDeal('PLACEHOLDER', deal);
+
+          return request$;
+        })
+      )
+      .subscribe({
+        next: (res: Deal) => {
+
+          if (this.deals.find(d => d.id === res.id)) {
+            this.deals = this.deals.map(d => d.id === res.id ? res : d);
+          } else {
+            this.deals = [...this.deals, res];
+          }
+
+          this.closeModal();
+          this.cdr.detectChanges();
+        }
+      });
   }
 
-  openCreateModal() {
-    this.showCreateModal = true;
+  openModal(deal?: Deal) {
+    this.selectedDeal = deal;
+    this.showDealModal = true;
   }
 
-  closeCreateModal() {
-    this.showCreateModal = false;
+  openDeleteModal(deal: Deal) {
+    this.selectedDeal = deal;
+    this.showDeleteModal = true;
   }
 
-  onCreateDeal(deal: Deal) {
-    this.deals = [
-      ...this.deals,
-      { ...deal, id: crypto.randomUUID() }
-    ];
+  closeModal() {
+    this.showDealModal = false;
+    this.selectedDeal = undefined;
+  }
 
-    this.closeCreateModal();
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.selectedDeal = undefined;
+  }
+
+  onSubmitDeal(deal: Deal) {
+    this.submitDeal$.next(deal);
+  }
+
+  confirmDelete() {
+    if (!this.selectedDeal) return;
+
+    this.dealService.deleteDeal(this.selectedDeal.id)
+      .subscribe(() => {
+
+        this.deals = this.deals.filter(
+          d => d.id !== this.selectedDeal!.id
+        );
+
+        this.closeDeleteModal();
+        this.cdr.detectChanges();
+      });
+  }
+
+  onCreate() {
+    this.openModal(undefined);
   }
 
   onRowClick(deal: Deal) {
@@ -45,10 +114,10 @@ export class DealPage {
   }
 
   onEdit(deal: Deal) {
-    console.log('edit deal:', deal.id);
+    this.openModal(deal);
   }
 
   onDelete(deal: Deal) {
-    console.log('delete deal:', deal.id);
+    this.openDeleteModal(deal);
   }
 }
