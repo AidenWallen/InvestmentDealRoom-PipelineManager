@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.NotFoundException;
 
 
@@ -16,7 +15,7 @@ import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.except
 public class GlobalExceptionHandler {
     
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(DealNotFoundException ex) {
+    public ResponseEntity<String> handleEntityNotFoundException(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     } 
 

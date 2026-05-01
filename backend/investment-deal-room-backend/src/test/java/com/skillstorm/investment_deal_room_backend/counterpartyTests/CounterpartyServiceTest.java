@@ -41,18 +41,19 @@ public class CounterpartyServiceTest {
     @Test
     @DisplayName("createCounterparty: valid request should create and return a counterparty")
     void testCreateCounterparty() {
-        CreateCounterpartyRequestDto requestDto = CounterpartyTestFactory.buildCreateRequest();
+
         Counterparty savedCounterparty = CounterpartyTestFactory.buildCounterparty();
 
         when(counterpartyRepository.save(any(Counterparty.class)))
             .thenReturn(savedCounterparty);
+            
+        CreateCounterpartyRequestDto request = CounterpartyTestFactory.buildCreateRequest();
+        CounterpartyResponseDto result = counterpartyService.createCounterparty(request);
 
-        CounterpartyResponseDto result = counterpartyService.createCounterparty(requestDto);
-
-        assertEquals(requestDto.organizationName(), result.organizationName());
-        assertEquals(requestDto.primaryContactName(), result.primaryContactName());
-        assertEquals(requestDto.contactEmail(), result.contactEmail());
-        assertEquals(requestDto.contactPhone(), result.contactPhone());
+        assertEquals(request.organizationName(), result.organizationName());
+        assertEquals(request.primaryContactName(), result.primaryContactName());
+        assertEquals(request.contactEmail(), result.contactEmail());
+        assertEquals(request.contactPhone(), result.contactPhone());
 
         verify(counterpartyRepository).save(any(Counterparty.class));
     }

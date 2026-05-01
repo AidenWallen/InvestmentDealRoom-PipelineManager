@@ -2,6 +2,6 @@ package com.skillstorm.investment_deal_room_backend.globalExceptionHandler.excep
 
 public class CounterpartyNotFoundException extends NotFoundException{
     public CounterpartyNotFoundException(String id) {
-        super("Deal not found with id: " + id);
+        super("Counterparty not found with id: " + id);
     }
 }
