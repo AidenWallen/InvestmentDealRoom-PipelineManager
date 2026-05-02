@@ -1,8 +1,11 @@
 package com.skillstorm.investment_deal_room_backend.counterpartyTests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,7 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
+import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.CounterpartyResponseDto;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.CounterpartyAlreadyExistsException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
@@ -45,8 +50,8 @@ public class CounterpartyServiceTest {
         Counterparty savedCounterparty = CounterpartyTestFactory.buildCounterparty();
 
         when(counterpartyRepository.save(any(Counterparty.class)))
-            .thenReturn(savedCounterparty);
-            
+                .thenReturn(savedCounterparty);
+
         CreateCounterpartyRequestDto request = CounterpartyTestFactory.buildCreateRequest();
         CounterpartyResponseDto result = counterpartyService.createCounterparty(request);
 
@@ -56,6 +61,22 @@ public class CounterpartyServiceTest {
         assertEquals(request.contactPhone(), result.contactPhone());
 
         verify(counterpartyRepository).save(any(Counterparty.class));
+    }
+
+    @Test
+    @DisplayName("createCounterparty: throws an exception when the counterparty name already exists")
+    void testCreateCounterpartyNameExists() {
+
+        CreateCounterpartyRequestDto request = CounterpartyTestFactory.buildCreateRequest();
+
+        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
+                .thenReturn(true);
+
+        assertThrows(CounterpartyAlreadyExistsException.class, () -> {
+            counterpartyService.createCounterparty(request);
+        });
+
+        verify(counterpartyRepository, never()).save(any(Counterparty.class));
     }
 
     /**
@@ -69,10 +90,10 @@ public class CounterpartyServiceTest {
     void testGetAllCounterparties() {
 
         Counterparty cp1 = CounterpartyTestFactory.buildCounterparty()
-            .toBuilder().id("cp-1").organizationName("Org 1").build();
+                .toBuilder().id("cp-1").organizationName("Org 1").build();
 
         Counterparty cp2 = CounterpartyTestFactory.buildCounterparty()
-            .toBuilder().id("cp-2").organizationName("Org 2").build();
+                .toBuilder().id("cp-2").organizationName("Org 2").build();
 
         List<Counterparty> mockList = List.of(cp1, cp2);
 
@@ -91,16 +112,15 @@ public class CounterpartyServiceTest {
     @DisplayName("getCounterpartyById: returns counterparty when id exists")
     void testGetCounterpartyById() {
         Counterparty cp = CounterpartyTestFactory.buildCounterparty()
-            .toBuilder()
-            .id("cp-123")
-            .organizationName("Test Org")
-            .build();
+                .toBuilder()
+                .id("cp-123")
+                .organizationName("Test Org")
+                .build();
 
         when(counterpartyRepository.findByIdAndDeletedFalse("cp-123"))
-            .thenReturn(Optional.of(cp));
+                .thenReturn(Optional.of(cp));
 
-        CounterpartyResponseDto result =
-            counterpartyService.getCounterpartyById("cp-123");
+        CounterpartyResponseDto result = counterpartyService.getCounterpartyById("cp-123");
 
         assertEquals("Test Org", result.organizationName());
         verify(counterpartyRepository).findByIdAndDeletedFalse("cp-123");
@@ -110,13 +130,146 @@ public class CounterpartyServiceTest {
     @DisplayName("getCounterpartyById: throws exception when id not found")
     void testGetCounterpartyByIdNotFound() {
         when(counterpartyRepository.findByIdAndDeletedFalse("cp-999"))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
-        assertThrows(CounterpartyNotFoundException.class, () ->
-            counterpartyService.getCounterpartyById("cp-999")
-        );
+        assertThrows(CounterpartyNotFoundException.class, () -> counterpartyService.getCounterpartyById("cp-999"));
 
         verify(counterpartyRepository).findByIdAndDeletedFalse("cp-999");
+    }
+
+    /**
+     * 
+     * TEST UPDATE COUNTERPARTIES
+     * 
+     */
+    
+    @Test
+    @DisplayName("updateCounterparty: valid request updates and returns CounterpartyResponseDto")
+    void updateCounterparty_success() {
+
+        String counterpartyId = "cp-123";
+
+        Counterparty existing = CounterpartyTestFactory.buildCounterparty();
+        existing.setId(counterpartyId);
+
+        UpdateCounterpartyRequestDto request =
+            new UpdateCounterpartyRequestDto(
+                "New Organization Name",
+                "New Contact Name",
+                "new@email.com",
+                "999-999-9999"
+            );
+
+        when(counterpartyRepository.findById(counterpartyId))
+                .thenReturn(Optional.of(existing));
+
+        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
+                .thenReturn(false);
+
+        when(counterpartyRepository.save(any(Counterparty.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        CounterpartyResponseDto result =
+            counterpartyService.updateCounterparty(counterpartyId, request);
+
+        assertEquals("New Organization Name", result.organizationName());
+
+        verify(counterpartyRepository).save(any(Counterparty.class));
+    }
+
+    @Test
+    @DisplayName("updateCounterparty: duplicate organization name throws CounterpartyAlreadyExistsException")
+    void updateCounterparty_duplicateName_throwsException() {
+
+        String counterpartyId = "cp-123";
+
+        Counterparty existing = CounterpartyTestFactory.buildCounterparty();
+        existing.setId(counterpartyId);
+
+        UpdateCounterpartyRequestDto request =
+            new UpdateCounterpartyRequestDto(
+                "Test Organization Name", // duplicate
+                null,
+                null,
+                null
+            );
+
+        when(counterpartyRepository.findById(counterpartyId))
+                .thenReturn(Optional.of(existing));
+
+        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
+                .thenReturn(true);
+
+        assertThrows(CounterpartyAlreadyExistsException.class, () -> {
+            counterpartyService.updateCounterparty(counterpartyId, request);
+        });
+
+        verify(counterpartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("updateCounterparty: throws CounterpartyNotFoundException when id not found")
+    void updateCounterparty_notFound() {
+
+        String counterpartyId = "cp-123";
+
+        UpdateCounterpartyRequestDto request =
+            new UpdateCounterpartyRequestDto(
+                "New Organization Name",
+                null,
+                null,
+                null
+            );
+
+        when(counterpartyRepository.findById(counterpartyId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(CounterpartyNotFoundException.class, () -> {
+            counterpartyService.updateCounterparty(counterpartyId, request);
+        });
+
+        verify(counterpartyRepository, never()).save(any());
+    }
+
+    /**
+     * 
+     * TEST DELETE COUNTERPARTIES
+     * 
+     */
+
+    @Test
+    @DisplayName("deleteCounterparty: existing id is soft deleted without error")
+    void deleteCounterparty_existingId_deletesSuccessfully() {
+
+        Counterparty counterparty =
+            CounterpartyTestFactory.buildCounterparty();
+        counterparty.setId("cp-001");
+
+        when(counterpartyRepository.findByIdAndDeletedFalse("cp-001"))
+                .thenReturn(Optional.of(counterparty));
+
+        when(counterpartyRepository.save(any(Counterparty.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        assertThatNoException()
+                .isThrownBy(() -> counterpartyService.deleteCounterparty("cp-001"));
+
+        assertThat(counterparty.isDeleted()).isTrue();
+
+        verify(counterpartyRepository).save(counterparty);
+    }
+
+    @Test
+    @DisplayName("deleteCounterparty: throws when counterparty does not exist")
+    void deleteCounterparty_notFound_throwsException() {
+
+        when(counterpartyRepository.findByIdAndDeletedFalse("cp-001"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(CounterpartyNotFoundException.class, () ->
+                counterpartyService.deleteCounterparty("cp-001"));
+
+        verify(counterpartyRepository, never()).save(any());
     }
 
 }

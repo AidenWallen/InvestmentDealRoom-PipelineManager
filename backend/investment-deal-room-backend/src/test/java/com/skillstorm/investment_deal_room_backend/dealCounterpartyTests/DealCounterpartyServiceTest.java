@@ -4,10 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkCounterpartyDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkDealCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealCounterpartyResponseDto;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealCounterpartyAlreadyExistsException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealCounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
+import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
+import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 import com.skillstorm.investment_deal_room_backend.services.DealCounterpartyService;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +37,12 @@ public class DealCounterpartyServiceTest {
 
     @Mock
     private DealCounterpartyRepository dcpRepository;
+
+    @Mock
+    private DealRepository dealRepository;
+
+    @Mock
+    private CounterpartyRepository counterpartyRepository;
 
     @InjectMocks
     private DealCounterpartyService dcpService;
@@ -42,7 +55,7 @@ public class DealCounterpartyServiceTest {
 
     @Test
     @DisplayName("linkDealToCounterparty: valid request should create and return a DealCounterparty")
-    void testCreateDealCounterparty() {
+    void testLinkDealToCounterparty() {
 
         DealCounterparty savedDcp = DealCounterpartyTestFactory.buildDealCounterparty();
 
@@ -61,7 +74,7 @@ public class DealCounterpartyServiceTest {
 
     @Test
     @DisplayName("linkCounterpartyToDeal: valid request should create and return a DealCounterparty")
-    void testCreateCounterpartyDeal() {
+    void testLinkCounterpartyToDeal() {
 
         DealCounterparty savedDcp = DealCounterpartyTestFactory.buildDealCounterparty();
 
@@ -76,6 +89,78 @@ public class DealCounterpartyServiceTest {
         assertEquals(request.dealRole(), result.dealRole());
 
         verify(dcpRepository).save(any(DealCounterparty.class));
+    }
+
+    @Test
+    @DisplayName("linkDealToCounterparty: throws exception when deal does not exist")
+    void testLinkDealToCounterpartyDealNotFound() {
+
+        LinkDealCounterpartyRequestDto request =
+            DealCounterpartyTestFactory.buildDealLinkRequest();
+
+        when(dealRepository.existsById("0000")).thenReturn(false);
+
+        assertThrows(DealNotFoundException.class, () -> {
+            dcpService.linkDealToCounterparty("0000", request);
+        });
+
+        verify(dcpRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("linkDealToCounterparty: throws exception when link already exists")
+    void testLinkDealToCounterpartyDuplicate() {
+
+        LinkDealCounterpartyRequestDto request =
+            DealCounterpartyTestFactory.buildDealLinkRequest();
+
+        when(dealRepository.existsById("0000")).thenReturn(true);
+        when(dcpRepository.existsByDealIdAndCounterpartyId(
+                eq("0000"),
+                eq(request.counterpartyId())
+        )).thenReturn(true);
+
+        assertThrows(DealCounterpartyAlreadyExistsException.class, () -> {
+            dcpService.linkDealToCounterparty("0000", request);
+        });
+
+        verify(dcpRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("linkCounterpartyToDeal: throws exception when counterparty does not exist")
+    void testLinkCounterpartyToDealCounterpartyNotFound() {
+
+        LinkCounterpartyDealRequestDto request =
+            DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
+
+        when(counterpartyRepository.existsById("0000")).thenReturn(false);
+
+        assertThrows(CounterpartyNotFoundException.class, () -> {
+            dcpService.linkCounterpartyToDeal("0000", request);
+        });
+
+        verify(dcpRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("linkCounterpartyToDeal: throws exception when link already exists")
+    void testLinkCounterpartyToDealDuplicate() {
+
+        LinkCounterpartyDealRequestDto request =
+            DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
+
+        when(counterpartyRepository.existsById("0000")).thenReturn(true);
+        when(dcpRepository.existsByDealIdAndCounterpartyId(
+                eq(request.dealId()),
+                eq("0000")
+        )).thenReturn(true);
+
+        assertThrows(DealCounterpartyAlreadyExistsException.class, () -> {
+            dcpService.linkCounterpartyToDeal("0000", request);
+        });
+
+        verify(dcpRepository, never()).save(any());
     }
 
     /**
@@ -159,4 +244,52 @@ public class DealCounterpartyServiceTest {
 
         verify(dcpRepository).findByCounterpartyId("cp-1");
     }
+
+    /**
+     * 
+     * TEST UNLINK DEAL_COUNTERPARTY
+     * 
+     */
+
+    @Test
+    @DisplayName("unlinkDealCounterparty: valid request hard deletes link and returns response")
+    void unlinkDealCounterparty_success_hardDelete() {
+
+        String dealId = "deal-123";
+        String counterpartyId = "cp-456";
+
+        DealCounterparty existing = DealCounterpartyTestFactory.buildDealCounterparty();
+        existing.setDealId(dealId);
+        existing.setCounterpartyId(counterpartyId);
+
+        when(dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId))
+                .thenReturn(Optional.of(existing));
+
+        DealCounterpartyResponseDto result =
+                dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+
+        assertEquals(dealId, result.dealId());
+        assertEquals(counterpartyId, result.counterpartyId());
+
+        verify(dcpRepository).delete(existing);
+    }
+
+    @Test
+    @DisplayName("unlinkDealCounterparty: throws exception when link does not exist")
+    void unlinkDealCounterparty_notFound_hardDelete() {
+
+        String dealId = "deal-123";
+        String counterpartyId = "cp-456";
+
+        when(dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(DealCounterpartyNotFoundException.class, () -> {
+            dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+        });
+
+        verify(dcpRepository, never()).delete(any());
+    }
+
+
 }

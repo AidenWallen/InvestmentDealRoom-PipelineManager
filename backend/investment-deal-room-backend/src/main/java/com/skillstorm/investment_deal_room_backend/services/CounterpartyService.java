@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
+import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.CounterpartyResponseDto;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
@@ -44,5 +45,15 @@ public class CounterpartyService {
     private final Counterparty getCounterpartyEntityById(String id) {
         return counterpartyRepository.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new CounterpartyNotFoundException(id));
+    }
+
+    public CounterpartyResponseDto updateCounterparty(String counterpartyId, UpdateCounterpartyRequestDto request) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateCounterparty'");
+    }
+
+    public CounterpartyResponseDto deleteCounterparty(String counterpartyId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteCounterparty'");
     }
 }

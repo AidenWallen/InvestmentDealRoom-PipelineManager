@@ -61,6 +61,11 @@ public class DealCounterpartyService {
         return DealCounterpartyResponseDto.fromEntity(savedDealCounterparty);
     }
 
+    public DealCounterpartyResponseDto unlinkDealCounterparty(String dealId, String counterpartyId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'unlinkDealCounterparty'");
+    }
+
 
 
 }
