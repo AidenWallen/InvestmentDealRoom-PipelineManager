@@ -20,7 +20,6 @@ public class DealActivityController {
         this.dealActivityService = dealActivityService;
     }
 
-    // Endpoint to get the activity feed for a deal
     @GetMapping
     public ResponseEntity<List<DealActivityResponseDto>> getDealActivity(@PathVariable String dealId) {
         return ResponseEntity.ok(dealActivityService.getActivitiesFeed(dealId));
