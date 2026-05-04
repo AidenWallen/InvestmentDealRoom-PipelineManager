@@ -3,6 +3,8 @@ package com.skillstorm.investment_deal_room_backend.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealActivityResponseDto;
 import com.skillstorm.investment_deal_room_backend.enums.ActivityType;
 import com.skillstorm.investment_deal_room_backend.enums.DealRole;
@@ -11,6 +13,7 @@ import com.skillstorm.investment_deal_room_backend.models.DealActivity;
 import com.skillstorm.investment_deal_room_backend.models.embedded.ActivityPayload;
 import com.skillstorm.investment_deal_room_backend.repositories.DealActivityRepository;
 
+@Service
 public class DealActivityService {
     private final DealActivityRepository dealActivityRepository;
 

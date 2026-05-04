@@ -7,18 +7,23 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DuplicateResourceException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.NotFoundException;
 
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(DealNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(DealNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     } 
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    } 
     
     @ExceptionHandler(InvalidStageTransitionException.class)
     public ResponseEntity<String> handleInvalidStageTransitionException(InvalidStageTransitionException ex) {

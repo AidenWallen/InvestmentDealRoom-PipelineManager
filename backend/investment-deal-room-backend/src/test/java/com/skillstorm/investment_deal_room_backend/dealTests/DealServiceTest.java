@@ -2,6 +2,7 @@ package com.skillstorm.investment_deal_room_backend.dealTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -22,17 +23,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
+import com.mongodb.DuplicateKeyException;
+import com.skillstorm.investment_deal_room_backend.counterpartyTests.CounterpartyTestFactory;
+import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealResponseDto;
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
 import com.skillstorm.investment_deal_room_backend.enums.DealType;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.CounterpartyAlreadyExistsException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealAlreadyExistsException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
+import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
+import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
+import com.skillstorm.investment_deal_room_backend.services.DealActivityService;
 import com.skillstorm.investment_deal_room_backend.services.DealService;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +48,12 @@ public class DealServiceTest {
 
     @Mock
     private DealRepository dealRepository;
+
+    @Mock
+    private DealCounterpartyRepository dealCounterpartyRepository;
+
+    @Mock
+    private DealActivityService dealActivityService;
 
     @InjectMocks
     private DealService dealService;
@@ -98,6 +112,21 @@ public class DealServiceTest {
         verify(dealRepository, times(1)).save(any(Deal.class));
     }
 
+    @Test
+    @DisplayName("createDeal: throws an exception when the Deal name already exists")
+    void testCreateDealNameExists() {
+
+        CreateDealRequestDto request = buildCreateDealRequestDto();
+
+        when(dealRepository.save(any(Deal.class)))
+            .thenThrow(DuplicateKeyException.class);
+
+        assertThrows(DealAlreadyExistsException.class, () -> {
+            dealService.createDeal(request, "manager-01");
+        });
+
+        verify(dealRepository).save(any(Deal.class));
+    }
 
 
     /**
@@ -249,6 +278,34 @@ public class DealServiceTest {
         ).isInstanceOf(DealNotFoundException.class);
     }
 
+    @Test
+    @DisplayName("updateDeal: duplicate deal names throw DealAlreadyExistsException")
+    void updateDeal_duplicateName_throwsDealAlreadyExistsException() {
+
+        String dealId = "deal-123";
+
+        UpdateDealRequestDto request = new UpdateDealRequestDto(
+            "Project Phoenix", null, null, null, null
+        );
+
+        Deal existingDeal = Deal.builder()
+            .id(dealId)
+            .dealName("Old Name")
+            .build();
+
+        when(dealRepository.findByIdAndDeletedFalse(dealId))
+                .thenReturn(Optional.of(existingDeal));
+
+        when(dealRepository.save(any(Deal.class)))
+            .thenThrow(DuplicateKeyException.class);
+
+        assertThrows(DealAlreadyExistsException.class, () -> {
+            dealService.updateDeal(dealId, request);
+        });
+
+        verify(dealRepository).save(any(Deal.class));
+    }
+
     /**
      * 
      * Test for deleteDeal (soft delete)
@@ -257,13 +314,15 @@ public class DealServiceTest {
     @Test
     @DisplayName("deleteDeal: existing deal soft is deleted without error")
     void deleteDeal_existingId_deletesSuccessfully() {
-        Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
-        when(dealRepository.findByIdAndDeletedFalse("deal-001")).thenReturn(Optional.of(deal));
+        String dealId = "deal-001";
+        Deal deal = buildDeal(dealId, PipelineStage.PROSPECTING);
+        when(dealRepository.findByIdAndDeletedFalse(dealId)).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        assertThatNoException().isThrownBy(() -> dealService.deleteDeal("deal-001"));
+        assertThatNoException().isThrownBy(() -> dealService.deleteDeal(dealId));
         assertThat(deal.isDeleted()).isTrue();
         verify(dealRepository).save(deal);
+        verify(dealCounterpartyRepository).deleteByDealId(dealId);
     }
 
     @Test

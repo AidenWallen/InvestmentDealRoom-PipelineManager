@@ -6,19 +6,23 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mongodb.DuplicateKeyException;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealResponseDto;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealAlreadyExistsException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
+import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
 
 @Service
 public class DealService {
     private final DealRepository dealRepository;
+    private final DealCounterpartyRepository dealCounterpartyRepository;
     private final DealActivityService dealActivityService;
 
     // Define valid pipeline stage transitions
@@ -31,15 +35,14 @@ public class DealService {
         PipelineStage.CLOSED_LOST, List.of()
     );
 
-    public DealService(DealRepository dealRepository, DealActivityService dealActivityService) {
+    public DealService(DealRepository dealRepository, DealCounterpartyRepository dealCounterpartyRepository, DealActivityService dealActivityService) {
         this.dealRepository = dealRepository;
+        this.dealCounterpartyRepository = dealCounterpartyRepository;
         this.dealActivityService = dealActivityService;
     }
 
     @Transactional
     public DealResponseDto createDeal(CreateDealRequestDto request, String createdByUserId) {
-        Deal deal = request.toEntity(createdByUserId);
-        Deal savedDeal = dealRepository.save(deal);
 
         return DealResponseDto.fromEntity(savedDeal);
     }
@@ -61,26 +64,20 @@ public class DealService {
 
     @Transactional
     public DealResponseDto updateDeal(String id, UpdateDealRequestDto request) {
+
         Deal deal = getDealEntityById(id);
 
-        if (request.dealName() != null) {
-            deal.setDealName(request.dealName());
-        }
-        if (request.dealType() != null) {
-            deal.setDealType(request.dealType());
-        }
-        if (request.targetCompany() != null) {
-            deal.setTargetCompany(request.targetCompany());
-        }
-        if (request.estimatedValue() != null) {
-            deal.setEstimatedValue(request.estimatedValue());
-        }
-        if (request.currency() != null) {
-            deal.setCurrency(request.currency());
-        }
+        if (request.dealName() != null) deal.setDealName(request.dealName());
+        if (request.dealType() != null) deal.setDealType(request.dealType());
+        if (request.targetCompany() != null) deal.setTargetCompany(request.targetCompany());
+        if (request.estimatedValue() != null) deal.setEstimatedValue(request.estimatedValue());
+        if (request.currency() != null) deal.setCurrency(request.currency());
 
-        Deal updatedDeal = dealRepository.save(deal);
-        return DealResponseDto.fromEntity(updatedDeal);
+        try {
+            return DealResponseDto.fromEntity(dealRepository.save(deal));
+        } catch (DuplicateKeyException e) {
+            throw new DealAlreadyExistsException(request.dealName());
+        }
     }
 
     @Transactional
@@ -102,8 +99,11 @@ public class DealService {
     
     public void deleteDeal(String id) {
         Deal deal = getDealEntityById(id);
+
         deal.setDeleted(true);
         dealRepository.save(deal);
+
+        dealCounterpartyRepository.deleteByDealId(id);
     }
 
 
@@ -112,9 +112,9 @@ public class DealService {
      * @param id
      * @return
      */
-    private final Deal getDealEntityById(String id) {
+    public final Deal getDealEntityById(String id) {
         return dealRepository.findByIdAndDeletedFalse(id)
-            .orElseThrow(() -> new DealNotFoundException("Deal not found"));
+            .orElseThrow(() -> new DealNotFoundException(id));
     }
 
 
