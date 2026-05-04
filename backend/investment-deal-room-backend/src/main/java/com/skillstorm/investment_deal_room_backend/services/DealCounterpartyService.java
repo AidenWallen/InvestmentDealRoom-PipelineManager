@@ -108,7 +108,7 @@ public class DealCounterpartyService {
     }
 
     public final DealCounterparty getDealCounterpartyEntityById(String dealId, String counterpartyId) {
-        return dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId)
+        return dcpRepository.findByDealIdAndCounterpartyId(dealId, counterpartyId)
                 .orElseThrow(() -> new DealCounterpartyNotFoundException(dealId, counterpartyId));
     }
 

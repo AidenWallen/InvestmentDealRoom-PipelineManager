@@ -314,7 +314,7 @@ public class DealCounterpartyServiceTest {
         existing.setDealId(dealId);
         existing.setCounterpartyId(counterpartyId);
 
-        when(dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId))
+        when(dcpRepository.findByDealIdAndCounterpartyId(dealId, counterpartyId))
                 .thenReturn(Optional.of(existing));
 
         dcpService.unlinkDealCounterparty(dealId, counterpartyId);
@@ -329,7 +329,7 @@ public class DealCounterpartyServiceTest {
         String dealId = "deal-123";
         String counterpartyId = "cp-456";
 
-        when(dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId))
+        when(dcpRepository.findByDealIdAndCounterpartyId(dealId, counterpartyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(DealCounterpartyNotFoundException.class, () -> {

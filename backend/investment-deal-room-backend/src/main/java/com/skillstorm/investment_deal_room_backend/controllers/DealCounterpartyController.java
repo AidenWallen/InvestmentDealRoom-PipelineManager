@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ public class DealCounterpartyController {
         return ResponseEntity.ok(dcpService.getDealsByCounterpartyId(counterpartyId));
     }
 
+    @PreAuthorize("hasRole('DealManager')")
     @PostMapping("/deals/{dealId}/counterparties")
     public ResponseEntity<DealCounterpartyResponseDto> linkDealToCounterparty(
             @PathVariable String dealId,
@@ -48,6 +50,7 @@ public class DealCounterpartyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PreAuthorize("hasRole('DealManager')")
     @PostMapping("/counterparties/{counterpartyId}/deals")
     public ResponseEntity<DealCounterpartyResponseDto> linkCounterpartyToDeal(
             @PathVariable String counterpartyId,
