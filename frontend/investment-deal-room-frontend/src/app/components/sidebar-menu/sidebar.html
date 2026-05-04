@@ -1,10 +1,9 @@
 <aside
-  class="flex flex-col h-screen border-r border-border bg-bg transition-all duration-300 overflow-hidden"
+  class="flex flex-col h-screen border-r border-border bg-bg-canvas transition-all duration-300 overflow-hidden"
   [class.w-56]="!collapsed()"
   [class.w-16]="collapsed()"
 >
-  <!-- Header -->
-  <div class="flex items-center px-4 py-5 min-h-[60px]">
+  <div class="flex items-center px-4 py-5 min-h-15">
     @if (!collapsed()) {
       <span class="text-accent font-semibold text-base whitespace-nowrap">
         DealFlow
@@ -18,7 +17,7 @@
     </button>
   </div>
 
-  <!-- Nav Items -->
+  
   <nav class="flex flex-col gap-1 px-2">
     @for (item of navItems; track item.route) {
       <a

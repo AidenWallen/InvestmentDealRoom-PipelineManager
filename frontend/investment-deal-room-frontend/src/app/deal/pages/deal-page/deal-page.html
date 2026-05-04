@@ -1,4 +1,4 @@
-<div class="min-h-screen p-6 bg-bg text-text-primary">
+<div class="min-h-screen p-6 bg-canvas text-text-primary">
 
   <h1 class="text-2xl font-semibold flex  pb-3">
       Deal Pipeline
@@ -6,7 +6,7 @@
 
   <div class="flex justify-between items-center mb-4 border-t-accent">
 
-    <div class="justify-center flex flex-wrap pb-2">
+    <div class="justify-center flex flex-wrap pb-2 gap-2">
         <input
             pInputText
             [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
@@ -15,93 +15,64 @@
 
         <p-select
             [options]="dealTypes"
-             optionLabel="label"
-             optionValue="value"
-            placeholder="DEAL TYPE"
-            class="ml-4 w-48"
+            [ngModel]="filterDealType()"
+            (ngModelChange)="filterDealType.set($event)"
+            placeholder="TYPE"
+
+            [pt]="{ root: 'text-xs font-mono' }"
         ></p-select>
 
-
-
+        <p-select
+            [options]="pipelineStages"
+            [ngModel]="filterPipelineStage()"
+            (ngModelChange)="filterPipelineStage.set($event)"
+            placeholder="STAGE"
+            [pt]="{ root: 'text-xs font-mono' }"
+        ></p-select>
     </div>
 
-    <button
-      class="px-3  py-2 text-xs bg-bg text-text-primary border border-accent rounded hover:bg-accent-soft transition-colors cursor-pointer"
-      (click)="onCreate()">
+    <p-button
+      class="px-3  py-2 text-xs  "
+      (click)="handleCreateDeal()">
       + New Deal
-    </button>
+    </p-button>
 
   </div>
 
   <div class="bg-surface rounded-md shadow-md p-4">
     <app-deal-table
-      [deals]="deals"
+      [deals]="allDeals()"
       (rowClick)="onRowClick($event)"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)">
     </app-deal-table>
   </div>
 
-  @if (showDealModal) {
-    <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <!-- Create and Update dialog modal -->
+  <p-dialog
+    [header]="selectedDeal() ? 'Edit Deal' : 'New Deal'"
+    (visibleChange)="showDealDialog.set($event)"
+    [visible]="showDealDialog()"
+    [modal]="true"
+    [style]="{ width: '480px' }"
+    [closable]="true"
+    (onHide)="selectedDeal.set(null)"
+  >
+    <app-deal-form
+      [form]="form"
+      [selectedDeal]="selectedDeal()"
+      (submitDeal)="saveDeal()"
+      (cancel)="showDealDialog.set(false)"
+    />
+  </p-dialog>
 
-      <div class="bg-surface-2 border border-border p-6 rounded-md w-125 shadow-modal">
 
-        <h2 class="text-base font-semibold text-text-primary mb-4">New Deal</h2>
+  <app-delete-confirmation-modal
+    [visible]="showDeleteDialog()"
+    [recordName]="'Deal #' + (selectedDeal()?.id ?? '')"
+    (confirmed)="deleteDeal()"
+    (cancelled)="showDeleteDialog.set(false)"
+/>
 
-        <app-deal-form
-          [deal]="selectedDeal"
-          (submit)="onSubmitDeal($event)">
-        </app-deal-form>
-
-        <div class="flex justify-end mt-4">
-          <button
-            class="px-3 py-1 text-sm rounded border border-border text-text-secondary hover:text-text-primary hover:border-border-strong transition-colors cursor-pointer"
-            (click)="closeModal()">
-            Cancel
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-  }
-
-  @if (showDeleteModal) {
-    <div class="fixed inset-0 bg-black/60 flex items-center justify-center">
-
-      <div class="bg-surface p-6 rounded-md w-96 shadow-glow-lg">
-
-        <h2 class="text-lg font-semibold mb-4">
-          Delete Deal?
-        </h2>
-
-        <p class="mb-6">
-          Are you sure you want to delete
-          <span class="font-semibold">
-            {{ selectedDeal?.dealName }}
-          </span>?
-        </p>
-
-        <div class="flex justify-end gap-2">
-
-          <button
-            class="px-3 py-1 text-sm rounded bg-border hover:opacity-90 cursor-pointer"
-            (click)="closeDeleteModal()">
-            Cancel
-          </button>
-
-          <button
-            class="px-3 py-1 text-sm rounded bg-red-600 text-white hover:opacity-90 cursor-pointer"
-            (click)="confirmDelete()">
-            Delete
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-  }
 
 </div>

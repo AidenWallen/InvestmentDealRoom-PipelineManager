@@ -1,9 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { TableModule } from 'primeng/table';
 import { Deal } from '../../models/deal.model';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-deal-table',
   standalone: true,
+  imports: [TableModule],
   templateUrl: './deal-table.html'
 })
 export class DealTable {
@@ -14,8 +18,12 @@ export class DealTable {
   @Output() edit = new EventEmitter<Deal>();
   @Output() delete = new EventEmitter<Deal>();
 
-  onRowClick(deal: Deal){
-    this.rowClick.emit(deal);
+  selectedDeal!: Deal;
+
+  constructor(private router: Router) {}
+
+  onRowSelect(event: any){
+    this.router.navigate(['/deals', event.data.id]);
   }
 
   onEdit(event: MouseEvent, deal: Deal) {

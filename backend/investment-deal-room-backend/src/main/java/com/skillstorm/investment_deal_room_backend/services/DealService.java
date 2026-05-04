@@ -44,22 +44,7 @@ public class DealService {
     @Transactional
     public DealResponseDto createDeal(CreateDealRequestDto request, String createdByUserId) {
 
-        try {
-            Deal deal = request.toEntity(createdByUserId);
-
-            Deal savedDeal = dealRepository.save(deal);
-
-            dealActivityService.recordDealCreation(
-                savedDeal.getId(),
-                createdByUserId,
-                createdByUserId
-            );
-
-            return DealResponseDto.fromEntity(savedDeal);
-
-        } catch (DuplicateKeyException e) {
-            throw new DealAlreadyExistsException(request.dealName());
-        }
+        return DealResponseDto.fromEntity(savedDeal);
     }
 
 

@@ -20,7 +20,7 @@ export class Sidebar{
 
     navItems: NavItem[] = [
         { label: 'Deals', icon: 'pi pi-briefcase', route: '/deals' },
-        { label: 'Counterparties', icon: 'pi pi-building', route: '/counterparties' },
+        { label: 'Counterparties', icon: 'pi pi-building', route: '/counterparties'},
         { label: 'Profile', icon: 'pi pi-user', route: '/profile' },
     ];
 
