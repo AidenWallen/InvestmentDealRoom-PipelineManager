@@ -33,6 +33,6 @@ public class DealActivity {
     private String performedByName;    
     private LocalDateTime occurredAt;
 
-    private ActivityPayload payload;   // what actually changed
+    private ActivityPayload payload;  
 
 }

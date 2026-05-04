@@ -1,151 +1,203 @@
 import { ChangeDetectorRef, Component, signal, OnInit } from '@angular/core';
 import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
-import { DealForm } from "../../components/deal-form/deal-form";
+import { buildDealForm } from "../../components/deal-form/deal.form";
 import { DealService } from '../../services/deal';
 import { Button, ButtonModule } from "primeng/button";
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from "primeng/select";
 import { DealType } from '../../models/enums/deal-type.enum';
 import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
-import { exhaustMap, Subject } from 'rxjs';
+import { exhaustMap, forkJoin, Subject } from 'rxjs';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
+import { DealForm } from '../../components/deal-form/deal-form';
+import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
+import { Currency } from '../../models/enums/currency.enum';
 
 @Component({
   selector: 'app-deal-page',
   standalone: true,
   templateUrl: './deal-page.html',
-  imports: [DealTable, DealForm, ButtonModule, InputTextModule, SelectModule]
+  imports: [DealTable, DealForm , DialogModule, ButtonModule, 
+            InputTextModule, SelectModule, FormsModule, DeleteConfirmationModal]
 })
 export class DealPage implements OnInit {
 
-  deals: Deal[] = [];
+  allDeals = signal<Deal[]>([]);
 
-  showCreateModal = false;
-  /** filtering deals */
+  /** filtering signals */
   searchQuery = signal('');
-  filterActivityType = signal<DealType | null>(null);
+  filterDealType = signal<DealType | null>(null);
   filterPipelineStage = signal<PipelineStage | null>(null);
   
-
   /** Enum options */
   dealTypes = Object.values(DealType);
   pipelineStages = Object.values(PipelineStage);
 
-  showDealModal = false;
-  showDeleteModal = false;
+  showDealDialog = signal<boolean>(false);
+  showDeleteDialog = signal<boolean>(false);
+  selectedDeal = signal<Deal | null>(null); 
 
-  selectedDeal: Deal | undefined;
+  form!: FormGroup;
 
-  private submitDeal$ = new Subject<Deal>();
   constructor(
     private dealService: DealService,
-    private cdr: ChangeDetectorRef
+    private formBuilder: FormBuilder,
   ) {}
 
+  
   ngOnInit() {
-    this.dealService.getDeals().subscribe(data => {
-      this.deals = data;
+    this.loadAll();
+    this.form = buildDealForm(this.formBuilder); 
+  }
 
-      this.cdr.detectChanges();
+
+  loadAll(): void {
+    forkJoin({
+      deals_: this.dealService.getDeals()
+    }).subscribe({
+      next: ({ deals_ }) => {
+        this.allDeals.set(deals_);
+      },
+      error: (err) => {
+        console.error('Error loading data:', err);
+      }
     });
+  }
 
-    this.submitDeal$
-      .pipe(
-        exhaustMap(deal => {
 
-          const request$ = deal.id
-            ? this.dealService.updateDeal(deal.id, {
-                dealName: deal.dealName,
-                dealType: deal.dealType,
-                targetCompany: deal.targetCompany,
-                estimatedValue: deal.estimatedValue,
-                currency: deal.currency
-              })
-            : this.dealService.createDeal('PLACEHOLDER', deal);
+  saveDeal() {
+    if (this.form.invalid) return;
 
-          return request$;
-        })
-      )
-      .subscribe({
-        next: (res: Deal) => {
+    const {dealName, dealType, targetCompany, estimatedValue,
+          currency, pipelineStage} = this.form.value;
 
-          if (this.deals.find(d => d.id === res.id)) {
-            this.deals = this.deals.map(d => d.id === res.id ? res : d);
-          } else {
-            this.deals = [...this.deals, res];
-          }
+    const dealTypeKey =  Object.entries(DealType).find(([, val]) => val === dealType)?.[0];
+    const currencyKey =  Object.entries(Currency).find(([, val]) => val === currency)?.[0];
 
-          this.closeModal();
-          this.cdr.detectChanges();
-        }
+
+    const payload: Deal = {
+		dealName,
+		dealType:       dealTypeKey as DealType,
+		targetCompany,
+		estimatedValue,
+		currency:       currencyKey as Currency,
+		pipelineStage,
+    };
+
+
+    if (this.selectedDeal()) {
+      this.dealService.updateDeal(this.selectedDeal()!.id!, payload).subscribe({
+        next: (data) => {
+        	this.allDeals.update(list => list.map(e => e.id === data.id ? data : e));
+			this.showDealDialog.set(false);
+        },
+		error: (err) => { console.error(err); }
       });
+
+    } 
+	else {
+		this.dealService.createDeal("test", payload).subscribe({
+			next: (data) => {
+				this.allDeals.update((currentList) => [...currentList, data]);
+				this.showDealDialog.set(true);
+			},
+			error: (err) => {
+				console.log(err);
+			}
+		});
+
+    }
+}
+  
+
+  handleCreateDeal() {
+	this.selectedDeal.set(null);
+	this.form.setValue({
+		dealName:       null,
+		dealType:       null,
+		targetCompany:  null,
+		estimatedValue: null,
+		currency:       null,
+		pipelineStage:  null,
+	});
+	this.showDealDialog.set(true);
   }
 
-  openModal(deal?: Deal) {
-    this.selectedDeal = deal;
-    this.showDealModal = true;
+
+  handleUpdateDeal(deal: Deal) {
+	this.selectedDeal.set(deal);
+
+	this.form.setValue({
+		dealName:		deal.dealName,
+		dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
+		targetCompany:  deal.targetCompany,
+		estimatedValue: deal.estimatedValue,
+		Currency: 		Currency[deal.currency as string as keyof typeof Currency],
+	});
+	this.showDealDialog.set(true);
   }
 
-  openDeleteModal(deal: Deal) {
-    this.selectedDeal = deal;
-    this.showDeleteModal = true;
-  }
 
-  closeModal() {
-    this.showDealModal = false;
-    this.selectedDeal = undefined;
-  }
 
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.selectedDeal = undefined;
-  }
 
-  onSubmitDeal(deal: Deal) {
-    this.submitDeal$.next(deal);
-  }
+  // openModal(deal?: Deal) {
+  //   this.selectedDeal = deal;
+  //   this.showDealModal = true;
+  // }
 
-  confirmDelete() {
-    if (!this.selectedDeal) return;
+  // openDeleteModal(deal: Deal) {
+  //   this.selectedDeal = deal;
+  //   this.showDeleteModal = true;
+  // }
 
-    this.dealService.deleteDeal(this.selectedDeal.id)
-      .subscribe(() => {
+  // closeModal() {
+  //   this.showDealModal = false;
+  //   this.selectedDeal = undefined;
+  // }
 
-        this.deals = this.deals.filter(
-          d => d.id !== this.selectedDeal!.id
-        );
-
-        this.closeDeleteModal();
-        this.cdr.detectChanges();
-      });
-  }
-
-  onCreate() {
-    this.openModal(undefined);
-  }
-
+  // closeDeleteModal() {
+  //   this.showDeleteModal = false;
+  //   this.selectedDeal = undefined;
+  // }
+  
   filteredDeals(): Deal[] {
     const query = this.searchQuery().trim().toLowerCase();
+    const type = this.filterDealType();
+    const stage = this.filterPipelineStage();
 
-    return this.deals.filter(deal => {
-      const matchesSearch = this.searchQuery().trim() === '' || deal.dealName.toLowerCase().includes(this.searchQuery().toLowerCase());
-      const matchesType = this.filterActivityType() === null || deal.dealType === this.filterActivityType();
-      const matchesStage = this.filterPipelineStage() === null || deal.pipelineStage === this.filterPipelineStage();
-
-      return matchesSearch && matchesType && matchesStage;
-    });
+    return []
   }
 
+  deleteDeal() {
+    if (!this.selectedDeal() || this.selectedDeal()?.id === null) return;
+
+    this.dealService.deleteDeal(this.selectedDeal()!.id!)
+      .subscribe({
+        next: () => {
+          this.allDeals.update(deals => deals.filter(d => d.id !== this.selectedDeal()!.id));
+          this.showDeleteDialog.set(false);
+        },
+        error: (err) => {
+          console.log(err);
+          this.showDeleteDialog.set(false);
+        }
+      });
+       
+  }
 
   onRowClick(deal: Deal) {
     console.log('view deal:', deal.id);
   }
 
   onEdit(deal: Deal) {
-    this.openModal(deal);
+    this.selectedDeal.set(deal);
+    this.showDealDialog.set(true);
   }
 
   onDelete(deal: Deal) {
-    this.openDeleteModal(deal);
+    this.selectedDeal.set(deal);
+    this.showDeleteDialog.set(true);
   }
 }

@@ -1,7 +1,6 @@
 package com.skillstorm.investment_deal_room_backend.models.embedded;
 
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.skillstorm.investment_deal_room_backend.enums.DealRole;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
 
@@ -14,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityPayload {
 
     
@@ -24,6 +24,4 @@ public class ActivityPayload {
     private String counterpartyName;
     private DealRole counterpartyRole;
 
-    // For deal updates — what fields changed
-    private Map<String, String> changedFields; 
 }

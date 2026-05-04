@@ -74,45 +74,6 @@ public class DealActivityService {
         dealActivityRepository.save(activity);
     }
 
-    // Logs when a deal is deleted
-    public void logDealDeletion(String dealId, String userId, String userName) {
-        DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(ActivityType.DEAL_DELETED)
-            .performedBy(userId)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .build();
-        dealActivityRepository.save(activity);
-    }
-
-    //
-    public void logDealUpdate(String dealId, String userId, String userName, 
-                              java.util.Map<String, String> changedFields) {
-        DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(ActivityType.DEAL_UPDATED)
-            .performedBy(userId)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .payload(ActivityPayload.builder()
-                .changedFields(changedFields)
-                .build())
-            .build();
-        dealActivityRepository.save(activity);
-    }
-
-    // Logs when a deal is created
-    public void recordDealCreation(String dealId, String userId, String userName) {
-        DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(ActivityType.DEAL_CREATED)
-            .performedBy(userId)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .build();
-        dealActivityRepository.save(activity);
-    }
 
     public List<DealActivityResponseDto> getActivitiesFeed(String dealId) {
         return dealActivityRepository.findByDealIdOrderByOccurredAtDesc(dealId).stream()
