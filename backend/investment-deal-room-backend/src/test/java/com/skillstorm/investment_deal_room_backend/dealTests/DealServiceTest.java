@@ -1,6 +1,5 @@
 package com.skillstorm.investment_deal_room_backend.dealTests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,8 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.mongodb.DuplicateKeyException;
-import com.skillstorm.investment_deal_room_backend.counterpartyTests.CounterpartyTestFactory;
-import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealResponseDto;
@@ -33,10 +30,8 @@ import com.skillstorm.investment_deal_room_backend.enums.Currency;
 import com.skillstorm.investment_deal_room_backend.enums.DealType;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.InvalidStageTransitionException;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.CounterpartyAlreadyExistsException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealAlreadyExistsException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
-import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;

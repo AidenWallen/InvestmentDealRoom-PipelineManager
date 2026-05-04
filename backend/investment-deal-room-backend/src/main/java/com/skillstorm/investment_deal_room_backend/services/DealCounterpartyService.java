@@ -16,9 +16,7 @@ import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.except
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
-import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
-import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
 @Service
 public class DealCounterpartyService {
