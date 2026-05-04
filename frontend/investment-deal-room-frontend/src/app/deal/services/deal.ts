@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Deal } from '../models/deal.model';
 import { UpdateDealRequest } from '../models/update-deal-request.model';
+import { environment } from '../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { UpdateDealRequest } from '../models/update-deal-request.model';
 export class DealService {
   constructor(private http: HttpClient) {}
 
-  private readonly URL = '${environment.apiBaseUrl}/deals';
+  private readonly URL = `${environment.apiBaseUrl}/deals`;
   
 
   getDeals(): Observable<Deal[]> {

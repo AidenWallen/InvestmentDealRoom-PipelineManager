@@ -6,6 +6,9 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { DealService } from './deal/services/deal';
 import { MockDealService } from './deal/services/deal.mock.service';
+import { MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalService } from '@azure/msal-angular';
+import { msalGuardConfig, msalInstance, msalInterceptorConfig } from './core/auth/msal.config';
+import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +27,19 @@ export const appConfig: ApplicationConfig = {
 
         }
       }
-    })
+    }),
+    MsalModule.forRoot(
+      msalInstance,
+      msalGuardConfig,
+      msalInterceptorConfig
+    ).providers!,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService
   ]
 };

@@ -12,7 +12,7 @@ import { exhaustMap, forkJoin, Subject } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { DealForm } from '../../components/deal-form/deal-form';
-import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
+import { DeleteConfirmationModal } from '../../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { Currency } from '../../models/enums/currency.enum';
 
 @Component({
