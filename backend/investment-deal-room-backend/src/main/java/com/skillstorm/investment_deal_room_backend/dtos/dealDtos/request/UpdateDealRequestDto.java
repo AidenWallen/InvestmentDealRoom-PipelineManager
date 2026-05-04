@@ -6,11 +6,13 @@ import java.math.BigDecimal;
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
 import com.skillstorm.investment_deal_room_backend.enums.DealType;
 
+import jakarta.validation.constraints.PositiveOrZero;
+
 public record UpdateDealRequestDto(
     String dealName,
     DealType dealType,
     String targetCompany,
-    BigDecimal estimatedValue,
+    @PositiveOrZero BigDecimal estimatedValue,
     Currency currency
 ) {} 
 

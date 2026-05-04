@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: investment-deal-room-backend
+  data:
+    mongodb:
+      uri: ${MONGO_URI}

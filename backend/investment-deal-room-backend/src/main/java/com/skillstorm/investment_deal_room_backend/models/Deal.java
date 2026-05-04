@@ -4,7 +4,7 @@ package com.skillstorm.investment_deal_room_backend.models;
 import java.math.BigDecimal;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
@@ -21,6 +21,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@CompoundIndex(
+    def = "{'dealName': 1}",
+    unique = true,
+    partialFilter = "{ 'deleted': false }"
+)
 public class Deal {
     
     @Id
@@ -31,11 +36,8 @@ public class Deal {
     private BigDecimal estimatedValue;
     private Currency currency;
     private PipelineStage pipelineStage;
-
-    @Indexed
     private String assignedManagerId;
-    
-    @Indexed
+
     @Builder.Default
     private boolean deleted = false;
     
