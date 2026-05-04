@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.mongodb.DuplicateKeyException;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.CounterpartyResponseDto;
@@ -26,6 +27,7 @@ import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.except
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
+import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.services.CounterpartyService;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +35,9 @@ public class CounterpartyServiceTest {
 
     @Mock
     private CounterpartyRepository counterpartyRepository;
+
+    @Mock
+    private DealCounterpartyRepository dealCounterpartyRepository;
 
     @InjectMocks
     private CounterpartyService counterpartyService;
@@ -69,14 +74,14 @@ public class CounterpartyServiceTest {
 
         CreateCounterpartyRequestDto request = CounterpartyTestFactory.buildCreateRequest();
 
-        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
-                .thenReturn(true);
+        when(counterpartyRepository.save(any(Counterparty.class)))
+            .thenThrow(DuplicateKeyException.class);
 
         assertThrows(CounterpartyAlreadyExistsException.class, () -> {
             counterpartyService.createCounterparty(request);
         });
 
-        verify(counterpartyRepository, never()).save(any(Counterparty.class));
+        verify(counterpartyRepository).save(any(Counterparty.class));
     }
 
     /**
@@ -160,11 +165,8 @@ public class CounterpartyServiceTest {
                 "999-999-9999"
             );
 
-        when(counterpartyRepository.findById(counterpartyId))
+        when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.of(existing));
-
-        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
-                .thenReturn(false);
 
         when(counterpartyRepository.save(any(Counterparty.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -188,23 +190,23 @@ public class CounterpartyServiceTest {
 
         UpdateCounterpartyRequestDto request =
             new UpdateCounterpartyRequestDto(
-                "Test Organization Name", // duplicate
+                "New Organization Name", // duplicate of name already in database
                 null,
                 null,
                 null
             );
 
-        when(counterpartyRepository.findById(counterpartyId))
+        when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.of(existing));
 
-        when(counterpartyRepository.existsByOrganizationNameAndDeletedFalse(request.organizationName()))
-                .thenReturn(true);
+        when(counterpartyRepository.save(any(Counterparty.class)))
+            .thenThrow(DuplicateKeyException.class);
 
         assertThrows(CounterpartyAlreadyExistsException.class, () -> {
             counterpartyService.updateCounterparty(counterpartyId, request);
         });
 
-        verify(counterpartyRepository, never()).save(any());
+        verify(counterpartyRepository).save(any());
     }
 
     @Test
@@ -221,7 +223,7 @@ public class CounterpartyServiceTest {
                 null
             );
 
-        when(counterpartyRepository.findById(counterpartyId))
+        when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.empty());
 
         assertThrows(CounterpartyNotFoundException.class, () -> {
@@ -257,6 +259,7 @@ public class CounterpartyServiceTest {
         assertThat(counterparty.isDeleted()).isTrue();
 
         verify(counterpartyRepository).save(counterparty);
+        verify(dealCounterpartyRepository).deleteByDealId(counterparty.getId());
     }
 
     @Test

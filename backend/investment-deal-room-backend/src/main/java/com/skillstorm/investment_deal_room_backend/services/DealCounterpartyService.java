@@ -3,69 +3,115 @@ package com.skillstorm.investment_deal_room_backend.services;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.mongodb.DuplicateKeyException;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkCounterpartyDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkDealCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealCounterpartyResponseDto;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealCounterpartyAlreadyExistsException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
+import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealCounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
+import com.skillstorm.investment_deal_room_backend.models.Counterparty;
+import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
+import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
-
-import jakarta.validation.Valid;
+import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
 @Service
 public class DealCounterpartyService {
 
     private final DealCounterpartyRepository dcpRepository;
 
-    public DealCounterpartyService(DealCounterpartyRepository dcpRepository){
+    private final DealService dealService;
+
+    private final CounterpartyService counterpartyService;
+
+    private final DealActivityService dealActivityServices;
+
+    public DealCounterpartyService(DealCounterpartyRepository dcpRepository, CounterpartyService counterpartyService,
+            DealActivityService dealActivityServices, DealService dealService) {
         this.dcpRepository = dcpRepository;
+        this.dealService = dealService;
+        this.counterpartyService = counterpartyService;
+        this.dealActivityServices = dealActivityServices;
     }
 
     public List<DealCounterpartyResponseDto> getCounterpartiesByDealId(String dealId) {
         List<DealCounterparty> list = dcpRepository.findByDealId(dealId);
 
-        if(list.isEmpty())
+        if (list.isEmpty())
             throw new DealNotFoundException(dealId);
 
         return list.stream()
-            .map(DealCounterpartyResponseDto::fromEntity)
-            .toList();
+                .map(DealCounterpartyResponseDto::fromEntity)
+                .toList();
     }
 
     public List<DealCounterpartyResponseDto> getDealsByCounterpartyId(String counterpartyId) {
         List<DealCounterparty> list = dcpRepository.findByCounterpartyId(counterpartyId);
 
-        if(list.isEmpty())
+        if (list.isEmpty())
             throw new CounterpartyNotFoundException(counterpartyId);
 
         return list.stream()
-            .map(DealCounterpartyResponseDto::fromEntity)
-            .toList();
+                .map(DealCounterpartyResponseDto::fromEntity)
+                .toList();
     }
 
-    public DealCounterpartyResponseDto linkDealToCounterparty(String dealId,
+    @Transactional
+    public DealCounterpartyResponseDto linkDealToCounterparty(
+            String dealId,
             LinkDealCounterpartyRequestDto request) {
-        DealCounterparty dealCounterparty = request.toEntity(dealId);
-        DealCounterparty savedDealCounterparty = dcpRepository.save(dealCounterparty);
 
-        return DealCounterpartyResponseDto.fromEntity(savedDealCounterparty);
+        try {
+            Deal deal = dealService.getDealEntityById(dealId);
+
+            counterpartyService.getCounterpartyEntityById(request.counterpartyId());
+
+            DealCounterparty dealCounterparty = request.toEntity(deal.getId());
+
+            DealCounterparty saved = dcpRepository.save(dealCounterparty);
+
+            return DealCounterpartyResponseDto.fromEntity(saved);
+        } catch (DuplicateKeyException e) {
+            throw new DealCounterpartyAlreadyExistsException(dealId, request.counterpartyId());
+        }
     }
 
-    public DealCounterpartyResponseDto linkCounterpartyToDeal(String counterpartyId,
+    @Transactional
+    public DealCounterpartyResponseDto linkCounterpartyToDeal(
+            String counterpartyId,
             LinkCounterpartyDealRequestDto request) {
-        DealCounterparty dealCounterparty = request.toEntity(counterpartyId);
-        DealCounterparty savedDealCounterparty = dcpRepository.save(dealCounterparty);
 
-        return DealCounterpartyResponseDto.fromEntity(savedDealCounterparty);
+        try {
+            Counterparty counterparty = counterpartyService.getCounterpartyEntityById(counterpartyId);
+
+            dealService.getDealEntityById(request.dealId());
+
+            DealCounterparty dealCounterparty = request.toEntity(counterparty.getId());
+
+            DealCounterparty saved = dcpRepository.save(dealCounterparty);
+
+            return DealCounterpartyResponseDto.fromEntity(saved);
+        } catch (DuplicateKeyException e) {
+            throw new DealCounterpartyAlreadyExistsException(request.dealId(), counterpartyId);
+        }
     }
 
-    public DealCounterpartyResponseDto unlinkDealCounterparty(String dealId, String counterpartyId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'unlinkDealCounterparty'");
+    @Transactional
+    public void unlinkDealCounterparty(String dealId, String counterpartyId) {
+        DealCounterparty dcp = 
+            getDealCounterpartyEntityById(dealId, counterpartyId);
+
+        dcpRepository.delete(dcp);
     }
 
-
+    public final DealCounterparty getDealCounterpartyEntityById(String dealId, String counterpartyId) {
+        return dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId)
+                .orElseThrow(() -> new DealCounterpartyNotFoundException(dealId, counterpartyId));
+    }
 
 }
