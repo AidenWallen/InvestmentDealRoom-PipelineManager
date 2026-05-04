@@ -13,3 +13,11 @@ export const routes: Routes = [
   { path: 'counterparties',  component: CounterpartyPage, canActivate: [MsalGuard] },
   { path: 'profile',         component: ProfilePage,      canActivate: [MsalGuard] },
 ];
+
+// export const routes: Routes = [
+//   { path: '', redirectTo: 'deals', pathMatch: 'full' },
+//   { path: 'deals',           component: DealPage,          },
+//   { path: 'deals/:id',       component: DealDetailPage,    },
+//   { path: 'counterparties',  component: CounterpartyPage,  },
+//   { path: 'profile',         component: ProfilePage,       },
+// ];
