@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, FormsModule } from "@angular/forms";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { SelectModule } from "primeng/select";
@@ -19,6 +19,10 @@ import { forkJoin } from "rxjs";
 import { StepsModule } from 'primeng/steps';
 import { TagModule } from 'primeng/tag';
 import { DeleteConfirmationModal } from "../../../components/delete-confirmation-modal/delete-confirmation-modal";
+import { buildDealForm } from "../../components/deal-form/deal.form";
+import { DealForm } from "../../components/deal-form/deal-form";
+import { DealType } from "../../../shared/enums/deal-type.enum";
+import { Currency } from "../../../shared/enums/currency.enum";
 
 
 
@@ -27,7 +31,7 @@ import { DeleteConfirmationModal } from "../../../components/delete-confirmation
   standalone: true,
   imports: [
     CommonModule,ButtonModule,DialogModule,DividerModule,SelectModule,FormsModule, DeleteConfirmationModal, StepsModule,
-	TagModule,
+	TagModule, DealForm
   ],
   templateUrl: './deal-detail.html',
 })
@@ -52,6 +56,7 @@ export class DealDetail implements OnInit {
 
 
 	//dialog signals
+	showEditDialog			   = signal<boolean>(false);
 	showLinkCounterpartyDialog = signal<boolean>(false);
 	showStageDialog			   = signal<boolean>(false);
 	showDeleteDialog		   = signal<boolean>(false);
@@ -59,6 +64,8 @@ export class DealDetail implements OnInit {
 	//
 	selectedStage				= signal<PipelineStage | null>(null);
 	selectedCounterPartyId		= signal<string | null>(null);
+
+	form!: FormGroup;
 
 	// Provides all the stage options to stepper as 
 	pipelineStages = [...Object.values(PipelineStage)
@@ -76,12 +83,13 @@ export class DealDetail implements OnInit {
 
 
 	constructor(
-	private route:               ActivatedRoute,
-	private router:              Router,
-	private dealService:         DealService,
-	private counterpartyService: CounterpartyService,
-	private activityFeedService:     ActivityFeedService,
-	public  auth:                AuthService,
+		private route:               ActivatedRoute,
+		private router:              Router,
+		private dealService:         DealService,
+		private counterpartyService: CounterpartyService,
+		private activityFeedService:     ActivityFeedService,
+		public  auth:                AuthService,
+		private formBuilder:		FormBuilder,
 	) {}
 
 
@@ -91,6 +99,8 @@ export class DealDetail implements OnInit {
 			this.router.navigate(['/deals']);
 			return;
 		}
+
+		this.form = buildDealForm(this.formBuilder); 
 		this.loadAll(id);
 	}
 
@@ -142,6 +152,17 @@ export class DealDetail implements OnInit {
 		this.showDeleteDialog.set(true);
 	}
 
+	saveDeal(): void {
+		if (!this.form.valid || !this.deal()?.id) return;
+
+		this.dealService.updateDeal(this.deal()!.id!, this.form.value).subscribe({
+			next: (updated) => {this.deal.set(updated),
+				this.showEditDialog.set(false);
+			},
+			error: (err) => console.error(err)
+		});
+	}
+
 	deleteDeal(): void {
 		const id = this.deal()?.id;
 		if (!id) return;
@@ -150,6 +171,23 @@ export class DealDetail implements OnInit {
 			next: () => this.router.navigate(['/deals']),
 			error: (err) => console.error(err)
 		});
+	}
+
+	handleUpdateDeal() {
+		const deal = this.deal();
+		if (!deal) {
+			console.log("ERORR", deal);
+			return;
+		}
+
+		this.form.patchValue({
+			dealName:		deal.dealName,
+			dealType:		deal.dealType,
+			targetCompany:  deal.targetCompany,
+			estimatedValue: deal.estimatedValue,
+			currency: 		deal.currency,
+		});
+		this.showEditDialog.set(true);
 	}
 
 	/** For updating UI Pipeline stage changes */

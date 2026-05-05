@@ -6,7 +6,7 @@
         <span>›</span>
         <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Pipeline</span>
         <span>›</span>
-        <span class="text-text-secondary">{{ deal()?.id }}</span>
+        <span class="text-text-secondary">{{ deal()?.dealName }}</span>
     </div>
 
 
@@ -37,7 +37,8 @@
                     </button>
 
                     @if(true) {
-                        <button class="hover:text-accent flex items-center gap-1 transition-colors">
+                        <button class="hover:text-accent flex items-center gap-1 transition-colors"
+                            (click)="handleUpdateDeal()">
                             <i class="pi pi-pencil text-xs"></i> Edit
                         </button>
                         <button class="hover:text-red-400 flex items-center gap-1 transition-colors"
@@ -82,6 +83,22 @@
 
     }
 </div>
+
+
+<p-dialog
+    header="Edit Deal"
+    [visible]="showEditDialog()"
+    (visibleChange)="showEditDialog.set($event)"
+    [modal]="true"
+    [style]="{ width: '480px' }"
+    [closable]="true">
+    <app-deal-form
+        [form]="form"
+        [selectedDeal]="deal()"
+        (submitDeal)="saveDeal()"
+        (cancel)="showEditDialog.set(false)" />
+</p-dialog>
+
 
 <app-delete-confirmation-modal
   [visible]="showDeleteDialog()"
