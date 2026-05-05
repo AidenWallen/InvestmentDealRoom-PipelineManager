@@ -12,7 +12,7 @@ import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealAc
 import com.skillstorm.investment_deal_room_backend.services.DealActivityService;
 
 @RestController
-@RequestMapping("/api/v1/{dealId}/activity")
+@RequestMapping("/api/v1/deals/{dealId}/activity")
 public class DealActivityController {
     private final DealActivityService dealActivityService;
 

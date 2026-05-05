@@ -1,0 +1,253 @@
+<div class="min-h-screen p-6 font-mono text-text-primary bg-bg-canvas">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-xs text-text-tertiary mb-1">
+        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Workspace</span>
+        <span>›</span>
+        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Pipeline</span>
+        <span>›</span>
+        <span class="text-text-secondary">{{ deal()?.dealName }}</span>
+    </div>
+
+
+    <h1 class="text-lg font-bold text-text-primary mb-4">Deal Detail</h1>
+
+
+    @if (deal()) {
+        <div class="bg-surface border border-border rounded p-4 mb-4">
+
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex flex-col"> 
+                    <span class="text-xl font-semibold text-text-primary pb-2 ">
+                        {{ deal()!.dealName }}
+                    </span>
+                    <div class="flex items-center gap-2"> 
+                        <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                            {{ deal()!.dealType }}
+                        </span>
+                        <span class="text-xs px-2 py-0.5 bg-amber-600/30 text-amber-400 border border-amber-700/50 rounded">
+                            {{ deal()!.pipelineStage }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-text-tertiary">
+                    <button class="hover:text-text-primary flex items-center gap-1 transition-colors"
+                        (click)="goBack()">
+                        <i class="pi pi-arrow-left text-xs"></i> Back
+                    </button>
+
+                    @if(true) {
+                        <button class="hover:text-accent flex items-center gap-1 transition-colors"
+                            (click)="handleUpdateDeal()">
+                            <i class="pi pi-pencil text-xs"></i> Edit
+                        </button>
+                        <button class="hover:text-red-400 flex items-center gap-1 transition-colors"
+                            (click)="openDeleteDialog()">
+                            <i class="pi pi-trash text-xs"></i> Delete
+                        </button>
+                    }
+                </div>
+            </div>
+
+            
+            <!-- Pipeline staging UI component -->
+            <div class="mb-4">
+                <p-steps [model]="pipelineStages" [activeIndex]="activeIndex" [readonly]="isClosed()"/>
+                @if (isClosed()) {
+                    <div class="flex justify-center mt-2">
+                        @if (deal()!.pipelineStage === PipelineStage.CLOSED_WON) {
+                            <p-tag value="Won" severity="success" icon="pi pi-check-circle" />
+                        } @else {
+                            <p-tag value="Lost" severity="danger" icon="pi pi-times-circle" />
+                        }
+                    </div>
+                } @else if (deal()?.pipelineStage === PipelineStage.CLOSING) {
+                    <div class="flex justify-center gap-3 mt-3">
+                        <p-button 
+                            label="Mark as Won" severity="success" [outlined]="true"
+                            size="small" icon="pi pi-check-circle"
+                            (onClick)="advanceStage(PipelineStage.CLOSED_WON)" />
+                        <p-button 
+                            label="Mark as Lost" severity="danger" [outlined]="true"
+                            size="small" icon="pi pi-times-circle"
+                            (onClick)="advanceStage(PipelineStage.CLOSED_LOST)" />
+                    </div>
+                }
+            </div>
+        
+        </div>
+
+
+        <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)">
+            <p-tablist>
+                @for (tab of tabs; track tab) {
+                    <p-tab [value]="tab">
+                        {{ tab }}
+                        @if (tab === 'Counterparties') {
+                            <!-- <p-badge [value]="linkedCounterparties().length.toString()" severity="secondary" class="ml-1" /> -->
+                        }
+                    </p-tab>
+                }
+            </p-tablist>
+        </p-tabs>
+
+
+        @if(activeTab() === 'Overview'){
+            <div class="grid grid-cols-3 pt-2 gap-4">
+
+                <!-- Left: deal info -->
+                <div class="col-span-2">
+                    
+                    <div class="bg-surface border border-border rounded  pt-2 p-4">
+                        <p class="text-xs text-text-tertiary font-bold pb-1 mb-3">DEAL INFORMATION</p>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">DEAL TYPE</span>
+                                <span class="font-semibold text-text-primary">{{ deal()!.dealType }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">TARGET COMPANY</span>
+                                <span class="font-semibold text-text-primary">{{ deal()!.targetCompany }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">ESTIMATED VALUE</span>
+                                <span class="font-bold text-accent">
+                                    {{ formatCurrency(deal()!.estimatedValue, deal()!.currency) }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">CURRENCY</span>
+                                <span class="font-semibold text-text-primary">{{ deal()!.currency }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">CURRENT STAGE</span>
+                                <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded w-fit">
+                                {{ deal()!.pipelineStage }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">OWNED BY</span>
+                                <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId}}</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+
+                
+                <!-- Right: Activity Feed -->
+                <div class="col-span-1 bg-surface border-border rounded flex flex-col gap-4">
+                    <p class="text-xs text-text-tertiary font-bold mb-3 p-4 ">RECENT ACTIVITY</p>
+                    <div class="flex flex-col gap-3"> 
+                        @for (activity of recentActivities(); track activity.id) {
+                            <div class="flex flex-col gap-0.5 text-xs">
+                                <div class="text-text-primary">
+                                    <span class="font-bold">{{ activity.performedBy }}</span>
+                                    <span class="text-text-secondary"> Placeholder </span>
+                                </div>
+                                <span class="text-text-tertiary">
+                                    PH-1 · PH-2 
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <button class="text-xs text-accent hover:underline mt-3 p-4 flex items-center gap-1"
+                        (click)="activeTab.set('Activity')">
+                        View all activity →
+                    </button>
+                </div>
+
+
+
+            </div>
+        } 
+
+        @if (activeTab() === 'Counterparties') {
+          <div class="bg-surface border border-border rounded p-4">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs text-text-tertiary font-bold">LINKED COUNTERPARTIES</p>
+              @if (auth.canWrite) {
+                <p-button label="+ LINK" class="text-xs" />
+              }
+            </div>
+
+            @if (true) {
+              <span class="text-text-tertiary text-xs">NO COUNTERPARTIES LINKED</span>
+            }
+
+            <div class="flex flex-col gap-2">
+              @for (i of [1,2, 3, 4]; track i) {
+                <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors">
+                  <div class="flex items-center gap-3">
+                    <!-- Avatar initials -->
+                    <div class="w-8 h-8 rounded bg-elevated flex items-center justify-center text-xs font-bold text-accent">
+                      PH-8
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-semibold text-text-primary"> PH-7 </span>
+                      <span class="text-xs text-text-tertiary"> PH-4 . PH-5</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs px-2 py-0.5 bg-surface-2 border border-border rounded text-text-secondary">
+                        PH-3
+                    </span>
+                    @if (auth.canWrite) {
+                      <button class="text-text-tertiary hover:text-red-400 transition-colors">
+                        <i class="pi pi-times text-xs"></i>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Activity Tab -->
+        @if (activeTab() === 'Activity') {
+          <div class="bg-surface border border-border rounded p-4">
+            <p class="text-xs text-text-tertiary font-bold mb-3">ALL ACTIVITY</p>
+            <div class="flex flex-col gap-3">
+              @for (activity of activities(); track activity.id) {
+                <div class="flex gap-3 border-l-2 border-accent pl-3 py-1">
+                  <div class="flex flex-col gap-0.5">
+                    <div class="text-xs text-text-primary">
+                      <span class="font-bold">{{ activity.performedBy }}</span>
+                      <span class="text-text-secondary"> Description </span>
+                    </div>
+                    <span class="text-xs text-text-tertiary">
+                     TimeStamp · Action
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+    }
+</div>
+
+
+<p-dialog
+    header="Edit Deal"
+    [visible]="showEditDialog()"
+    (visibleChange)="showEditDialog.set($event)"
+    [modal]="true"
+    [style]="{ width: '480px' }"
+    [closable]="true">
+    <app-deal-form
+        [form]="form"
+        [selectedDeal]="deal()"
+        (submitDeal)="saveDeal()"
+        (cancel)="showEditDialog.set(false)" />
+</p-dialog>
+
+
+<app-delete-confirmation-modal
+  [visible]="showDeleteDialog()"
+  [recordName]="deal()?.dealName ?? ''"
+  (confirmed)="deleteDeal()"
+  (cancelled)="showDeleteDialog.set(false)" />
+

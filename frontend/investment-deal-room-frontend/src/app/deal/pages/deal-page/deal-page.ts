@@ -1,19 +1,19 @@
 import { ChangeDetectorRef, Component, signal, OnInit } from '@angular/core';
-import { Deal } from '../../models/deal.model';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { buildDealForm } from "../../components/deal-form/deal.form";
-import { DealService } from '../../services/deal';
+import { DealService } from '../../../core/services/deal.service';
 import { Button, ButtonModule } from "primeng/button";
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from "primeng/select";
-import { DealType } from '../../models/enums/deal-type.enum';
-import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
+import { DealType } from '../../../shared/enums/deal-type.enum';
+import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
 import { exhaustMap, forkJoin, Subject } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { DealForm } from '../../components/deal-form/deal-form';
 import { DeleteConfirmationModal } from '../../../components/delete-confirmation-modal/delete-confirmation-modal';
-import { Currency } from '../../models/enums/currency.enum';
+import { Currency } from '../../../shared/enums/currency.enum';
+import { Deal } from '../../../shared/models/deal.model';
 
 @Component({
   selector: 'app-deal-page',
@@ -98,7 +98,7 @@ export class DealPage implements OnInit {
 
     } 
 	else {
-		this.dealService.createDeal("test", payload).subscribe({
+		this.dealService.createDeal(payload).subscribe({
 			next: (data) => {
 				this.allDeals.update((currentList) => [...currentList, data]);
 				this.showDealDialog.set(false);
@@ -112,23 +112,24 @@ export class DealPage implements OnInit {
 }
   
 
-  handleCreateDeal() {
-	this.selectedDeal.set(null);
-	this.form.setValue({
-		dealName:       null,
-		dealType:       null,
-		targetCompany:  null,
-		estimatedValue: null,
-		currency:       null,
-		pipelineStage:  null,
-	});
-	this.showDealDialog.set(true);
-  }
+	handleCreateDeal() {
+		this.selectedDeal.set(null);
+		this.form.setValue({
+			dealName:       null,
+			dealType:       null,
+			targetCompany:  null,
+			estimatedValue: null,
+			currency:       null,
+			pipelineStage:  null,
+		});
+		this.showDealDialog.set(true);
+	}
 
 
-  handleUpdateDeal(deal: Deal) {
-	this.selectedDeal.set(deal);
+	handleUpdateDeal(deal: Deal) {
+		this.selectedDeal.set(deal);
 
+<<<<<<< HEAD
 	this.form.setValue({
 		dealName:		deal.dealName,
 		dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
@@ -139,30 +140,18 @@ export class DealPage implements OnInit {
 	});
 	this.showDealDialog.set(true);
   }
+=======
+		this.form.setValue({
+			dealName:		deal.dealName,
+			dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
+			targetCompany:  deal.targetCompany,
+			estimatedValue: deal.estimatedValue,
+			Currency: 		Currency[deal.currency as string as keyof typeof Currency],
+		});
+		this.showDealDialog.set(true);
+	}
+>>>>>>> features/deals-detail-view
 
-
-
-
-  // openModal(deal?: Deal) {
-  //   this.selectedDeal = deal;
-  //   this.showDealModal = true;
-  // }
-
-  // openDeleteModal(deal: Deal) {
-  //   this.selectedDeal = deal;
-  //   this.showDeleteModal = true;
-  // }
-
-  // closeModal() {
-  //   this.showDealModal = false;
-  //   this.selectedDeal = undefined;
-  // }
-
-  // closeDeleteModal() {
-  //   this.showDeleteModal = false;
-  //   this.selectedDeal = undefined;
-  // }
-  
   filteredDeals(): Deal[] {
     const query = this.searchQuery().trim().toLowerCase();
     const type = this.filterDealType();

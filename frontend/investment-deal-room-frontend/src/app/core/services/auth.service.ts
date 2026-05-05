@@ -1,7 +1,7 @@
 // core/services/auth.service.ts
 import { Injectable, computed, signal } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
-import { UserRole } from '../../user/model/enums/user-role.enum';
+import { UserRole } from '../../shared/enums/user-role.enum';
 
 
 @Injectable({ providedIn: 'root' })
