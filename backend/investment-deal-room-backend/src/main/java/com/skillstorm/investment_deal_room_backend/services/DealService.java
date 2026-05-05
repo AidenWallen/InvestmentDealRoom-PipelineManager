@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mongodb.DuplicateKeyException;
+import org.springframework.dao.DuplicateKeyException;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.CreateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealResponseDto;
@@ -111,7 +111,7 @@ public class DealService {
         return DealResponseDto.fromEntity(updatedDeal);
     }
 
-    
+    @Transactional
     public void deleteDeal(String id) {
         Deal deal = getDealEntityById(id);
 
