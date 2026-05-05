@@ -40,6 +40,7 @@ import { BadgeModule } from "primeng/badge";
 export class DealDetail implements OnInit {
 
 	protected readonly PipelineStage = PipelineStage;
+	deal = signal<Deal | null>(null);
 
 	// icons
 	editIcon  = PrimeIcons.PENCIL;
@@ -50,13 +51,10 @@ export class DealDetail implements OnInit {
 
 	tabs = ['Overview', 'Counterparties', 'Activity'];
 	activeTab = signal<string>('Overview');
-
-	deal = signal<Deal | null>(null);
 	
 	// linkedCounterparties    = signal<DealCounterparty[]>([]);
 	availableCounterparties = signal <Counterparty[]>([]);
 	activities              = signal<DealActivity[]>([])
-
 
 	//dialog signals
 	showEditDialog			   = signal<boolean>(false);
@@ -64,14 +62,14 @@ export class DealDetail implements OnInit {
 	showStageDialog			   = signal<boolean>(false);
 	showDeleteDialog		   = signal<boolean>(false);
 
-	//
-	
 	selectedCounterPartyId		= signal<string | null>(null);
+	selectedStage				= signal<PipelineStage | null>(null)
 
 	form!: FormGroup;
 
-	selectedStage				= signal<PipelineStage | null>(null);
 	allStages 					= Object.values(PipelineStage);
+
+	recentActivities = computed(() => this.activities().slice(0,5));
 
 	// Provides all the stage options to stepper as 
 	pipelineStages = [...Object.values(PipelineStage)
