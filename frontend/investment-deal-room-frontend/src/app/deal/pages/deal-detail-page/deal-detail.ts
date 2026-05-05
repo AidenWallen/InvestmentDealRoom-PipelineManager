@@ -23,6 +23,8 @@ import { buildDealForm } from "../../components/deal-form/deal.form";
 import { DealForm } from "../../components/deal-form/deal-form";
 import { DealType } from "../../../shared/enums/deal-type.enum";
 import { Currency } from "../../../shared/enums/currency.enum";
+import { TabsModule } from 'primeng/tabs';
+import { BadgeModule } from "primeng/badge";
 
 
 
@@ -31,7 +33,7 @@ import { Currency } from "../../../shared/enums/currency.enum";
   standalone: true,
   imports: [
     CommonModule,ButtonModule,DialogModule,DividerModule,SelectModule,FormsModule, DeleteConfirmationModal, StepsModule,
-	TagModule, DealForm
+	TagModule, DealForm, TabsModule, BadgeModule
   ],
   templateUrl: './deal-detail.html',
 })
@@ -46,10 +48,11 @@ export class DealDetail implements OnInit {
 	userIcon  = PrimeIcons.USER;
 	linkIcon  = PrimeIcons.LINK;
 
-	// all pipeline stages for the stage tracker
-	allStages = Object.values(PipelineStage);
+	tabs = ['Overview', 'Counterparties', 'Activity'];
+	activeTab = signal<string>('Overview');
 
 	deal = signal<Deal | null>(null);
+	
 	// linkedCounterparties    = signal<DealCounterparty[]>([]);
 	availableCounterparties = signal <Counterparty[]>([]);
 	activities              = signal<DealActivity[]>([])
@@ -62,10 +65,13 @@ export class DealDetail implements OnInit {
 	showDeleteDialog		   = signal<boolean>(false);
 
 	//
-	selectedStage				= signal<PipelineStage | null>(null);
+	
 	selectedCounterPartyId		= signal<string | null>(null);
 
 	form!: FormGroup;
+
+	selectedStage				= signal<PipelineStage | null>(null);
+	allStages 					= Object.values(PipelineStage);
 
 	// Provides all the stage options to stepper as 
 	pipelineStages = [...Object.values(PipelineStage)
@@ -95,10 +101,7 @@ export class DealDetail implements OnInit {
 
 	ngOnInit(): void {
 		const id = this.route.snapshot.paramMap.get('id');
-		if (!id) {
-			this.router.navigate(['/deals']);
-			return;
-		}
+		if (!id) { this.router.navigate(['/deals']); return; }
 
 		this.form = buildDealForm(this.formBuilder); 
 		this.loadAll(id);
@@ -190,6 +193,10 @@ export class DealDetail implements OnInit {
 		this.showEditDialog.set(true);
 	}
 
+	onTabChange(value: string | number | undefined): void {
+		if (value) this.activeTab.set(value as string);
+	}
+
 	/** For updating UI Pipeline stage changes */
 
 	get activeIndex(): number {
@@ -212,7 +219,7 @@ export class DealDetail implements OnInit {
 
 	formatCurrency(value: number, currency: string): string {
 		return new Intl.NumberFormat('en-US', {
-			style: 'currency', currency: currency ?? 'USD', notation: 'compact'
+			style: 'currency', currency: currency ?? 'USD'
 		}).format(value);
  	}
 

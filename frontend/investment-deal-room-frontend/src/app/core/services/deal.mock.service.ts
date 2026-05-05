@@ -13,7 +13,7 @@ export class MockDealService {
       dealName: 'Acquisition of TechCorp',
       dealType: DealType.DEBT_ISSUANCE,
       targetCompany: 'TechCorp',
-      estimatedValue: 5000000,
+      estimatedValue: 500010000,
       currency: Currency.USD,
       pipelineStage: PipelineStage.DUE_DILIGENCE
     }
