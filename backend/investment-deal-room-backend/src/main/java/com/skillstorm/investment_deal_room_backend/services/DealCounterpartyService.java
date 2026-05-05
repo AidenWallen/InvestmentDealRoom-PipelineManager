@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mongodb.DuplicateKeyException;
+import org.springframework.dao.DuplicateKeyException;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkCounterpartyDealRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkDealCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealCounterpartyResponseDto;
@@ -16,9 +16,7 @@ import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.except
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
-import com.skillstorm.investment_deal_room_backend.repositories.CounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
-import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
 @Service
 public class DealCounterpartyService {
@@ -110,7 +108,7 @@ public class DealCounterpartyService {
     }
 
     public final DealCounterparty getDealCounterpartyEntityById(String dealId, String counterpartyId) {
-        return dcpRepository.findByDealIdAndCounterpartyIdAndDeletedFalse(dealId, counterpartyId)
+        return dcpRepository.findByDealIdAndCounterpartyId(dealId, counterpartyId)
                 .orElseThrow(() -> new DealCounterpartyNotFoundException(dealId, counterpartyId));
     }
 

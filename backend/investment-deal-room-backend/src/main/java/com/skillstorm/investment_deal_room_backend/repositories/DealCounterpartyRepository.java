@@ -15,8 +15,8 @@ public interface DealCounterpartyRepository extends MongoRepository<DealCounterp
 
     List<DealCounterparty> findByCounterpartyId(String counterpartyId);
 
-    Optional<DealCounterparty> findByDealIdAndCounterpartyIdAndDeletedFalse(String dealId, String counterpartyId);
-
     void deleteByDealId(String id);
+
+    Optional<DealCounterparty> findByDealIdAndCounterpartyId(String dealId, String counterpartyId);
 
 }

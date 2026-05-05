@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,6 +48,7 @@ public class DealController {
     }
 
 
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
     public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request, @RequestParam String userId) {
         DealResponseDto response = dealService.createDeal(request, userId);
@@ -54,17 +56,20 @@ public class DealController {
     }
     
 
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<DealResponseDto> updateDeal(@PathVariable String id, @Valid @RequestBody UpdateDealRequestDto request) {
         return ResponseEntity.ok(dealService.updateDeal(id, request));
     }
 
 
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PatchMapping("/{id}/stage")
     public ResponseEntity<DealResponseDto> updatePipelineStage(@PathVariable String id, @RequestBody UpdatePipelineStageRequestDto request) {
         return ResponseEntity.ok(dealService.updatePipelineStage(id, request.pipelineStage()));
     }
 
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDeal(@PathVariable String id) {
         dealService.deleteDeal(id);
