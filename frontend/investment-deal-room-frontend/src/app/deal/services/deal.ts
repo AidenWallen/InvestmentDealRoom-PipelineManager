@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { Deal } from '../models/deal.model';
 import { UpdateDealRequest } from '../models/update-deal-request.model';
+import { environment } from '../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
@@ -10,13 +11,16 @@ import { UpdateDealRequest } from '../models/update-deal-request.model';
 export class DealService {
   constructor(private http: HttpClient) {}
 
+  private readonly URL = `${environment.apiBaseUrl}/deals`;
+  
+
   getDeals(): Observable<Deal[]> {
-    return this.http.get<Deal[]>('http://localhost:8080/api/v1/deals');
+    return this.http.get<Deal[]>(this.URL);
   }
 
   createDeal(userId: string, deal: Deal): Observable<Deal> {
     return this.http.post<Deal>(
-      `http://localhost:8080/api/v1/deals?userId=${userId}`,
+      `${this.URL}?userId=${userId}`,
       deal
     );
   }
@@ -27,14 +31,19 @@ export class DealService {
   ): Observable<Deal> {
 
     return this.http.put<Deal>(
-      `http://localhost:8080/api/v1/deals/${id}`,
-      request
-    );
+      `${this.URL}/${id}`, request)
+      .pipe(catchError(err => {
+        console.error('Error updating deal:', err);
+        return throwError(() => new Error('Failed to update deal'));
+      }));
   }
 
   deleteDeal(id: string): Observable<void> {
     return this.http.delete<void>(
-      `http://localhost:8080/api/v1/deals/${id}`
-    );
+      `${this.URL}/${id}`)
+      .pipe(catchError(err => {
+        console.error('Error deleting deal:', err);
+        return throwError(() => new Error('Failed to delete deal'));
+      }));
   }
 }

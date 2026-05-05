@@ -1,81 +1,70 @@
-<form (ngSubmit)="onSubmitDeal()" #dealForm="ngForm" class="deal-form">
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="flex flex-col gap-4 font-mono text-sm p-1"
+>
 
-  <div>
-    <label>Name</label>
+  <p-floatlabel variant="in" class="flex">
     <input
-      type="text"
-      name="dealName"
-      [(ngModel)]="formDeal.dealName"
-      required
+      pInputText id="dealName" formControlName="dealName" class="w-full pt-8 pl-1"
+      [class.ng-invalid]="form.get('dealName')?.invalid && form.get('dealName')?.touched"
+    />
+    <label for="dealName">Deal Name</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="in" class="flex">
+    <p-select
+      inputId="dealType" formControlName="dealType"
+      [options]="dealTypes" class="w-full"
+      [class.ng-invalid]="form.get('dealType')?.invalid && form.get('dealType')?.touched"
+    />
+    <label for="dealType">Deal Type</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="in" class="flex">
+    <input
+      pInputText id="targetCompany" formControlName="targetCompany" class="w-full pt-8 pl-1"
+      [class.ng-invalid]="form.get('targetCompany')?.invalid && form.get('targetCompany')?.touched"
+    />
+    <label for="targetCompany">Target Company</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="in" class="flex">
+    <input
+      pInputText id="estimatedValue" formControlName="estimatedValue" class="w-full pt-8 pl-1"
+      [class.ng-invalid]="form.get('estimatedValue')?.invalid && form.get('estimatedValue')?.touched"
+    />
+    <label for="estimatedValue">Estimated Value</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="in" class="flex">
+    <p-select
+      inputId="currency" formControlName="currency"
+      [options]="currencies" class="w-full"
+      appendTo="body"
+      [class.ng-invalid]="form.get('currency')?.invalid && form.get('currency')?.touched"
+    />
+    <label for="currency">Currency</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="in" class="flex">
+    <p-select
+      inputId="pipelineStage" formControlName="pipelineStage"
+      [options]="pipelineStages" class="w-full"
+      appendTo="body"
+      [disabled]="selectedDeal !== null"
+      [class.ng-invalid]="form.get('pipelineStage')?.invalid && form.get('pipelineStage')?.touched"
+    />
+    <label for="pipelineStage">Pipeline Stage</label>
+  </p-floatlabel>
+
+  <div class="justify-end">
+    <p-button
+      [label]="selectedDeal ? 'Update' : 'Save'"
+      type="submit"
+      [disabled]="form.invalid"
+      class="w-0.5 p-2"
     />
   </div>
-
-  <div>
-    <label>Type</label>
-    <select
-      name="dealType"
-      [(ngModel)]="formDeal.dealType"
-      required
-    >
-      @for (t of dealTypes; track t) {
-        <option [value]="t">{{ t }}</option>
-      }
-    </select>
-  </div>
-
-  <div>
-    <label>Target Company</label>
-    <input
-      type="text"
-      name="targetCompany"
-      [(ngModel)]="formDeal.targetCompany"
-      required
-    />
-  </div>
-
-  <div>
-    <label>Estimated Value</label>
-    <input
-      type="number"
-      name="estimatedValue"
-      [(ngModel)]="formDeal.estimatedValue"
-      min="0"
-      required
-    />
-  </div>
-
-  <div>
-    <label>Currency</label>
-    <select
-      name="currency"
-      [(ngModel)]="formDeal.currency"
-      required
-    >
-      @for (c of currencyValues; track c) {
-        <option [value]="c">{{ c }}</option>
-      }
-    </select>
-  </div>
-
-  <div>
-    <label>Pipeline Stage</label>
-    <select
-      name="pipelineStage"
-      [(ngModel)]="formDeal.pipelineStage"
-      [disabled]="!!formDeal.id"
-      required
-      [ngClass]="{
-        'bg-gray-200 text-gray-500 cursor-not-allowed': !!formDeal.id
-      }"
-    >
-      @for (p of pipelineStages; track p) {
-        <option [value]="p">{{ p }}</option>
-      }
-    </select>
-  </div>
-
-  <button type="submit" [disabled]="!dealForm.form.valid">
-    {{ formDeal.id ? 'Update Deal' : 'Create Deal' }}
-  </button>
 
 </form>

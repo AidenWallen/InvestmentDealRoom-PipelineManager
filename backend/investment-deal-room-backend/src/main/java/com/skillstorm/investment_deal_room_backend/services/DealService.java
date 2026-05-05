@@ -48,13 +48,6 @@ public class DealService {
             Deal deal = request.toEntity(createdByUserId);
 
             Deal savedDeal = dealRepository.save(deal);
-
-            dealActivityService.recordDealCreation(
-                savedDeal.getId(),
-                createdByUserId,
-                createdByUserId
-            );
-
             return DealResponseDto.fromEntity(savedDeal);
 
         } catch (DuplicateKeyException e) {

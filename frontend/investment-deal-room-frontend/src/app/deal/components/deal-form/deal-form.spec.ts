@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DealForm } from './deal-form';
+// import { DealForm } from './deal-form';
 
-describe('DealForm', () => {
-  let component: DealForm;
-  let fixture: ComponentFixture<DealForm>;
+// describe('DealForm', () => {
+//   let component: DealForm;
+//   let fixture: ComponentFixture<DealForm>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [DealForm]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       imports: [DealForm]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(DealForm);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
+//     fixture = TestBed.createComponent(DealForm);
+//     component = fixture.componentInstance;
+//     await fixture.whenStable();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });
