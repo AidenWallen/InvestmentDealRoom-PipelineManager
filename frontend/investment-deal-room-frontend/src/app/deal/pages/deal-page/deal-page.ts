@@ -129,28 +129,16 @@ export class DealPage implements OnInit {
 	handleUpdateDeal(deal: Deal) {
 		this.selectedDeal.set(deal);
 
-<<<<<<< HEAD
 	this.form.setValue({
 		dealName:		deal.dealName,
 		dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
 		targetCompany:  deal.targetCompany,
 		estimatedValue: deal.estimatedValue,
 		currency: 		Currency[deal.currency as string as keyof typeof Currency],
-    pipelineStage:  deal.pipelineStage,
+    	pipelineStage:  deal.pipelineStage,
 	});
 	this.showDealDialog.set(true);
   }
-=======
-		this.form.setValue({
-			dealName:		deal.dealName,
-			dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
-			targetCompany:  deal.targetCompany,
-			estimatedValue: deal.estimatedValue,
-			Currency: 		Currency[deal.currency as string as keyof typeof Currency],
-		});
-		this.showDealDialog.set(true);
-	}
->>>>>>> features/deals-detail-view
 
   filteredDeals(): Deal[] {
     const query = this.searchQuery().trim().toLowerCase();
