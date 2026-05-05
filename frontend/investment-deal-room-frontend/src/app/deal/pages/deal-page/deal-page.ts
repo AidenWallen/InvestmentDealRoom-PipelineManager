@@ -101,7 +101,7 @@ export class DealPage implements OnInit {
 		this.dealService.createDeal("test", payload).subscribe({
 			next: (data) => {
 				this.allDeals.update((currentList) => [...currentList, data]);
-				this.showDealDialog.set(true);
+				this.showDealDialog.set(false);
 			},
 			error: (err) => {
 				console.log(err);
@@ -134,7 +134,8 @@ export class DealPage implements OnInit {
 		dealType:		DealType[deal.dealType as string as keyof typeof  DealType],
 		targetCompany:  deal.targetCompany,
 		estimatedValue: deal.estimatedValue,
-		Currency: 		Currency[deal.currency as string as keyof typeof Currency],
+		currency: 		Currency[deal.currency as string as keyof typeof Currency],
+    pipelineStage:  deal.pipelineStage,
 	});
 	this.showDealDialog.set(true);
   }

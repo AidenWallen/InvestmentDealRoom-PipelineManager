@@ -1,6 +1,8 @@
-<div class="flex h-screen w-screen overflow-hidden bg-canvas">
-  <app-sidebar />
-  <main class="flex-1 overflow-y-auto">
-    <router-outlet />
-  </main>
-</div>
+@if (!isIframe) {
+  <div class="flex h-screen w-screen overflow-hidden bg-canvas">
+    <app-sidebar />
+    <main class="flex-1 overflow-y-auto">
+      <router-outlet />
+    </main>
+  </div>
+}

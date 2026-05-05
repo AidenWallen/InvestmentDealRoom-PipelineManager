@@ -8,11 +8,11 @@ import { DealService } from './deal/services/deal';
 import { MockDealService } from './deal/services/deal.mock.service';
 import { MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalService } from '@azure/msal-angular';
 import { msalGuardConfig, msalInstance, msalInterceptorConfig } from './core/auth/msal.config';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    {provide: DealService, useClass: MockDealService},
+    // {provide: DealService, useClass: MockDealService},
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG ({
@@ -28,6 +28,7 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
+    provideHttpClient(withInterceptorsFromDi()),
     MsalModule.forRoot(
       msalInstance,
       msalGuardConfig,
