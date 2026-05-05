@@ -91,11 +91,14 @@
             </p-tablist>
         </p-tabs>
 
-        <div class="grid grid-cols-3 gap-4">
-            <div class="col-span-2">
 
-                @if( activeTab() === 'Overview') {
-                    <div class="bg-surface border border-border rounded p-4">
+        @if(activeTab() === 'Overview'){
+            <div class="grid grid-cols-3 pt-2 gap-4">
+
+                <!-- Left: deal info -->
+                <div class="col-span-2">
+                    
+                    <div class="bg-surface border border-border rounded  pt-2 p-4">
                         <p class="text-xs text-text-tertiary font-bold pb-1 mb-3">DEAL INFORMATION</p>
                         <div class="grid grid-cols-2 gap-4 text-sm">
                             <div class="flex flex-col gap-1">
@@ -112,7 +115,7 @@
                                     {{ formatCurrency(deal()!.estimatedValue, deal()!.currency) }}
                                 </span>
                             </div>
-                             <div class="flex flex-col gap-1">
+                            <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">CURRENCY</span>
                                 <span class="font-semibold text-text-primary">{{ deal()!.currency }}</span>
                             </div>
@@ -122,33 +125,107 @@
                                 {{ deal()!.pipelineStage }}
                                 </span>
                             </div>
-                             <div class="flex flex-col gap-1">
+                            <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">OWNED BY</span>
                                 <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId}}</span>
                             </div>
                             
                         </div>
                     </div>
-                }
-            </div>
-            
-            <!-- Right: Activity Feed -->
-            <div class="col-span-1 flex flex-col gap-4">
-                <p class="text-xs text-text-tertiary font-bold mb-3">RECENT ACTIVITY</p>
-                <div class="flex flex-col gap-3"> 
-                    @for (activity of recentActivities(); track activity.id) {
-                        <div class="flex flex-col gap-0.5 text-xs">
-                            
-                        </div>
-                    }
+                    
                 </div>
-            </div>
-        </div>
-    } @else {
-        <span class="text-xs px-2 py-0.5 border border-border text-text-tertiary rounded">
-            HELLO
-        </span>
 
+                
+                <!-- Right: Activity Feed -->
+                <div class="col-span-1 bg-surface border-border rounded flex flex-col gap-4">
+                    <p class="text-xs text-text-tertiary font-bold mb-3 p-4 ">RECENT ACTIVITY</p>
+                    <div class="flex flex-col gap-3"> 
+                        @for (activity of recentActivities(); track activity.id) {
+                            <div class="flex flex-col gap-0.5 text-xs">
+                                <div class="text-text-primary">
+                                    <span class="font-bold">{{ activity.performedBy }}</span>
+                                    <span class="text-text-secondary"> Placeholder </span>
+                                </div>
+                                <span class="text-text-tertiary">
+                                    PH-1 · PH-2 
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <button class="text-xs text-accent hover:underline mt-3 p-4 flex items-center gap-1"
+                        (click)="activeTab.set('Activity')">
+                        View all activity →
+                    </button>
+                </div>
+
+
+
+            </div>
+        } 
+
+        @if (activeTab() === 'Counterparties') {
+          <div class="bg-surface border border-border rounded p-4">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs text-text-tertiary font-bold">LINKED COUNTERPARTIES</p>
+              @if (auth.canWrite) {
+                <p-button label="+ LINK" class="text-xs" />
+              }
+            </div>
+
+            @if (true) {
+              <span class="text-text-tertiary text-xs">NO COUNTERPARTIES LINKED</span>
+            }
+
+            <div class="flex flex-col gap-2">
+              @for (i of [1,2, 3, 4]; track i) {
+                <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors">
+                  <div class="flex items-center gap-3">
+                    <!-- Avatar initials -->
+                    <div class="w-8 h-8 rounded bg-elevated flex items-center justify-center text-xs font-bold text-accent">
+                      PH-8
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-semibold text-text-primary"> PH-7 </span>
+                      <span class="text-xs text-text-tertiary"> PH-4 . PH-5</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs px-2 py-0.5 bg-surface-2 border border-border rounded text-text-secondary">
+                        PH-3
+                    </span>
+                    @if (auth.canWrite) {
+                      <button class="text-text-tertiary hover:text-red-400 transition-colors">
+                        <i class="pi pi-times text-xs"></i>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Activity Tab -->
+        @if (activeTab() === 'Activity') {
+          <div class="bg-surface border border-border rounded p-4">
+            <p class="text-xs text-text-tertiary font-bold mb-3">ALL ACTIVITY</p>
+            <div class="flex flex-col gap-3">
+              @for (activity of activities(); track activity.id) {
+                <div class="flex gap-3 border-l-2 border-accent pl-3 py-1">
+                  <div class="flex flex-col gap-0.5">
+                    <div class="text-xs text-text-primary">
+                      <span class="font-bold">{{ activity.performedBy }}</span>
+                      <span class="text-text-secondary"> Description </span>
+                    </div>
+                    <span class="text-xs text-text-tertiary">
+                     TimeStamp · Action
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
     }
 </div>
 
