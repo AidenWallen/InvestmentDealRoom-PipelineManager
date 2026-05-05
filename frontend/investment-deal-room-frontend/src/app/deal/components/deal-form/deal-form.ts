@@ -4,10 +4,10 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { DealType } from '../../models/enums/deal-type.enum';
-import { PipelineStage } from '../../models/enums/pipeline-stage.enum';
-import { Deal } from '../../models/deal.model';
-import { Currency } from '../../models/enums/currency.enum';
+import { DealType } from '../../../shared/enums/deal-type.enum';
+import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
+import { Currency } from '../../../shared/enums/currency.enum';
+import { Deal } from '../../../shared/models/deal.model';
 
 @Component({
   selector: 'app-deal-form',

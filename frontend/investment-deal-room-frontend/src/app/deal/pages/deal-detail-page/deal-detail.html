@@ -1,0 +1,91 @@
+<div class="min-h-screen p-6 font-mono text-text-primary bg-bg-canvas">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-xs text-text-tertiary mb-1">
+        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Workspace</span>
+        <span>›</span>
+        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Pipeline</span>
+        <span>›</span>
+        <span class="text-text-secondary">{{ deal()?.id }}</span>
+    </div>
+
+
+    <h1 class="text-lg font-bold text-text-primary mb-4">Deal Detail</h1>
+
+
+    @if (deal()) {
+        <div class="bg-surface border border-border rounded p-4 mb-4">
+
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex flex-col"> 
+                    <span class="text-xl font-semibold text-text-primary pb-2 ">
+                        {{ deal()!.dealName }}
+                    </span>
+                    <div class="flex items-center gap-2"> 
+                        <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                            {{ deal()!.dealType }}
+                        </span>
+                        <span class="text-xs px-2 py-0.5 bg-amber-600/30 text-amber-400 border border-amber-700/50 rounded">
+                            {{ deal()!.pipelineStage }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-text-tertiary">
+                    <button class="hover:text-text-primary flex items-center gap-1 transition-colors"
+                        (click)="goBack()">
+                        <i class="pi pi-arrow-left text-xs"></i> Back
+                    </button>
+
+                    @if(true) {
+                        <button class="hover:text-accent flex items-center gap-1 transition-colors">
+                            <i class="pi pi-pencil text-xs"></i> Edit
+                        </button>
+                        <button class="hover:text-red-400 flex items-center gap-1 transition-colors"
+                            (click)="openDeleteDialog()">
+                            <i class="pi pi-trash text-xs"></i> Delete
+                        </button>
+                    }
+                </div>
+            </div>
+
+            
+            <!-- Pipeline staging UI component -->
+            <div class="mb-4">
+                <p-steps [model]="pipelineStages" [activeIndex]="activeIndex" [readonly]="isClosed()"/>
+                @if (isClosed()) {
+                    <div class="flex justify-center mt-2">
+                        @if (deal()!.pipelineStage === PipelineStage.CLOSED_WON) {
+                            <p-tag value="Won" severity="success" icon="pi pi-check-circle" />
+                        } @else {
+                            <p-tag value="Lost" severity="danger" icon="pi pi-times-circle" />
+                        }
+                    </div>
+                } @else if (deal()?.pipelineStage === PipelineStage.CLOSING) {
+                    <div class="flex justify-center gap-3 mt-3">
+                        <p-button 
+                            label="Mark as Won" severity="success" [outlined]="true"
+                            size="small" icon="pi pi-check-circle"
+                            (onClick)="advanceStage(PipelineStage.CLOSED_WON)" />
+                        <p-button 
+                            label="Mark as Lost" severity="danger" [outlined]="true"
+                            size="small" icon="pi pi-times-circle"
+                            (onClick)="advanceStage(PipelineStage.CLOSED_LOST)" />
+                    </div>
+                }
+            </div>
+        
+        </div>
+    } @else {
+        <span class="text-xs px-2 py-0.5 border border-border text-text-tertiary rounded">
+            HELLO
+        </span>
+
+    }
+</div>
+
+<app-delete-confirmation-modal
+  [visible]="showDeleteDialog()"
+  [recordName]="deal()?.dealName ?? ''"
+  (confirmed)="deleteDeal()"
+  (cancelled)="showDeleteDialog.set(false)" />
+

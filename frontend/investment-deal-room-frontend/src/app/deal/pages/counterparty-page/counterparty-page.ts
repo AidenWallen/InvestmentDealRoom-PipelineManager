@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from "@angular/core";
-import { Counterparty } from "../../models/counterparty.model";
-import { CounterpartyService } from "../../services/CounterpartyService";
+import { Counterparty } from "../../../shared/models/counterparty.model";
+import { CounterpartyService } from "../../../core/services/counterparty.service";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { FloatLabel, FloatLabelModule } from "primeng/floatlabel";
 import { ButtonModule } from "primeng/button";

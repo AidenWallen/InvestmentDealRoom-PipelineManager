@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { Deal } from '../models/deal.model';
-import { DealType } from '../models/enums/deal-type.enum';
-import { Currency } from '../models/enums/currency.enum';
-import { PipelineStage } from '../models/enums/pipeline-stage.enum';
+import { DealType } from '../../shared/enums/deal-type.enum';
+import { Currency } from '../../shared/enums/currency.enum';
+import { PipelineStage } from '../../shared/enums/pipeline-stage.enum';
+import { Deal } from '../../shared/models/deal.model';
 
 @Injectable({ providedIn: 'root' })
 export class MockDealService {
@@ -18,9 +18,12 @@ export class MockDealService {
       pipelineStage: PipelineStage.DUE_DILIGENCE
     }
   ];
-
+  getDealById(id: string) { return of(this.deals.find(d => d.id === id)); }
   getDeals()   { return of(this.deals); }
   createDeal(deal: any) { return of({ ...deal, id: crypto.randomUUID() }); }
   updateDeal(id: string, deal: any) { return of({ id, ...deal }); }
   deleteDeal(id: string) { return of(void 0); }
+  updateStage(id: string, toStage: PipelineStage) {
+   return of({ ...this.deals.find(d => d.id === id)!, pipelineStage: toStage });
+  }
 }

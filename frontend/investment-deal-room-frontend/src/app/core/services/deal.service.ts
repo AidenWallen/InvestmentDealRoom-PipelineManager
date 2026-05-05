@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Deal } from '../models/deal.model';
-import { UpdateDealRequest } from '../models/update-deal-request.model';
+import { UpdateDealRequest } from '../../shared/models/update-deal-request.model';
 import { environment } from '../../../environments/environments';
+import { Deal } from '../../shared/models/deal.model';
+import { PipelineStage } from '../../shared/enums/pipeline-stage.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -18,10 +19,13 @@ export class DealService {
     return this.http.get<Deal[]>(this.URL);
   }
 
-  createDeal(userId: string, deal: Deal): Observable<Deal> {
+  getDealById(id: string): Observable<Deal> {
+    return this.http.get<Deal>(`${this.URL}/${id}`);
+  }
+
+  createDeal(deal: Deal): Observable<Deal> {
     return this.http.post<Deal>(
-      `${this.URL}?userId=${userId}`,
-      deal
+      `${this.URL}`, deal
     );
   }
 
@@ -36,6 +40,12 @@ export class DealService {
         console.error('Error updating deal:', err);
         return throwError(() => new Error('Failed to update deal'));
       }));
+  }
+
+  updateStage(id: string, toStage: PipelineStage): Observable<Deal> {
+	return this.http.patch<Deal>(`${this.URL}/${id}/stage`, { 
+		pipelineStage: toStage 
+	});
   }
 
   deleteDeal(id: string): Observable<void> {

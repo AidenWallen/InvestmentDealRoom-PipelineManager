@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { Deal } from '../../models/deal.model';
 import { Router } from '@angular/router';
+import { Deal } from '../../../shared/models/deal.model';
 
 
 @Component({
