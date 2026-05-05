@@ -1,7 +1,8 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/dealroom-dev
+      uri: ${DB_CONNECTION_STRING}
+      database: investment-deal-room-db
   security:
     oauth2:
       resourceserver:
