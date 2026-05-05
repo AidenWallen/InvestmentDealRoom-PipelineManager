@@ -41,7 +41,7 @@ public class CounterpartyController {
         return ResponseEntity.ok(counterpartyService.getCounterpartyById(id));
     }
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
     public ResponseEntity<CounterpartyResponseDto> createCounterparty(@Valid @RequestBody CreateCounterpartyRequestDto request) {
         CounterpartyResponseDto response = counterpartyService.createCounterparty(request);

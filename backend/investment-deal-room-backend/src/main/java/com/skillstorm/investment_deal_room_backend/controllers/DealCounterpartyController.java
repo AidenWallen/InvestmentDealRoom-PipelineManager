@@ -40,7 +40,7 @@ public class DealCounterpartyController {
         return ResponseEntity.ok(dcpService.getDealsByCounterpartyId(counterpartyId));
     }
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping("/deals/{dealId}/counterparties")
     public ResponseEntity<DealCounterpartyResponseDto> linkDealToCounterparty(
             @PathVariable String dealId,
@@ -50,7 +50,7 @@ public class DealCounterpartyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping("/counterparties/{counterpartyId}/deals")
     public ResponseEntity<DealCounterpartyResponseDto> linkCounterpartyToDeal(
             @PathVariable String counterpartyId,

@@ -48,7 +48,7 @@ public class DealController {
     }
 
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
     public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request, @RequestParam String userId) {
         DealResponseDto response = dealService.createDeal(request, userId);
@@ -56,20 +56,20 @@ public class DealController {
     }
     
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<DealResponseDto> updateDeal(@PathVariable String id, @Valid @RequestBody UpdateDealRequestDto request) {
         return ResponseEntity.ok(dealService.updateDeal(id, request));
     }
 
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PatchMapping("/{id}/stage")
     public ResponseEntity<DealResponseDto> updatePipelineStage(@PathVariable String id, @RequestBody UpdatePipelineStageRequestDto request) {
         return ResponseEntity.ok(dealService.updatePipelineStage(id, request.pipelineStage()));
     }
 
-    @PreAuthorize("hasRole('DealManager')")
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDeal(@PathVariable String id) {
         dealService.deleteDeal(id);
