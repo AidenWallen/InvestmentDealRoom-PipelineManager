@@ -1,1 +1,154 @@
-<p>counterparty-detail works!</p>
+<div class="min-h-screen p-6 font-mono text-text-primary bg-bg-canvas">
+
+  <button class="text-xs text-text-tertiary hover:text-text-primary flex items-center gap-1 transition-colors cursor-pointer mb-3"
+      (click)="goBack()">
+    <i class="pi pi-arrow-left text-xs"></i> Back
+  </button>
+
+  <h1 class="text-lg font-bold text-text-primary mb-4">Counterparty Detail</h1>
+
+  @if (counterparty()) {
+    <div class="bg-surface border border-border rounded p-4 mb-4">
+
+      <!-- Header row -->
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-xl font-semibold text-text-primary">
+          {{ counterparty()!.organizationName }}
+        </span>
+        <div class="flex items-center gap-3 text-xs text-text-tertiary">
+          @if (!editMode()) {
+            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
+                (click)="startEdit()">
+              <i class="pi pi-pencil text-xs"></i> Edit
+            </button>
+            <button class="hover:text-red-400 flex items-center gap-1 transition-colors cursor-pointer"
+                (click)="showDeleteDialog.set(true)">
+              <i class="pi pi-trash text-xs"></i> Delete
+            </button>
+          } @else {
+            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
+                (click)="saveCounterparty()"
+                [disabled]="form.invalid">
+              <i class="pi pi-check text-xs"></i> Save
+            </button>
+            <button class="hover:text-text-primary flex items-center gap-1 transition-colors cursor-pointer"
+                (click)="cancelEdit()">
+              <i class="pi pi-times text-xs"></i> Cancel
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Info grid -->
+      <p class="text-xs text-text-tertiary font-bold pb-1 mb-3">CONTACT INFORMATION</p>
+      <form [formGroup]="form" class="grid grid-cols-2 gap-4 text-sm">
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-text-tertiary">ORGANIZATION</span>
+          @if (editMode()) {
+            <input pInputText formControlName="organizationName" class="w-full"
+              [class.ng-invalid]="form.get('organizationName')?.invalid && form.get('organizationName')?.touched" />
+          } @else {
+            <span class="font-semibold text-text-primary">{{ counterparty()!.organizationName }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-text-tertiary">CONTACT NAME</span>
+          @if (editMode()) {
+            <input pInputText formControlName="contactName" class="w-full"
+              [class.ng-invalid]="form.get('contactName')?.invalid && form.get('contactName')?.touched" />
+          } @else {
+            <span class="font-semibold text-text-primary">{{ counterparty()!.contactName }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-text-tertiary">EMAIL</span>
+          @if (editMode()) {
+            <input pInputText formControlName="contactEmail" class="w-full"
+              [class.ng-invalid]="form.get('contactEmail')?.invalid && form.get('contactEmail')?.touched" />
+          } @else {
+            <span class="font-semibold text-accent">{{ counterparty()!.contactEmail }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-text-tertiary">PHONE</span>
+          @if (editMode()) {
+            <input pInputText formControlName="contactPhone" class="w-full"
+              [class.ng-invalid]="form.get('contactPhone')?.invalid && form.get('contactPhone')?.touched" />
+          } @else {
+            <span class="font-semibold text-text-primary">{{ counterparty()!.contactPhone || '—' }}</span>
+          }
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Linked Deals -->
+    <div class="bg-surface border border-border rounded p-4">
+      <p class="text-xs text-text-tertiary font-bold mb-2">LINKED DEALS</p>
+      <input
+        pInputText
+        [ngModel]="dealSearch()"
+        (ngModelChange)="dealSearch.set($event)"
+        [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
+        placeholder="Search deals..."
+        class="mb-4" />
+      <p-table
+        [value]="filteredLinkedDeals()"
+        [sortMode]="'multiple'"
+        [rowHover]="true"
+        selectionMode="single"
+        dataKey="id"
+        (onRowSelect)="onDealRowSelect($event)"
+        class="w-full text-sm">
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="dealName"      style="min-width: 180px">Deal Name    <p-sortIcon field="dealName" /></th>
+            <th pSortableColumn="dealType"      style="min-width: 130px">Type         <p-sortIcon field="dealType" /></th>
+            <th pSortableColumn="pipelineStage" style="min-width: 140px">Stage        <p-sortIcon field="pipelineStage" /></th>
+            <th pSortableColumn="dealRole"      style="min-width: 120px">Role         <p-sortIcon field="dealRole" /></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-deal>
+          <tr [pSelectableRow]="deal" class="cursor-pointer">
+            <td class="font-semibold text-text-primary">{{ deal.dealName }}</td>
+            <td>{{ deal.dealType }}</td>
+            <td>
+              <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded">
+                {{ deal.pipelineStage }}
+              </span>
+            </td>
+            <td>
+              <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                {{ deal.dealRole }}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center p-6 text-text-secondary">
+              No deals linked to this counterparty.
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+  }
+
+</div>
+
+
+<app-delete-confirmation-modal
+  [visible]="showDeleteDialog()"
+  [recordName]="counterparty()?.organizationName ?? ''"
+  (confirmed)="deleteCounterparty()"
+  (cancelled)="showDeleteDialog.set(false)" />

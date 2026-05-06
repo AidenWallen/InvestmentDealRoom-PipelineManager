@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Counterparty } from "../../shared/models/counterparty.model";
-import { catchError, Observable, throwError } from "rxjs";
+import { DealCounterpartyLink } from "../../shared/models/deal-counterparty-link.model";
+import { catchError, Observable, of, throwError } from "rxjs";
 import { environment } from "../../../environments/environments.development";
 
 @Injectable({providedIn: 'root'})
@@ -12,6 +13,15 @@ export class CounterpartyService {
 
   getCounterparties(): Observable<Counterparty[]> {
     return this.http.get<Counterparty[]>(this.URL);
+  }
+
+  getCounterpartyById(id: string): Observable<Counterparty> {
+    return this.http.get<Counterparty>(`${this.URL}/${id}`);
+  }
+
+  getDealsByCounterpartyId(counterpartyId: string): Observable<DealCounterpartyLink[]> {
+    return this.http.get<DealCounterpartyLink[]>(`${this.URL}/${counterpartyId}/deals`)
+      .pipe(catchError(() => of([])));
   }
 
   createCounterparty(counterparty: Counterparty): Observable<Counterparty> {
