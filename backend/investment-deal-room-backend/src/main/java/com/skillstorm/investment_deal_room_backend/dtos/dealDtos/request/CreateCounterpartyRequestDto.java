@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateCounterpartyRequestDto(
     @NotBlank String organizationName,
-    @NotBlank String primaryContactName,
+    @NotBlank String contactName,
     @NotBlank String contactEmail,
     @NotBlank String contactPhone
 ) {
     public Counterparty toEntity(){
         return Counterparty.builder()
             .organizationName(organizationName)
-            .primaryContactName(primaryContactName)
+            .contactName(contactName)
             .contactEmail(contactEmail)
             .contactPhone(contactPhone)
             .build();

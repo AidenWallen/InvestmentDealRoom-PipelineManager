@@ -1,0 +1,108 @@
+<div class="min-h-screen p-6 bg-bg-canvas text-text-primary">
+
+  <h1 class="text-2xl font-semibold pb-3">Counterparties</h1>
+
+  <div class="flex justify-between items-center mb-4">
+    <input
+      pInputText
+      [ngModel]="searchQuery()"
+      (ngModelChange)="searchQuery.set($event)"
+      [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
+      placeholder="Search counterparties..." />
+
+    <p-button (click)="handleCreate()">+ New Counterparty</p-button>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-surface rounded-md shadow-md p-4">
+    <p-table
+      [value]="filteredCounterparties()"
+      [sortMode]="'multiple'"
+      [scrollable]="true"
+      scrollHeight="600px"
+      [rowHover]="true"
+      selectionMode="single"
+      dataKey="id"
+      (onRowSelect)="onRowSelect($event)"
+      class="w-full font-mono text-sm">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="organizationName" style="min-width: 200px">Organization  <p-sortIcon field="organizationName" /></th>
+          <th pSortableColumn="contactName"      style="min-width: 160px">Contact Name  <p-sortIcon field="contactName" /></th>
+          <th pSortableColumn="contactEmail"     style="min-width: 200px">Email         <p-sortIcon field="contactEmail" /></th>
+          <th pSortableColumn="contactPhone"     style="min-width: 150px">Phone         <p-sortIcon field="contactPhone" /></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-counterparty>
+        <tr [pSelectableRow]="counterparty" class="cursor-pointer">
+          <td>{{ counterparty.organizationName }}</td>
+          <td>{{ counterparty.contactName }}</td>
+          <td>{{ counterparty.contactEmail }}</td>
+          <td>{{ counterparty.contactPhone }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-6 text-text-secondary">
+            No counterparties found.
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
+
+
+  <!-- Create dialog -->
+  <p-dialog
+    header="New Counterparty"
+    [visible]="showFormDialog()"
+    (visibleChange)="showFormDialog.set($event)"
+    [modal]="true"
+    [style]="{ width: '480px' }"
+    [closable]="true">
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="saveCounterparty()"
+      class="flex flex-col gap-4 font-mono text-sm p-1">
+
+      <p-floatlabel variant="in" class="flex">
+        <input
+          pInputText id="organizationName" formControlName="organizationName" class="w-full pt-8 pl-1"
+          [class.ng-invalid]="form.get('organizationName')?.invalid && form.get('organizationName')?.touched" />
+        <label for="organizationName">Organization Name</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="in" class="flex">
+        <input
+          pInputText id="contactName" formControlName="contactName" class="w-full pt-8 pl-1"
+          [class.ng-invalid]="form.get('contactName')?.invalid && form.get('contactName')?.touched" />
+        <label for="contactName">Contact Name</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="in" class="flex">
+        <input
+          pInputText id="contactEmail" formControlName="contactEmail" class="w-full pt-8 pl-1"
+          [class.ng-invalid]="form.get('contactEmail')?.invalid && form.get('contactEmail')?.touched" />
+        <label for="contactEmail">Contact Email</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="in" class="flex">
+        <input
+          pInputText id="contactPhone" formControlName="contactPhone" class="w-full pt-8 pl-1"
+          [class.ng-invalid]="form.get('contactPhone')?.invalid && form.get('contactPhone')?.touched" />
+        <label for="contactPhone">Contact Phone</label>
+      </p-floatlabel>
+
+      <div class="flex justify-end pt-2">
+        <p-button type="submit" [disabled]="form.invalid">Create</p-button>
+      </div>
+
+    </form>
+  </p-dialog>
+
+</div>

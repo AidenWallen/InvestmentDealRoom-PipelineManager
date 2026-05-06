@@ -8,7 +8,7 @@ public class CounterpartyTestFactory {
     public static Counterparty buildCounterparty() {
         return Counterparty.builder()
             .organizationName("Test Organization Name")
-            .primaryContactName("Test Contact Name")
+            .contactName("Test Contact Name")
             .contactEmail("test@email.com")
             .contactPhone("123-456-7890")
             .build();

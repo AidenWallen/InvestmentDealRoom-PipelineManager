@@ -66,7 +66,7 @@ public class CounterpartyService {
         Counterparty counterparty = getCounterpartyEntityById(counterpartyId);
 
         if (request.organizationName() != null) counterparty.setOrganizationName(request.organizationName());
-        if (request.primaryContactName() != null) counterparty.setPrimaryContactName(request.primaryContactName());
+        if (request.contactName() != null) counterparty.setContactName(request.contactName());
         if (request.contactEmail() != null) counterparty.setContactEmail(request.contactEmail());
         if (request.contactPhone() != null) counterparty.setContactPhone(request.contactPhone());
 
