@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideAppInitializer  } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -12,7 +12,10 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // {provide: DealService, useClass: MockDealService},
+    {provide: DealService, useClass: MockDealService},
+    provideAppInitializer(() => {
+      document.documentElement.classList.add('p-dark');
+    }),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG ({
@@ -20,6 +23,7 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura, 
         options: {
+           darkModeSelector: '.p-dark'
           // cssLayer: {
           //   name: 'primeng',
           //   order: 'theme, base, primeng'

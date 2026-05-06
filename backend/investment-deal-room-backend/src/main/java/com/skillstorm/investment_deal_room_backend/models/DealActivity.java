@@ -27,9 +27,7 @@ public class DealActivity {
     @Indexed
     private String dealId;
 
-    private ActivityType activityType;
-
-    private String performedBy;    
+    private ActivityType activityType;   
     private String performedByName;    
     private LocalDateTime occurredAt;
 
