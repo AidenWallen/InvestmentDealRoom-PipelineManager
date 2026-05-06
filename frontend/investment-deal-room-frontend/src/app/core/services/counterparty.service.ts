@@ -24,6 +24,10 @@ export class CounterpartyService {
       .pipe(catchError(() => of([])));
   }
 
+  linkCounterpartyToDeal(counterpartyId: string, dealId: string, dealRole: string): Observable<DealCounterpartyLink> {
+    return this.http.post<DealCounterpartyLink>(`${this.URL}/${counterpartyId}/deals`, { dealId, dealRole });
+  }
+
   createCounterparty(counterparty: Counterparty): Observable<Counterparty> {
     return this.http.post<Counterparty>(
         `${this.URL}`,

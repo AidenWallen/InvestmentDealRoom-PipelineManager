@@ -2,11 +2,7 @@ import { Routes } from '@angular/router';
 import { DealPage } from './deal/pages/deal-page/deal-page';
 import { CounterpartyPage } from './counterparty/pages/counterparty-page/counterparty-page';
 import { CounterpartyDetail } from './counterparty/pages/counterparty-detail-page/counterparty-detail';
-import { ProfilePage } from './deal/pages/profile-page/profile-page';
 import { DealDetail } from './deal/pages/deal-detail-page/deal-detail';
-import { MsalGuard } from '@azure/msal-angular';
-
-
 // export const routes: Routes = [
 //   { path: '', redirectTo: 'deals', pathMatch: 'full' },
 //   { path: 'deals',           component: DealPage,         canActivate: [MsalGuard] },
@@ -21,5 +17,5 @@ export const routes: Routes = [
   { path: 'deals/:id',          component: DealDetail         },
   { path: 'counterparties',     component: CounterpartyPage   },
   { path: 'counterparties/:id', component: CounterpartyDetail },
-  { path: 'profile',            component: ProfilePage        },
+  // { path: 'profile', component: ProfilePage }, // re-enable after feature/frontend-users merges
 ];

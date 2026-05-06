@@ -18,6 +18,10 @@
         <div class="flex items-center gap-3 text-xs text-text-tertiary">
           @if (!editMode()) {
             <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
+                (click)="openLinkDialog()">
+              <i class="pi pi-link text-xs"></i> Link Deal
+            </button>
+            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
                 (click)="startEdit()">
               <i class="pi pi-pencil text-xs"></i> Edit
             </button>
@@ -145,6 +149,52 @@
   }
 
 </div>
+
+
+<p-dialog
+  header="Link Deal"
+  [visible]="showLinkDialog()"
+  (visibleChange)="showLinkDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '440px' }"
+  [closable]="true">
+
+  <form
+    [formGroup]="linkForm"
+    (ngSubmit)="linkDeal()"
+    class="flex flex-col gap-4 font-mono text-sm p-1">
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs text-text-tertiary">DEAL</label>
+      <p-select
+        formControlName="dealId"
+        [options]="availableDeals()"
+        optionLabel="dealName"
+        optionValue="id"
+        [filter]="true"
+        filterBy="dealName"
+        placeholder="Search deals..."
+        appendTo="body"
+        class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs text-text-tertiary">ROLE</label>
+      <p-select
+        formControlName="dealRole"
+        [options]="dealRoleOptions"
+        placeholder="Select role..."
+        appendTo="body"
+        class="w-full" />
+    </div>
+
+    <div class="flex justify-end gap-2 pt-2">
+      <p-button type="button" severity="secondary" [outlined]="true" (click)="showLinkDialog.set(false)">Cancel</p-button>
+      <p-button type="submit" [disabled]="linkForm.invalid">Link</p-button>
+    </div>
+
+  </form>
+</p-dialog>
 
 
 <app-delete-confirmation-modal

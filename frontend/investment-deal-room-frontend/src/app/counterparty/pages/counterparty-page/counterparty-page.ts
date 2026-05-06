@@ -1,16 +1,13 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { TableModule } from 'primeng/table';
-
 import { CounterpartyService } from '../../../core/services/counterparty.service';
 import { Counterparty } from '../../../shared/models/counterparty.model';
-import { DeleteConfirmationModal } from '../../../components/delete-confirmation-modal/delete-confirmation-modal';
+import { CounterpartyTable } from '../../components/counterparty-table/counterparty-table';
 
 @Component({
   selector: 'app-counterparty-page',
@@ -18,8 +15,8 @@ import { DeleteConfirmationModal } from '../../../components/delete-confirmation
   imports: [
     FormsModule, ReactiveFormsModule,
     ButtonModule, DialogModule,
-    FloatLabelModule, InputTextModule, TableModule,
-    DeleteConfirmationModal,
+    FloatLabelModule, InputTextModule,
+    CounterpartyTable,
   ],
   templateUrl: './counterparty-page.html',
 })
@@ -48,7 +45,6 @@ export class CounterpartyPage implements OnInit {
   constructor(
     private counterpartyService: CounterpartyService,
     private formBuilder: FormBuilder,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -66,10 +62,6 @@ export class CounterpartyPage implements OnInit {
       next: (list) => this.allCounterparties.set(list),
       error: (err) => console.error('Error loading counterparties:', err),
     });
-  }
-
-  onRowSelect(event: any): void {
-    this.router.navigate(['/counterparties', event.data.id]);
   }
 
   handleCreate(): void {

@@ -15,44 +15,7 @@
 
   <!-- Table -->
   <div class="bg-surface rounded-md shadow-md p-4">
-    <p-table
-      [value]="filteredCounterparties()"
-      [sortMode]="'multiple'"
-      [scrollable]="true"
-      scrollHeight="600px"
-      [rowHover]="true"
-      selectionMode="single"
-      dataKey="id"
-      (onRowSelect)="onRowSelect($event)"
-      class="w-full font-mono text-sm">
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="organizationName" style="min-width: 200px">Organization  <p-sortIcon field="organizationName" /></th>
-          <th pSortableColumn="contactName"      style="min-width: 160px">Contact Name  <p-sortIcon field="contactName" /></th>
-          <th pSortableColumn="contactEmail"     style="min-width: 200px">Email         <p-sortIcon field="contactEmail" /></th>
-          <th pSortableColumn="contactPhone"     style="min-width: 150px">Phone         <p-sortIcon field="contactPhone" /></th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-counterparty>
-        <tr [pSelectableRow]="counterparty" class="cursor-pointer">
-          <td>{{ counterparty.organizationName }}</td>
-          <td>{{ counterparty.contactName }}</td>
-          <td>{{ counterparty.contactEmail }}</td>
-          <td>{{ counterparty.contactPhone }}</td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="4" class="text-center p-6 text-text-secondary">
-            No counterparties found.
-          </td>
-        </tr>
-      </ng-template>
-
-    </p-table>
+    <app-counterparty-table [counterparties]="filteredCounterparties()" />
   </div>
 
 

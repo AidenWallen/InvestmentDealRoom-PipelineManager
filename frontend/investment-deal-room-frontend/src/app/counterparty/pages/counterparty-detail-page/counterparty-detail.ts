@@ -2,7 +2,9 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { forkJoin } from 'rxjs';
 
@@ -23,7 +25,7 @@ interface LinkedDeal extends Deal {
   standalone: true,
   imports: [
     FormsModule, ReactiveFormsModule,
-    ButtonModule, InputTextModule, TableModule,
+    ButtonModule, DialogModule, InputTextModule, SelectModule, TableModule,
     DeleteConfirmationModal,
   ],
   templateUrl: './counterparty-detail.html',
@@ -35,6 +37,7 @@ export class CounterpartyDetail implements OnInit {
   allDeals         = signal<Deal[]>([]);
   editMode         = signal(false);
   showDeleteDialog = signal(false);
+  showLinkDialog   = signal(false);
 
   linkedDeals = computed<LinkedDeal[]>(() => {
     const links = this.dealLinks();
@@ -44,6 +47,11 @@ export class CounterpartyDetail implements OnInit {
       if (deal) acc.push({ ...deal, dealRole: link.dealRole });
       return acc;
     }, []);
+  });
+
+  availableDeals = computed(() => {
+    const linkedIds = new Set(this.linkedDeals().map(d => d.id));
+    return this.allDeals().filter(d => !linkedIds.has(d.id));
   });
 
   dealSearch = signal('');
@@ -59,7 +67,10 @@ export class CounterpartyDetail implements OnInit {
     );
   });
 
-  form!: FormGroup;
+  dealRoleOptions = Object.values(DealRole);
+
+  form!:     FormGroup;
+  linkForm!: FormGroup;
 
   constructor(
     private route:               ActivatedRoute,
@@ -78,6 +89,11 @@ export class CounterpartyDetail implements OnInit {
       contactName:      [null, Validators.required],
       contactEmail:     [null, [Validators.required, Validators.email]],
       contactPhone:     [null, Validators.pattern(/^\+?[\d\s\-().]{7,15}$/)],
+    });
+
+    this.linkForm = this.formBuilder.group({
+      dealId:   [null, Validators.required],
+      dealRole: [null, Validators.required],
     });
 
     this.loadAll(id);
@@ -133,6 +149,26 @@ export class CounterpartyDetail implements OnInit {
         this.editMode.set(false);
       },
       error: (err) => console.error('Error updating counterparty:', err),
+    });
+  }
+
+  openLinkDialog(): void {
+    this.linkForm.reset();
+    this.showLinkDialog.set(true);
+  }
+
+  linkDeal(): void {
+    const counterpartyId = this.counterparty()?.id;
+    if (this.linkForm.invalid || !counterpartyId) return;
+
+    const { dealId, dealRole } = this.linkForm.value;
+
+    this.counterpartyService.linkCounterpartyToDeal(counterpartyId, dealId, dealRole).subscribe({
+      next: (link) => {
+        this.dealLinks.update(links => [...links, link]);
+        this.showLinkDialog.set(false);
+      },
+      error: (err) => console.error('Error linking deal:', err),
     });
   }
 
