@@ -1,4 +1,4 @@
 export interface User {
-  id: string;
+  azureId: string;
   department: string;
 }

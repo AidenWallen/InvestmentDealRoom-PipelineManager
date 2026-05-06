@@ -1,19 +1,31 @@
 import { Injectable, signal } from '@angular/core';
-import { UserRole } from '../../shared/enums/user-role.enum';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, of, tap } from 'rxjs';
+import { User } from '../models/user';
+import { environment } from '../../../environments/environments.development';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private _role = signal<UserRole | null>(null);
-  private _department = signal<string>('');
+  private readonly URL = `${environment.apiBaseUrl}/users`;
 
-  readonly role = this._role.asReadonly();
+  private _department = signal<string>('');
   readonly department = this._department.asReadonly();
 
-  setRole(role: UserRole): void {
-    this._role.set(role);
+  constructor(private http: HttpClient) {}
+
+  loadDepartment(azureId: string): Observable<User | null> {
+    return this.http.get<User>(`${this.URL}/${azureId}/department`).pipe(
+      tap(user => this._department.set(user.department ?? '')),
+      catchError(err => {
+        if (err.status === 404) return of(null);
+        throw err;
+      })
+    );
   }
 
-  setDepartment(dept: string): void {
-    this._department.set(dept);
+  updateDepartment(azureId: string, department: string): Observable<User> {
+    return this.http.patch<User>(`${this.URL}/${azureId}/department`, { department }).pipe(
+      tap(user => this._department.set(user.department ?? ''))
+    );
   }
 }

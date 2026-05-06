@@ -10,7 +10,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { DealService } from '../../../core/services/deal.service';
 import { UserService } from '../../services/user';
 import { Deal } from '../../../shared/models/deal.model';
-import { UserRole } from '../../../shared/enums/user-role.enum';
 import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
 
 @Component({
@@ -26,7 +25,7 @@ export class ProfilePage implements OnInit {
   userId = '';
 
   editMode = signal(false);
-  selectedRole = signal<UserRole | null>(null);
+  saving = signal(false);
   selectedDepartment = signal('');
 
   allDeals = signal<Deal[]>([]);
@@ -37,8 +36,6 @@ export class ProfilePage implements OnInit {
     if (!uid) return deals;
     return deals.filter(d => d.assignedManagerId === uid);
   });
-
-  readonly roles = Object.values(UserRole);
 
   readonly departments = [
     'Investment Banking',
@@ -62,8 +59,13 @@ export class ProfilePage implements OnInit {
   ngOnInit(): void {
     this.userName = this.authService.userName;
     this.userId = this.authService.userId;
-    this.selectedRole.set(this.userService.role() ?? this.authService.role);
-    this.selectedDepartment.set(this.userService.department());
+
+    if (this.userId) {
+      this.userService.loadDepartment(this.userId).subscribe({
+        next: () => this.selectedDepartment.set(this.userService.department()),
+        error: (err) => console.error('Failed to load department:', err),
+      });
+    }
 
     this.dealService.getDeals().subscribe({
       next: (deals) => this.allDeals.set(deals),
@@ -82,9 +84,9 @@ export class ProfilePage implements OnInit {
   }
 
   get displayRole(): string {
-    const role = this.userService.role() ?? this.authService.role;
+    const role = this.authService.role;
     if (!role) return 'No Role';
-    return role === UserRole.DEAL_MANAGER ? 'Deal Manager' : role;
+    return role === 'DealManager' ? 'Deal Manager' : role;
   }
 
   get displayDepartment(): string {
@@ -92,13 +94,18 @@ export class ProfilePage implements OnInit {
   }
 
   saveProfile(): void {
-    if (this.selectedRole()) this.userService.setRole(this.selectedRole()!);
-    this.userService.setDepartment(this.selectedDepartment());
-    this.editMode.set(false);
+    if (!this.userId || !this.selectedDepartment()) {
+      this.editMode.set(false);
+      return;
+    }
+    this.saving.set(true);
+    this.userService.updateDepartment(this.userId, this.selectedDepartment()).subscribe({
+      next: () => { this.saving.set(false); this.editMode.set(false); },
+      error: (err) => { console.error('Failed to save department:', err); this.saving.set(false); },
+    });
   }
 
   cancelEdit(): void {
-    this.selectedRole.set(this.userService.role() ?? this.authService.role);
     this.selectedDepartment.set(this.userService.department());
     this.editMode.set(false);
   }

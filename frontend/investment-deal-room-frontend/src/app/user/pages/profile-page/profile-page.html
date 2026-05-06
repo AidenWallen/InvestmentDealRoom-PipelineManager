@@ -30,66 +30,51 @@
   <!-- Profile Details Card -->
   <div class="bg-surface border border-border rounded p-6 mb-6">
 
-    <div class="flex items-center justify-between mb-5">
-      <p class="text-xs font-semibold text-text-tertiary uppercase tracking-widest">Profile Details</p>
+    <p class="text-xs font-semibold text-text-tertiary uppercase tracking-widest mb-5">Profile Details</p>
 
-      @if (!editMode()) {
-        <button
-          class="flex items-center gap-1.5 px-2 py-1 text-xs rounded bg-border hover:opacity-80 cursor-pointer transition-opacity"
-          (click)="editMode.set(true)">
-          <i class="pi pi-pencil text-xs"></i>Edit
-        </button>
-      } @else {
-        <div class="flex gap-2">
-          <button
-            class="px-2 py-1 text-xs rounded bg-border hover:opacity-80 cursor-pointer transition-opacity"
-            (click)="cancelEdit()">
-            Cancel
-          </button>
-          <button
-            class="flex items-center gap-1.5 px-2 py-1 text-xs rounded bg-accent-soft text-accent border border-accent-strong hover:opacity-80 cursor-pointer transition-opacity"
-            (click)="saveProfile()">
-            <i class="pi pi-check text-xs"></i>Save
-          </button>
-        </div>
-      }
+    <div class="grid grid-cols-2 gap-6 text-sm">
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-text-tertiary">ROLE</span>
+        <span class="text-text-primary">{{ displayRole }}</span>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-text-tertiary">DEPARTMENT</span>
+        @if (!editMode()) {
+          <div class="flex items-center gap-2">
+            <span class="text-text-primary">{{ displayDepartment }}</span>
+            <button
+              class="text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+              (click)="editMode.set(true)">
+              <i class="pi pi-pencil text-xs"></i>
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center gap-2">
+            <p-select
+              [options]="departments"
+              [ngModel]="selectedDepartment()"
+              (ngModelChange)="selectedDepartment.set($event)"
+              placeholder="Select department"
+              [pt]="{ root: 'text-xs font-mono' }">
+            </p-select>
+            <button
+              class="text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+              (click)="cancelEdit()">
+              <i class="pi pi-times text-xs"></i>
+            </button>
+            <button
+              class="text-accent hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="saving()"
+              (click)="saveProfile()">
+              <i [class]="saving() ? 'pi pi-spin pi-spinner text-xs' : 'pi pi-check text-xs'"></i>
+            </button>
+          </div>
+        }
+      </div>
+
     </div>
-
-    @if (!editMode()) {
-      <div class="grid grid-cols-2 gap-6 text-sm">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-text-tertiary">ROLE</span>
-          <span class="text-text-primary">{{ displayRole }}</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-text-tertiary">DEPARTMENT</span>
-          <span class="text-text-primary">{{ displayDepartment }}</span>
-        </div>
-      </div>
-    } @else {
-      <div class="grid grid-cols-2 gap-6">
-        <div class="flex flex-col gap-2">
-          <span class="text-xs text-text-tertiary">ROLE</span>
-          <p-select
-            [options]="roles"
-            [ngModel]="selectedRole()"
-            (ngModelChange)="selectedRole.set($event)"
-            placeholder="Select role"
-            [pt]="{ root: 'w-full text-xs font-mono' }">
-          </p-select>
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="text-xs text-text-tertiary">DEPARTMENT</span>
-          <p-select
-            [options]="departments"
-            [ngModel]="selectedDepartment()"
-            (ngModelChange)="selectedDepartment.set($event)"
-            placeholder="Select department"
-            [pt]="{ root: 'w-full text-xs font-mono' }">
-          </p-select>
-        </div>
-      </div>
-    }
 
   </div>
 
