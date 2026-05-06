@@ -1,14 +1,9 @@
 <div class="min-h-screen p-6 font-mono text-text-primary bg-bg-canvas">
 
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-xs text-text-tertiary mb-1">
-        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Workspace</span>
-        <span>›</span>
-        <span class="hover:text-text-primary cursor-pointer" (click)="goBack()">Pipeline</span>
-        <span>›</span>
-        <span class="text-text-secondary">{{ deal()?.dealName }}</span>
-    </div>
-
+    <button class="text-xs text-text-tertiary hover:text-text-primary flex items-center gap-1 transition-colors cursor-pointer mb-3"
+        (click)="goBack()">
+        <i class="pi pi-arrow-left text-xs"></i> Back
+    </button>
 
     <h1 class="text-lg font-bold text-text-primary mb-4">Deal Detail</h1>
 
@@ -23,29 +18,12 @@
                     </span>
                     <div class="flex items-center gap-2"> 
                         <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
-                            {{ deal()!.dealType }}
+                            {{ dealTypeLabel(deal()!.dealType) }}
                         </span>
                         <span class="text-xs px-2 py-0.5 bg-amber-600/30 text-amber-400 border border-amber-700/50 rounded">
                             {{ deal()!.pipelineStage }}
                         </span>
                     </div>
-                </div>
-                <div class="flex items-center gap-3 text-xs text-text-tertiary">
-                    <button class="hover:text-text-primary flex items-center gap-1 transition-colors"
-                        (click)="goBack()">
-                        <i class="pi pi-arrow-left text-xs"></i> Back
-                    </button>
-
-                    @if(true) {
-                        <button class="hover:text-accent flex items-center gap-1 transition-colors"
-                            (click)="handleUpdateDeal()">
-                            <i class="pi pi-pencil text-xs"></i> Edit
-                        </button>
-                        <button class="hover:text-red-400 flex items-center gap-1 transition-colors"
-                            (click)="openDeleteDialog()">
-                            <i class="pi pi-trash text-xs"></i> Delete
-                        </button>
-                    }
                 </div>
             </div>
 
@@ -98,39 +76,97 @@
                 <!-- Left: deal info -->
                 <div class="col-span-2">
                     
-                    <div class="bg-surface border border-border rounded  pt-2 p-4">
-                        <p class="text-xs text-text-tertiary font-bold pb-1 mb-3">DEAL INFORMATION</p>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-surface border border-border rounded p-4">
+
+                        <!-- Header row -->
+                        <div class="flex items-center justify-between pb-1 mb-3">
+                            <p class="text-xs text-text-tertiary font-bold">DEAL INFORMATION</p>
+                            <div class="flex items-center gap-3 text-xs text-text-tertiary">
+                                @if (!editMode()) {
+                                    <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
+                                        (click)="startEdit()">
+                                        <i class="pi pi-pencil text-xs"></i> Edit
+                                    </button>
+                                    <button class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
+                                        (click)="openDeleteDialog()">
+                                        <i class="pi pi-trash text-xs"></i> Delete
+                                    </button>
+                                } @else {
+                                    <div class="flex flex-col items-end gap-1">
+                                        <div class="flex items-center gap-3">
+                                            <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
+                                                (click)="saveDeal()"
+                                                [disabled]="form.invalid">
+                                                <i class="pi pi-check text-xs"></i> Save
+                                            </button>
+                                            <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
+                                                (click)="cancelEdit()">
+                                                <i class="pi pi-times text-xs"></i> Cancel
+                                            </button>
+                                        </div>
+                                        @if (saveError()) {
+                                            <span class="text-xs text-red-400">
+                                                <i class="pi pi-exclamation-circle text-xs"></i> {{ saveError() }}
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Info grid -->
+                        <form [formGroup]="form" class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs text-text-tertiary">DEAL NAME</span>
+                                @if (editMode()) {
+                                    <input pInputText formControlName="dealName" class="w-full" />
+                                } @else {
+                                    <span class="font-semibold text-text-primary">{{ deal()!.dealName }}</span>
+                                }
+                            </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">DEAL TYPE</span>
-                                <span class="font-semibold text-text-primary">{{ deal()!.dealType }}</span>
+                                @if (editMode()) {
+                                    <p-select formControlName="dealType" [options]="dealTypes" appendTo="body" class="w-full" />
+                                } @else {
+                                    <span class="font-semibold text-text-primary">{{ dealTypeLabel(deal()!.dealType) }}</span>
+                                }
                             </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">TARGET COMPANY</span>
-                                <span class="font-semibold text-text-primary">{{ deal()!.targetCompany }}</span>
+                                @if (editMode()) {
+                                    <input pInputText formControlName="targetCompany" class="w-full" />
+                                } @else {
+                                    <span class="font-semibold text-text-primary">{{ deal()!.targetCompany }}</span>
+                                }
                             </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">ESTIMATED VALUE</span>
-                                <span class="font-bold text-accent">
-                                    {{ formatCurrency(deal()!.estimatedValue, deal()!.currency) }}
-                                </span>
+                                @if (editMode()) {
+                                    <input pInputText type="number" formControlName="estimatedValue" class="w-full" />
+                                } @else {
+                                    <span class="font-bold text-accent">{{ formatCurrency(deal()!.estimatedValue, deal()!.currency) }}</span>
+                                }
                             </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">CURRENCY</span>
-                                <span class="font-semibold text-text-primary">{{ deal()!.currency }}</span>
+                                @if (editMode()) {
+                                    <p-select formControlName="currency" [options]="currencies" appendTo="body" class="w-full" />
+                                } @else {
+                                    <span class="font-semibold text-text-primary">{{ deal()!.currency }}</span>
+                                }
                             </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">CURRENT STAGE</span>
                                 <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded w-fit">
-                                {{ deal()!.pipelineStage }}
+                                    {{ deal()!.pipelineStage }}
                                 </span>
                             </div>
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">OWNED BY</span>
-                                <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId}}</span>
+                                <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId }}</span>
                             </div>
-                            
-                        </div>
+                        </form>
                     </div>
                     
                 </div>
@@ -229,20 +265,6 @@
     }
 </div>
 
-
-<p-dialog
-    header="Edit Deal"
-    [visible]="showEditDialog()"
-    (visibleChange)="showEditDialog.set($event)"
-    [modal]="true"
-    [style]="{ width: '480px' }"
-    [closable]="true">
-    <app-deal-form
-        [form]="form"
-        [selectedDeal]="deal()"
-        (submitDeal)="saveDeal()"
-        (cancel)="showEditDialog.set(false)" />
-</p-dialog>
 
 
 <app-delete-confirmation-modal

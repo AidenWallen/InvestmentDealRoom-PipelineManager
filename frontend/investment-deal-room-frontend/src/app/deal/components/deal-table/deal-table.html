@@ -20,7 +20,6 @@
       <th pSortableColumn="estimatedValue" style="min-width: 150px">Est. Value     <p-sortIcon field="estimatedValue" /></th>
       <th pSortableColumn="currency"       style="min-width: 110px">Currency       <p-sortIcon field="currency" /></th>
       <th pSortableColumn="pipelineStage"  style="min-width: 150px">Stage          <p-sortIcon field="pipelineStage" /></th>
-      <th style="min-width: 120px">Actions</th>
     </tr>
   </ng-template>
 
@@ -34,27 +33,12 @@
       <td>{{deal.estimatedValue }}</td>
       <td>{{ deal.currency }}</td>
       <td>{{ deal.pipelineStage }}</td>
-
-      <td (click)="$event.stopPropagation()">
-        <div class="flex gap-2">
-          <button
-            class="px-2 py-1 text-xs rounded bg-border hover:opacity-80 cursor-pointer"
-            (click)="onEdit($event, deal)">
-            Edit
-          </button>
-          <button
-            class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:opacity-80 cursor-pointer"
-            (click)="onDelete($event, deal)">
-            Delete
-          </button>
-        </div>
-      </td>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="7" class="text-center p-6 text-text-secondary">
+      <td colspan="6" class="text-center p-6 text-text-secondary">
         No deals found.
       </td>
     </tr>

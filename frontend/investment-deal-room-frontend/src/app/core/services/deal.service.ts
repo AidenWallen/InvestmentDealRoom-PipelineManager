@@ -34,12 +34,7 @@ export class DealService {
     request: UpdateDealRequest
   ): Observable<Deal> {
 
-    return this.http.put<Deal>(
-      `${this.URL}/${id}`, request)
-      .pipe(catchError(err => {
-        console.error('Error updating deal:', err);
-        return throwError(() => new Error('Failed to update deal'));
-      }));
+    return this.http.put<Deal>(`${this.URL}/${id}`, request);
   }
 
   updateStage(id: string, toStage: PipelineStage): Observable<Deal> {

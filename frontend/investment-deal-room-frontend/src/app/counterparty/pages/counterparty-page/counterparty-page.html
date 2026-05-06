@@ -23,7 +23,7 @@
   <p-dialog
     header="New Counterparty"
     [visible]="showFormDialog()"
-    (visibleChange)="showFormDialog.set($event)"
+    (visibleChange)="showFormDialog.set($event); createError.set(null)"
     [modal]="true"
     [style]="{ width: '480px' }"
     [closable]="true">
@@ -61,7 +61,12 @@
         <label for="contactPhone">Contact Phone</label>
       </p-floatlabel>
 
-      <div class="flex justify-end pt-2">
+      <div class="flex flex-col items-end gap-1 pt-2">
+        @if (createError()) {
+          <span class="text-xs text-red-400">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ createError() }}
+          </span>
+        }
         <p-button type="submit" [disabled]="form.invalid">Create</p-button>
       </div>
 

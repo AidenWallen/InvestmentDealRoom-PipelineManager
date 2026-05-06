@@ -1,6 +1,6 @@
 export enum DealType {
-  MERGER_ACQUISITION = 'M&A',
-  IPO = 'IPO',
+  MERGER_ACQUISITION = 'Merger & Acquisition',
+  IPO = 'Initial Public Offering',
   DEBT_ISSUANCE = 'Debt Issuance',
   PRIVATE_PLACEMENT = 'Private Placement'
 }

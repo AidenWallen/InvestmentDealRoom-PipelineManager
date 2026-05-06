@@ -4,15 +4,12 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { DealService } from './core/services/deal.service';
-import { MockDealService } from './core/services/deal.mock.service';
 import { MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalService } from '@azure/msal-angular';
 import { msalGuardConfig, msalInstance, msalInterceptorConfig } from './core/auth/msal.config';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    {provide: DealService, useClass: MockDealService},
     provideAppInitializer(() => {
       document.documentElement.classList.add('p-dark');
     }),

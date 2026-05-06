@@ -36,14 +36,7 @@ export class CounterpartyService {
   }
 
     updateCounterparty(id: string, counterparty: Counterparty): Observable<Counterparty> {
-      return this.http.put<Counterparty>(
-        `${this.URL}/${id}`,
-        counterparty
-        )
-        .pipe(catchError(err => {
-            console.error('Error updating counterparty:', err);
-            return throwError(() => new Error('Failed to update counterparty'));
-        } ));
+      return this.http.put<Counterparty>(`${this.URL}/${id}`, counterparty);
     }  
 
     deleteCounterparty(id: string): Observable<void> {

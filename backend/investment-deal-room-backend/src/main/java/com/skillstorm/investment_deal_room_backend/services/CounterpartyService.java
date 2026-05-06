@@ -89,6 +89,6 @@ public class CounterpartyService {
         counterparty.setDeleted(true);
         counterpartyRepository.save(counterparty);
 
-        dealCounterpartyRepository.deleteByDealId(counterpartyId);
+        dealCounterpartyRepository.deleteByCounterpartyId(counterpartyId);
     }
 }

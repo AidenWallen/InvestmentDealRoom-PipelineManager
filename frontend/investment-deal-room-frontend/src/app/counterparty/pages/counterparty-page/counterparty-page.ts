@@ -39,6 +39,7 @@ export class CounterpartyPage implements OnInit {
   showFormDialog       = signal(false);
   showDeleteDialog     = signal(false);
   selectedCounterparty = signal<Counterparty | null>(null);
+  createError          = signal<string | null>(null);
 
   form!: FormGroup;
 
@@ -66,6 +67,7 @@ export class CounterpartyPage implements OnInit {
 
   handleCreate(): void {
     this.selectedCounterparty.set(null);
+    this.createError.set(null);
     this.form.reset();
     this.showFormDialog.set(true);
   }
@@ -80,7 +82,10 @@ export class CounterpartyPage implements OnInit {
         this.allCounterparties.update(list => [...list, created]);
         this.showFormDialog.set(false);
       },
-      error: (err) => console.error('Error creating counterparty:', err),
+      error: (err) => {
+        const message = typeof err.error === 'string' ? err.error : 'Failed to create counterparty.';
+        this.createError.set(message);
+      },
     });
   }
 }

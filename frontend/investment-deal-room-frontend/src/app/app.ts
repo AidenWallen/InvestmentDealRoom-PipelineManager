@@ -1,7 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Sidebar } from "./components/sidebar-menu/sidebar";
-import { MsalService } from '@azure/msal-angular';
+import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
+import { EventMessage, EventType } from '@azure/msal-browser';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,12 +12,17 @@ import { MsalService } from '@azure/msal-angular';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   protected readonly title = signal('investment-deal-room-backend');
 
   isIframe = window !== window.parent && !window.opener;
 
-  constructor(private authService: MsalService) {}
+  private readonly _destroying$ = new Subject<void>();
+
+  constructor(
+    private authService: MsalService,
+    private msalBroadcastService: MsalBroadcastService,
+  ) {}
 
   ngOnInit(): void {
     this.authService.handleRedirectObservable().subscribe({
@@ -29,5 +37,19 @@ export class App implements OnInit {
         }
       }
     });
+
+    this.msalBroadcastService.msalSubject$
+      .pipe(
+        filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_FAILURE),
+        takeUntil(this._destroying$)
+      )
+      .subscribe(() => {
+        this.authService.logoutRedirect();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroying$.next();
+    this._destroying$.complete();
   }
 }

@@ -9,6 +9,8 @@
     <div class="justify-center flex flex-wrap pb-2 gap-2">
         <input
             pInputText
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
             [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
             placeholder="Search Deals..."
         />
@@ -40,12 +42,7 @@
   </div>
 
   <div class="bg-surface rounded-md shadow-md p-4">
-    <app-deal-table
-      [deals]="allDeals()"
-      (rowClick)="onRowClick($event)"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)">
-    </app-deal-table>
+    <app-deal-table [deals]="filteredDeals()" />
   </div>
 
   <!-- Create and Update dialog modal -->
@@ -67,12 +64,6 @@
   </p-dialog>
 
 
-  <app-delete-confirmation-modal
-    [visible]="showDeleteDialog()"
-    [recordName]="'Deal #' + (selectedDeal()?.id ?? '')"
-    (confirmed)="deleteDeal()"
-    (cancelled)="showDeleteDialog.set(false)"
-/>
 
 
 </div>

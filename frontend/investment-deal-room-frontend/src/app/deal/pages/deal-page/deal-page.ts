@@ -1,17 +1,16 @@
-import { ChangeDetectorRef, Component, signal, OnInit } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { buildDealForm } from "../../components/deal-form/deal.form";
 import { DealService } from '../../../core/services/deal.service';
-import { Button, ButtonModule } from "primeng/button";
+import { ButtonModule } from "primeng/button";
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from "primeng/select";
 import { DealType } from '../../../shared/enums/deal-type.enum';
 import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
-import { exhaustMap, forkJoin, Subject } from 'rxjs';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { DealForm } from '../../components/deal-form/deal-form';
-import { DeleteConfirmationModal } from '../../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { Currency } from '../../../shared/enums/currency.enum';
 import { Deal } from '../../../shared/models/deal.model';
 
@@ -19,8 +18,8 @@ import { Deal } from '../../../shared/models/deal.model';
   selector: 'app-deal-page',
   standalone: true,
   templateUrl: './deal-page.html',
-  imports: [DealTable, DealForm , DialogModule, ButtonModule, 
-            InputTextModule, SelectModule, FormsModule, DeleteConfirmationModal]
+  imports: [DealTable, DealForm, DialogModule, ButtonModule,
+            InputTextModule, SelectModule, FormsModule]
 })
 export class DealPage implements OnInit {
 
@@ -36,8 +35,7 @@ export class DealPage implements OnInit {
   pipelineStages = Object.values(PipelineStage);
 
   showDealDialog = signal<boolean>(false);
-  showDeleteDialog = signal<boolean>(false);
-  selectedDeal = signal<Deal | null>(null); 
+  selectedDeal   = signal<Deal | null>(null);
 
   form!: FormGroup;
 
@@ -140,42 +138,19 @@ export class DealPage implements OnInit {
 	this.showDealDialog.set(true);
   }
 
-  filteredDeals(): Deal[] {
+  filteredDeals = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
-    const type = this.filterDealType();
+    const type  = this.filterDealType();
     const stage = this.filterPipelineStage();
 
-    return []
-  }
+    return this.allDeals().filter(d => {
+      const matchesQuery = !query ||
+        d.dealName?.toLowerCase().includes(query) ||
+        d.targetCompany?.toLowerCase().includes(query);
+      const matchesType  = !type  || d.dealType === type;
+      const matchesStage = !stage || d.pipelineStage === stage;
+      return matchesQuery && matchesType && matchesStage;
+    });
+  });
 
-  deleteDeal() {
-    if (!this.selectedDeal() || this.selectedDeal()?.id === null) return;
-
-    this.dealService.deleteDeal(this.selectedDeal()!.id!)
-      .subscribe({
-        next: () => {
-          this.allDeals.update(deals => deals.filter(d => d.id !== this.selectedDeal()!.id));
-          this.showDeleteDialog.set(false);
-        },
-        error: (err) => {
-          console.log(err);
-          this.showDeleteDialog.set(false);
-        }
-      });
-       
-  }
-
-  onRowClick(deal: Deal) {
-    console.log('view deal:', deal.id);
-  }
-
-  onEdit(deal: Deal) {
-    this.selectedDeal.set(deal);
-    this.showDealDialog.set(true);
-  }
-
-  onDelete(deal: Deal) {
-    this.selectedDeal.set(deal);
-    this.showDeleteDialog.set(true);
-  }
 }

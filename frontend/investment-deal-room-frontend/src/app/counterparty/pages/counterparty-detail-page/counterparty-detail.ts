@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NavigationHistoryService } from '../../../core/services/navigation-history.service';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -40,6 +41,7 @@ export class CounterpartyDetail implements OnInit {
   showLinkDialog   = signal(false);
   showUnlinkDialog = signal(false);
   dealToUnlink     = signal<LinkedDeal | null>(null);
+  saveError        = signal<string | null>(null);
 
   linkedDeals = computed<LinkedDeal[]>(() => {
     const links = this.dealLinks();
@@ -77,6 +79,7 @@ export class CounterpartyDetail implements OnInit {
   constructor(
     private route:               ActivatedRoute,
     private router:              Router,
+    private navHistory:          NavigationHistoryService,
     private counterpartyService: CounterpartyService,
     private dealService:         DealService,
     private formBuilder:         FormBuilder,
@@ -117,7 +120,7 @@ export class CounterpartyDetail implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/counterparties']);
+    this.navHistory.back('/counterparties');
   }
 
   onDealRowSelect(event: any): void {
@@ -138,6 +141,7 @@ export class CounterpartyDetail implements OnInit {
 
   cancelEdit(): void {
     this.editMode.set(false);
+    this.saveError.set(null);
     this.form.reset();
   }
 
@@ -145,12 +149,16 @@ export class CounterpartyDetail implements OnInit {
     const id = this.counterparty()?.id;
     if (this.form.invalid || !id) return;
 
+    this.saveError.set(null);
     this.counterpartyService.updateCounterparty(id, this.form.value).subscribe({
       next: (updated) => {
         this.counterparty.set(updated);
         this.editMode.set(false);
       },
-      error: (err) => console.error('Error updating counterparty:', err),
+      error: (err) => {
+        const message = typeof err.error === 'string' ? err.error : 'Failed to save changes.';
+        this.saveError.set(message);
+      },
     });
   }
 

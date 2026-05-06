@@ -26,15 +26,24 @@
               <i class="pi pi-trash text-xs"></i> Delete
             </button>
           } @else {
-            <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
-                (click)="saveCounterparty()"
-                [disabled]="form.invalid">
-              <i class="pi pi-check text-xs"></i> Save
-            </button>
-            <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
-                (click)="cancelEdit()">
-              <i class="pi pi-times text-xs"></i> Cancel
-            </button>
+            <div class="flex flex-col items-end gap-1">
+              <div class="flex items-center gap-3">
+                <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
+                    (click)="saveCounterparty()"
+                    [disabled]="form.invalid">
+                  <i class="pi pi-check text-xs"></i> Save
+                </button>
+                <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
+                    (click)="cancelEdit()">
+                  <i class="pi pi-times text-xs"></i> Cancel
+                </button>
+              </div>
+              @if (saveError()) {
+                <span class="text-xs text-red-400">
+                  <i class="pi pi-exclamation-circle text-xs"></i> {{ saveError() }}
+                </span>
+              }
+            </div>
           }
         </div>
       </div>
