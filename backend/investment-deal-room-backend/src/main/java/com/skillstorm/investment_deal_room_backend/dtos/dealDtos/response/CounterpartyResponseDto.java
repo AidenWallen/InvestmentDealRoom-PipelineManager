@@ -5,7 +5,7 @@ import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 public record CounterpartyResponseDto(
     String id,
     String organizationName,
-    String primaryContactName,
+    String contactName,
     String contactEmail,
     String contactPhone
 ) {
@@ -13,7 +13,7 @@ public record CounterpartyResponseDto(
         return new CounterpartyResponseDto(
             counterparty.getId(),
             counterparty.getOrganizationName(),
-            counterparty.getPrimaryContactName(),
+            counterparty.getContactName(),
             counterparty.getContactEmail(),
             counterparty.getContactPhone()
         );

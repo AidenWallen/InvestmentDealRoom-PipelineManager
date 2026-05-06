@@ -18,7 +18,7 @@ public class Counterparty {
     @Id
     private String id;
     private String organizationName;
-    private String primaryContactName;
+    private String contactName;
     private String contactEmail;
     private String contactPhone;
 

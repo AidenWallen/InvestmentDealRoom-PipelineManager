@@ -61,7 +61,7 @@ public class CounterpartyServiceTest {
         CounterpartyResponseDto result = counterpartyService.createCounterparty(request);
 
         assertEquals(request.organizationName(), result.organizationName());
-        assertEquals(request.primaryContactName(), result.primaryContactName());
+        assertEquals(request.contactName(), result.contactName());
         assertEquals(request.contactEmail(), result.contactEmail());
         assertEquals(request.contactPhone(), result.contactPhone());
 

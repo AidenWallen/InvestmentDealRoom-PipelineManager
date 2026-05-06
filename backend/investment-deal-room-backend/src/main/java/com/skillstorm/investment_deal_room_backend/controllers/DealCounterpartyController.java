@@ -19,6 +19,7 @@ import com.skillstorm.investment_deal_room_backend.services.DealCounterpartyServ
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -63,5 +64,15 @@ public class DealCounterpartyController {
         DealCounterpartyResponseDto response = dcpService.linkCounterpartyToDeal(counterpartyId, request, jwt.getClaimAsString("name"));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    
+
+    @PreAuthorize("hasRole('DEAL_MANAGER')")
+    @DeleteMapping("/counterparties/{counterpartyId}/deals/{dealId}")
+    public ResponseEntity<Void> unlinkCounterpartyFromDeal(
+            @PathVariable String counterpartyId,
+            @PathVariable String dealId
+    ) {
+        dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
