@@ -38,6 +38,8 @@ export class CounterpartyDetail implements OnInit {
   editMode         = signal(false);
   showDeleteDialog = signal(false);
   showLinkDialog   = signal(false);
+  showUnlinkDialog = signal(false);
+  dealToUnlink     = signal<LinkedDeal | null>(null);
 
   linkedDeals = computed<LinkedDeal[]>(() => {
     const links = this.dealLinks();
@@ -169,6 +171,26 @@ export class CounterpartyDetail implements OnInit {
         this.showLinkDialog.set(false);
       },
       error: (err) => console.error('Error linking deal:', err),
+    });
+  }
+
+  unlinkDeal(deal: LinkedDeal): void {
+    this.dealToUnlink.set(deal);
+    this.showUnlinkDialog.set(true);
+  }
+
+  confirmUnlink(): void {
+    const counterpartyId = this.counterparty()?.id;
+    const dealId = this.dealToUnlink()?.id;
+    if (!counterpartyId || !dealId) return;
+
+    this.counterpartyService.unlinkDeal(counterpartyId, dealId).subscribe({
+      next: () => {
+        this.dealLinks.update(links => links.filter(l => l.dealId !== dealId));
+        this.showUnlinkDialog.set(false);
+        this.dealToUnlink.set(null);
+      },
+      error: (err) => console.error('Error unlinking deal:', err),
     });
   }
 

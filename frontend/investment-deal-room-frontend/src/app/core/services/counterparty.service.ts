@@ -53,4 +53,8 @@ export class CounterpartyService {
             return throwError(() => new Error('Failed to delete counterparty'));
         }));
     }
+
+    unlinkDeal(counterpartyId: string, dealId: string): Observable<void> {
+      return this.http.delete<void>(`${this.URL}/${counterpartyId}/deals/${dealId}`);
+    }
 }

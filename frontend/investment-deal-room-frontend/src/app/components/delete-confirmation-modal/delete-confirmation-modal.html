@@ -1,11 +1,12 @@
 <p-dialog
     [modal]="true"
-    header="Confirm Delete"
-    [visible]= visible()
+    [header]="header()"
+    [visible]="visible()"
+    (visibleChange)="!$event && cancelled.emit()"
     [style]="{ width: '400px' }"
     [pt]="{header: 'text-green'}"
 >
-    <p class="text-text-muted"> Are you sure you want to delete
+    <p class="text-text-muted"> Are you sure you want to {{ actionLabel().toLowerCase() }}
         <span class="text-danger font-bold"> {{recordName()}}</span>
         ? This action cannot be undone.
     </p>
@@ -17,9 +18,9 @@
             [outlined]="true"
             (onClick)="cancelled.emit()"
         />
-            
+
         <p-button
-            label="DELETE"
+            [label]="actionLabel()"
             severity="danger"
             [outlined]="true"
             (onClick)="confirmed.emit()"

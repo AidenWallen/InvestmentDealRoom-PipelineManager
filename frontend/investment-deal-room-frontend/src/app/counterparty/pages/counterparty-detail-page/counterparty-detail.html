@@ -17,25 +17,21 @@
         </span>
         <div class="flex items-center gap-3 text-xs text-text-tertiary">
           @if (!editMode()) {
-            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
-                (click)="openLinkDialog()">
-              <i class="pi pi-link text-xs"></i> Link Deal
-            </button>
-            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
+            <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
                 (click)="startEdit()">
               <i class="pi pi-pencil text-xs"></i> Edit
             </button>
-            <button class="hover:text-red-400 flex items-center gap-1 transition-colors cursor-pointer"
+            <button class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
                 (click)="showDeleteDialog.set(true)">
               <i class="pi pi-trash text-xs"></i> Delete
             </button>
           } @else {
-            <button class="hover:text-accent flex items-center gap-1 transition-colors cursor-pointer"
+            <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
                 (click)="saveCounterparty()"
                 [disabled]="form.invalid">
               <i class="pi pi-check text-xs"></i> Save
             </button>
-            <button class="hover:text-text-primary flex items-center gap-1 transition-colors cursor-pointer"
+            <button class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
                 (click)="cancelEdit()">
               <i class="pi pi-times text-xs"></i> Cancel
             </button>
@@ -93,7 +89,13 @@
 
     <!-- Linked Deals -->
     <div class="bg-surface border border-border rounded p-4">
-      <p class="text-xs text-text-tertiary font-bold mb-2">LINKED DEALS</p>
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-xs text-text-tertiary font-bold">LINKED DEALS</p>
+        <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
+            (click)="openLinkDialog()">
+          <i class="pi pi-link text-xs"></i> Link Deal
+        </button>
+      </div>
       <input
         pInputText
         [ngModel]="dealSearch()"
@@ -129,9 +131,15 @@
               </span>
             </td>
             <td>
-              <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
-                {{ deal.dealRole }}
-              </span>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                  {{ deal.dealRole }}
+                </span>
+                <button class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
+                    (click)="$event.stopPropagation(); unlinkDeal(deal)">
+                  <i class="pi pi-unlink text-xs"></i> Unlink
+                </button>
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -202,3 +210,11 @@
   [recordName]="counterparty()?.organizationName ?? ''"
   (confirmed)="deleteCounterparty()"
   (cancelled)="showDeleteDialog.set(false)" />
+
+<app-delete-confirmation-modal
+  [visible]="showUnlinkDialog()"
+  [recordName]="dealToUnlink()?.dealName ?? ''"
+  header="Confirm Unlink"
+  actionLabel="UNLINK"
+  (confirmed)="confirmUnlink()"
+  (cancelled)="showUnlinkDialog.set(false)" />
