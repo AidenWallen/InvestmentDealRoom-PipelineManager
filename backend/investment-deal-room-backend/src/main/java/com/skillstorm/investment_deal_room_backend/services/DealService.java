@@ -89,7 +89,7 @@ public class DealService {
     }
 
     @Transactional
-    public DealResponseDto updatePipelineStage(String id, PipelineStage newStage) {
+    public DealResponseDto updatePipelineStage(String id, String userName, PipelineStage newStage) {
         Deal deal = getDealEntityById(id);
         PipelineStage currentStage = deal.getPipelineStage();
 
@@ -98,6 +98,7 @@ public class DealService {
             throw new InvalidStageTransitionException("Invalid pipeline stage transition from " + currentStage + " to " + newStage);
         }
 
+        dealActivityService.logStageTransition(deal.getId(), userName, currentStage, newStage);
         deal.setPipelineStage(newStage);
         Deal updatedDeal = dealRepository.save(deal);
 

@@ -82,7 +82,7 @@ public class DealCounterpartyService {
     @Transactional
     public DealCounterpartyResponseDto linkCounterpartyToDeal(
             String counterpartyId,
-            LinkCounterpartyDealRequestDto request) {
+            LinkCounterpartyDealRequestDto request, String userName) {
 
         try {
             Counterparty counterparty = counterpartyService.getCounterpartyEntityById(counterpartyId);
@@ -90,9 +90,11 @@ public class DealCounterpartyService {
             dealService.getDealEntityById(request.dealId());
 
             DealCounterparty dealCounterparty = request.toEntity(counterparty.getId());
-
             DealCounterparty saved = dcpRepository.save(dealCounterparty);
 
+            
+            dealActivityServices.logCounterpartyLink(request.dealId(), userName, counterpartyId, counterparty.getOrganizationName(), dealCounterparty.getDealRole());
+            
             return DealCounterpartyResponseDto.fromEntity(saved);
         } catch (DuplicateKeyException e) {
             throw new DealCounterpartyAlreadyExistsException(request.dealId(), counterpartyId);
@@ -100,9 +102,11 @@ public class DealCounterpartyService {
     }
 
     @Transactional
-    public void unlinkDealCounterparty(String dealId, String counterpartyId) {
-        DealCounterparty dcp = 
-            getDealCounterpartyEntityById(dealId, counterpartyId);
+    public void unlinkDealCounterparty(String dealId, String counterpartyId, String userName) {
+        DealCounterparty dcp  = getDealCounterpartyEntityById(dealId, counterpartyId);
+        Counterparty counterP = counterpartyService.getCounterpartyEntityById(counterpartyId);
+
+        dealActivityServices.logCounterpartyUnlink(dealId, userName, counterpartyId, counterP.getOrganizationName(), dcp.getDealRole());
 
         dcpRepository.delete(dcp);
     }

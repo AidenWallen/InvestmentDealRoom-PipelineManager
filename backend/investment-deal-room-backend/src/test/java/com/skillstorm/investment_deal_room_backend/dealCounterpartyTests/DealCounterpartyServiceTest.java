@@ -126,7 +126,7 @@ public class DealCounterpartyServiceTest {
             DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
 
         DealCounterpartyResponseDto result =
-            dcpService.linkCounterpartyToDeal("0000", request);
+            dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
 
         assertEquals("0000", result.counterpartyId());
         assertEquals(request.dealId(), result.dealId());
@@ -163,7 +163,7 @@ public class DealCounterpartyServiceTest {
             .thenThrow(new CounterpartyNotFoundException("0000"));
 
         assertThrows(CounterpartyNotFoundException.class, () -> {
-            dcpService.linkCounterpartyToDeal("0000", request);
+            dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
         });
 
         verify(dcpRepository, never()).save(any());
@@ -209,7 +209,7 @@ public class DealCounterpartyServiceTest {
             .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealCounterpartyAlreadyExistsException.class, () -> {
-            dcpService.linkCounterpartyToDeal("0000", request);
+            dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
         });
 
         verify(dcpRepository).save(any());
@@ -317,7 +317,7 @@ public class DealCounterpartyServiceTest {
         when(dcpRepository.findByDealIdAndCounterpartyId(dealId, counterpartyId))
                 .thenReturn(Optional.of(existing));
 
-        dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+        dcpService.unlinkDealCounterparty(dealId, counterpartyId, "counterparty-1");
 
         verify(dcpRepository).delete(existing);
     }
@@ -333,7 +333,7 @@ public class DealCounterpartyServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(DealCounterpartyNotFoundException.class, () -> {
-            dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+            dcpService.unlinkDealCounterparty(dealId, counterpartyId, "counterparty-1");
         });
 
         verify(dcpRepository, never()).delete(any());

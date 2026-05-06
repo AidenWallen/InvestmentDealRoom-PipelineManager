@@ -163,7 +163,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        DealResponseDto response = dealService.updatePipelineStage("deal-01", PipelineStage.DUE_DILIGENCE);
+        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1" , PipelineStage.DUE_DILIGENCE);
 
         assertThat(response.pipelineStage()).isEqualTo(PipelineStage.DUE_DILIGENCE);
         verify(dealRepository).save(deal);
@@ -177,7 +177,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
         assertThatThrownBy(() ->
-            dealService.updatePipelineStage("deal-01", PipelineStage.CLOSING)
+            dealService.updatePipelineStage("deal-01", "user1" , PipelineStage.CLOSING)
         ).isInstanceOf(InvalidStageTransitionException.class);
 
         verify(dealRepository, never()).save(any());
@@ -191,7 +191,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
         assertThatThrownBy(() ->
-            dealService.updatePipelineStage("deal-01", PipelineStage.NEGOTIATION)
+            dealService.updatePipelineStage("deal-01", "user1" ,PipelineStage.NEGOTIATION)
         ).isInstanceOf(InvalidStageTransitionException.class);
 
         verify(dealRepository, never()).save(any());
@@ -204,7 +204,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("bad-id")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-            dealService.updatePipelineStage("bad-id", PipelineStage.DUE_DILIGENCE)
+            dealService.updatePipelineStage("bad-id", "user1" ,PipelineStage.DUE_DILIGENCE)
         ).isInstanceOf(DealNotFoundException.class);
     }
 
@@ -215,7 +215,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        DealResponseDto response = dealService.updatePipelineStage("deal-01", PipelineStage.DUE_DILIGENCE);
+        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1" ,PipelineStage.DUE_DILIGENCE);
 
         assertThat(response.pipelineStage()).isEqualTo(PipelineStage.DUE_DILIGENCE);
     }
