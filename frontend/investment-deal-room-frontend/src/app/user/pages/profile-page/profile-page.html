@@ -1,0 +1,139 @@
+<div class="min-h-screen p-6 font-mono text-text-primary bg-bg-canvas">
+
+  <!-- Page Header: Avatar + Identity + Logout -->
+  <div class="flex items-start justify-between mb-8">
+    <div class="flex items-center gap-5">
+      <div class="w-16 h-16 rounded-full bg-accent-soft border-2 border-accent-strong flex items-center justify-center text-accent text-2xl font-semibold tracking-wide shrink-0">
+        {{ initials }}
+      </div>
+      <div>
+        <h1 class="text-2xl font-semibold text-text-primary">{{ userName || 'User' }}</h1>
+        <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+          <span class="text-xs px-2 py-0.5 rounded bg-accent-soft text-accent border border-accent-strong">
+            {{ displayRole }}
+          </span>
+          @if (displayDepartment !== '—') {
+            <span class="text-xs text-text-tertiary">{{ displayDepartment }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded bg-red-900/30 text-red-400 border border-red-800/40 hover:bg-red-900/50 cursor-pointer transition-colors"
+      (click)="logout()">
+      <i class="pi pi-sign-out"></i>Logout
+    </button>
+  </div>
+
+
+  <!-- Profile Details Card -->
+  <div class="bg-surface border border-border rounded p-6 mb-6">
+
+    <p class="text-xs font-semibold text-text-tertiary uppercase tracking-widest mb-5">Profile Details</p>
+
+    <div class="grid grid-cols-2 gap-6 text-sm">
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-text-tertiary">ROLE</span>
+        <span class="text-text-primary">{{ displayRole }}</span>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-text-tertiary">DEPARTMENT</span>
+        @if (!editMode()) {
+          <div class="flex items-center gap-2">
+            <span class="text-text-primary">{{ displayDepartment }}</span>
+            <button
+              class="text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+              (click)="editMode.set(true)">
+              <i class="pi pi-pencil text-xs"></i>
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center gap-2">
+            <p-select
+              [options]="departments"
+              [ngModel]="selectedDepartment()"
+              (ngModelChange)="selectedDepartment.set($event)"
+              placeholder="Select department"
+              [pt]="{ root: 'text-xs font-mono' }">
+            </p-select>
+            <button
+              class="text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+              (click)="cancelEdit()">
+              <i class="pi pi-times text-xs"></i>
+            </button>
+            <button
+              class="text-accent hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="saving()"
+              (click)="saveProfile()">
+              <i [class]="saving() ? 'pi pi-spin pi-spinner text-xs' : 'pi pi-check text-xs'"></i>
+            </button>
+          </div>
+        }
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Assigned Deals Table -->
+  <div class="bg-surface border border-border rounded p-4">
+
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-xs font-semibold text-text-tertiary uppercase tracking-widest">
+        My Deals
+      </p>
+      <span class="text-xs px-2 py-0.5 rounded bg-accent-soft text-accent border border-accent-strong">
+        {{ myDeals().length }}
+      </span>
+    </div>
+
+    <p-table
+      [value]="myDeals()"
+      [sortMode]="'multiple'"
+      [scrollable]="true"
+      scrollHeight="420px"
+      [rowHover]="true"
+      selectionMode="single"
+      dataKey="id"
+      class="w-full text-sm">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="dealName"       style="min-width: 160px">Name           <p-sortIcon field="dealName" /></th>
+          <th pSortableColumn="dealType"       style="min-width: 130px">Type           <p-sortIcon field="dealType" /></th>
+          <th pSortableColumn="targetCompany"  style="min-width: 160px">Target Company <p-sortIcon field="targetCompany" /></th>
+          <th pSortableColumn="estimatedValue" style="min-width: 140px">Est. Value     <p-sortIcon field="estimatedValue" /></th>
+          <th pSortableColumn="pipelineStage"  style="min-width: 150px">Stage          <p-sortIcon field="pipelineStage" /></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-deal>
+        <tr class="cursor-pointer" (click)="navigateToDeal(deal)">
+          <td>{{ deal.dealName }}</td>
+          <td>{{ deal.dealType }}</td>
+          <td>{{ deal.targetCompany }}</td>
+          <td>{{ formatValue(deal.estimatedValue, deal.currency) }}</td>
+          <td>
+            <span [class]="stageClass(deal.pipelineStage)">
+              {{ deal.pipelineStage }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center p-8 text-text-secondary">
+            No deals assigned to your account.
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
+
+</div>

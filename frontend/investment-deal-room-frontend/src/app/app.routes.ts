@@ -1,10 +1,8 @@
 import { Routes } from '@angular/router';
 import { DealPage } from './deal/pages/deal-page/deal-page';
 import { CounterpartyPage } from './deal/pages/counterparty-page/counterparty-page';
-import { ProfilePage } from './deal/pages/profile-page/profile-page';
+import { ProfilePage } from './user/pages/profile-page/profile-page';
 import { DealDetail } from './deal/pages/deal-detail-page/deal-detail';
-import { MsalGuard } from '@azure/msal-angular';
-
 
 // export const routes: Routes = [
 //   { path: '', redirectTo: 'deals', pathMatch: 'full' },
