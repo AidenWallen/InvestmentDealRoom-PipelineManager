@@ -22,7 +22,7 @@ public class DealActivityService {
     }
 
     // Logs a stage transition activity for a deal
-    public void logStageTransition(String dealId, String userId, String userName, 
+    public void logStageTransition(String dealId, String userName, 
                                    PipelineStage fromStage, PipelineStage toStage) {
         
         ActivityType transitionType = determineTransitionType(fromStage, toStage);
@@ -30,7 +30,6 @@ public class DealActivityService {
         DealActivity activity = DealActivity.builder()
             .dealId(dealId)
             .activityType(transitionType)
-            .performedBy(userId)
             .performedByName(userName)
             .occurredAt(LocalDateTime.now())
             .payload(ActivityPayload.builder()
@@ -42,12 +41,11 @@ public class DealActivityService {
     }
 
     // Logs when a counterparty is linked to a deal
-    public void logCounterpartyLink(String dealId, String userId, String userName, 
+    public void logCounterpartyLink(String dealId, String userName, 
                                     String counterpartyId, String counterpartyName, DealRole role) {
         DealActivity activity = DealActivity.builder()
             .dealId(dealId)
             .activityType(ActivityType.COUNTERPARTY_LINKED)
-            .performedBy(userId)
             .performedByName(userName)
             .occurredAt(LocalDateTime.now())
             .payload(ActivityPayload.builder()
@@ -60,12 +58,11 @@ public class DealActivityService {
     }
 
     // Logs when a counterparty is unlinked from a deal
-    public void logCounterpartyUnlink(String dealId, String userId, String userName, 
+    public void logCounterpartyUnlink(String dealId, String userName, 
                                       String counterpartyId, String counterpartyName, DealRole role) {
         DealActivity activity = DealActivity.builder()
             .dealId(dealId)
             .activityType(ActivityType.COUNTERPARTY_UNLINKED)
-            .performedBy(userId)
             .performedByName(userName)
             .occurredAt(LocalDateTime.now())
             .payload(ActivityPayload.builder()

@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +47,8 @@ public class DealCounterpartyController {
     @PostMapping("/deals/{dealId}/counterparties")
     public ResponseEntity<DealCounterpartyResponseDto> linkDealToCounterparty(
             @PathVariable String dealId,
-            @Valid @RequestBody LinkDealCounterpartyRequestDto request
+            @Valid @RequestBody LinkDealCounterpartyRequestDto request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         DealCounterpartyResponseDto response = dcpService.linkDealToCounterparty(dealId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -55,9 +58,10 @@ public class DealCounterpartyController {
     @PostMapping("/counterparties/{counterpartyId}/deals")
     public ResponseEntity<DealCounterpartyResponseDto> linkCounterpartyToDeal(
             @PathVariable String counterpartyId,
-            @Valid @RequestBody LinkCounterpartyDealRequestDto request
+            @Valid @RequestBody LinkCounterpartyDealRequestDto request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        DealCounterpartyResponseDto response = dcpService.linkCounterpartyToDeal(counterpartyId, request);
+        DealCounterpartyResponseDto response = dcpService.linkCounterpartyToDeal(counterpartyId, request, jwt.getClaimAsString("name"));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
