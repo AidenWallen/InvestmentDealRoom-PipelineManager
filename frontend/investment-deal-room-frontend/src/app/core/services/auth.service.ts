@@ -32,6 +32,10 @@ export class AuthService {
         return this.claims?.name ?? this.claims?.preferred_username ?? '';
     }
 
+    get userId(): string {
+        return this.claims?.oid ?? this.claims?.sub ?? '';
+    }
+
     login()  { this.msal.loginRedirect(); }
     logout() { this.msal.logoutRedirect(); }
 }
