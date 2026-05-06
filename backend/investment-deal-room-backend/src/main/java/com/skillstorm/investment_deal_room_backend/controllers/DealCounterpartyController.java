@@ -69,9 +69,10 @@ public class DealCounterpartyController {
     @DeleteMapping("/counterparties/{counterpartyId}/deals/{dealId}")
     public ResponseEntity<Void> unlinkCounterpartyFromDeal(
             @PathVariable String counterpartyId,
-            @PathVariable String dealId
+            @PathVariable String dealId,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        dcpService.unlinkDealCounterparty(dealId, counterpartyId);
+        dcpService.unlinkDealCounterparty(dealId, counterpartyId, jwt.getClaimAsString("name"));
         return ResponseEntity.noContent().build();
     }
 
