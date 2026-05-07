@@ -3,6 +3,7 @@ spring:
   data:
     mongodb:
       uri: ${COSMOS_DB_CONNECTION_STRING}
+      database: investment-deal-room-db
   security:
     oauth2:
       resourceserver:

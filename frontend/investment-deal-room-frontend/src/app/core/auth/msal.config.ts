@@ -24,7 +24,8 @@ export const msalGuardConfig: MsalGuardConfiguration = {
 export const msalInterceptorConfig: MsalInterceptorConfiguration = {
   interactionType: InteractionType.Redirect,
   protectedResourceMap: new Map([
-    [`http://localhost:8080/api/v1/**`, [environment.azureApiScope]]
+    [`${environment.msalProtectedUrl}/**`, [environment.azureApiScope]],
+    [`/api/v1/**`, [environment.azureApiScope]]
   ])
 };
 
