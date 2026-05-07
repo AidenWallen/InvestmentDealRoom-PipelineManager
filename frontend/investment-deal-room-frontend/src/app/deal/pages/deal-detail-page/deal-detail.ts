@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { InputTextModule } from "primeng/inputtext";
@@ -78,10 +78,20 @@ export class DealDetail implements OnInit {
 	dealTypes  = Object.values(DealType);
 	currencies = Object.values(Currency);
 
-	showLinkCounterpartyDialog = signal<boolean>(false);
-	showDeleteDialog            = signal<boolean>(false);
+	showLinkCounterpartyDialog = signal(false);
+	showUnlinkDialog           = signal(false);
+	showDeleteDialog           = signal(false);
+	counterpartyToUnlink       = signal<LinkedCounterparty | null>(null);
+
+	dealRoleOptions = Object.values(DealRole);
+
+	availableCounterparties = computed(() => {
+		const linkedIds = new Set(this.linkedCounterparties().map(cp => cp.id));
+		return this.allCounterparties().filter(cp => !linkedIds.has(cp.id));
+	});
 
 	form!: FormGroup;
+	linkCounterpartyForm!: FormGroup;
 
 	pipelineStages = [...Object.values(PipelineStage)
 		.filter(s => s !== PipelineStage.CLOSED_WON && s !== PipelineStage.CLOSED_LOST)
@@ -111,6 +121,10 @@ export class DealDetail implements OnInit {
 		const id = this.route.snapshot.paramMap.get('id');
 		if (!id) { this.router.navigate(['/deals']); return; }
 		this.form = buildDealForm(this.formBuilder);
+		this.linkCounterpartyForm = this.formBuilder.group({
+			counterpartyId: [null, Validators.required],
+			dealRole:       [null, Validators.required],
+		});
 		this.loadAll(id);
 	}
 
@@ -199,6 +213,48 @@ export class DealDetail implements OnInit {
 			next:  () => this.router.navigate(['/deals']),
 			error: (err) => console.error(err),
 		});
+	}
+
+	openLinkCounterpartyDialog(): void {
+		this.linkCounterpartyForm.reset();
+		this.showLinkCounterpartyDialog.set(true);
+	}
+
+	linkCounterparty(): void {
+		const dealId = this.deal()?.id;
+		if (this.linkCounterpartyForm.invalid || !dealId) return;
+		const { counterpartyId, dealRole } = this.linkCounterpartyForm.value;
+		const roleKey = Object.entries(DealRole).find(([, v]) => v === dealRole)?.[0] ?? dealRole;
+		this.counterpartyService.linkCounterpartyToDeal(counterpartyId, dealId, roleKey).subscribe({
+			next: (link) => {
+				this.counterpartyLinks.update(links => [...links, link]);
+				this.showLinkCounterpartyDialog.set(false);
+			},
+			error: (err) => console.error('Error linking counterparty:', err),
+		});
+	}
+
+	openUnlinkDialog(cp: LinkedCounterparty): void {
+		this.counterpartyToUnlink.set(cp);
+		this.showUnlinkDialog.set(true);
+	}
+
+	confirmUnlink(): void {
+		const dealId = this.deal()?.id;
+		const cpId   = this.counterpartyToUnlink()?.id;
+		if (!dealId || !cpId) return;
+		this.counterpartyService.unlinkDeal(cpId, dealId).subscribe({
+			next: () => {
+				this.counterpartyLinks.update(links => links.filter(l => l.counterpartyId !== cpId));
+				this.showUnlinkDialog.set(false);
+				this.counterpartyToUnlink.set(null);
+			},
+			error: (err) => console.error('Error unlinking counterparty:', err),
+		});
+	}
+
+	navigateToCounterparty(cp: LinkedCounterparty): void {
+		this.router.navigate(['/counterparties', cp.id]);
 	}
 
 	onTabChange(value: string | number | undefined): void {

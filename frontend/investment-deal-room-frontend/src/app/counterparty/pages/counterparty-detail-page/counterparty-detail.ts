@@ -7,7 +7,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
 import { forkJoin } from 'rxjs';
 
 import { CounterpartyService } from '../../../core/services/counterparty.service';
@@ -29,7 +28,7 @@ interface LinkedDeal extends Deal {
   standalone: true,
   imports: [
     FormsModule, ReactiveFormsModule,
-    ButtonModule, DialogModule, InputTextModule, SelectModule, TableModule,
+    ButtonModule, DialogModule, InputTextModule, SelectModule,
     ProgressSpinnerModule, DeleteConfirmationModal,
   ],
   templateUrl: './counterparty-detail.html',
@@ -218,6 +217,14 @@ export class CounterpartyDetail implements OnInit {
 
   pipelineStageLabel(key: string): string {
     return PipelineStage[key as keyof typeof PipelineStage] ?? key;
+  }
+
+  dealInitials(name: string): string {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  navigateToDeal(deal: LinkedDeal): void {
+    this.router.navigate(['/deals', deal.id]);
   }
 
   deleteCounterparty(): void {
