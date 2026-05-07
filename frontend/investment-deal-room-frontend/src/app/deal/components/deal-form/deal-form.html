@@ -52,7 +52,6 @@
       inputId="pipelineStage" formControlName="pipelineStage"
       [options]="pipelineStages" class="w-full"
       appendTo="body"
-      [disabled]="selectedDeal !== null"
       [class.ng-invalid]="form.get('pipelineStage')?.invalid && form.get('pipelineStage')?.touched"
     />
     <label for="pipelineStage">Pipeline Stage</label>

@@ -1,7 +1,9 @@
 import { Component, computed, signal, OnInit } from '@angular/core';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DealTable } from "../../components/deal-table/deal-table";
 import { buildDealForm } from "../../components/deal-form/deal.form";
 import { DealService } from '../../../core/services/deal.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from "primeng/select";
@@ -19,11 +21,13 @@ import { Deal } from '../../../shared/models/deal.model';
   standalone: true,
   templateUrl: './deal-page.html',
   imports: [DealTable, DealForm, DialogModule, ButtonModule,
-            InputTextModule, SelectModule, FormsModule]
+            InputTextModule, SelectModule, FormsModule, ProgressSpinnerModule]
 })
 export class DealPage implements OnInit {
 
-  allDeals = signal<Deal[]>([]);
+  allDeals   = signal<Deal[]>([]);
+  isLoading  = signal(true);
+  loadError  = signal(false);
 
   /** filtering signals */
   searchQuery = signal('');
@@ -41,6 +45,7 @@ export class DealPage implements OnInit {
 
   constructor(
     private dealService: DealService,
+    private authService: AuthService,
     private formBuilder: FormBuilder,
   ) {}
 
@@ -57,9 +62,12 @@ export class DealPage implements OnInit {
     }).subscribe({
       next: ({ deals_ }) => {
         this.allDeals.set(deals_);
+        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Error loading data:', err);
+        this.isLoading.set(false);
+        this.loadError.set(true);
       }
     });
   }
@@ -71,17 +79,17 @@ export class DealPage implements OnInit {
     const {dealName, dealType, targetCompany, estimatedValue,
           currency, pipelineStage} = this.form.value;
 
-    const dealTypeKey =  Object.entries(DealType).find(([, val]) => val === dealType)?.[0];
-    const currencyKey =  Object.entries(Currency).find(([, val]) => val === currency)?.[0];
-
+    const dealTypeKey      = Object.entries(DealType).find(([, val]) => val === dealType)?.[0];
+    const currencyKey      = Object.entries(Currency).find(([, val]) => val === currency)?.[0];
+    const pipelineStageKey = Object.entries(PipelineStage).find(([, val]) => val === pipelineStage)?.[0];
 
     const payload: Deal = {
 		dealName,
-		dealType:       dealTypeKey as DealType,
+		dealType:      dealTypeKey      as DealType,
 		targetCompany,
 		estimatedValue,
-		currency:       currencyKey as Currency,
-		pipelineStage,
+		currency:      currencyKey      as Currency,
+		pipelineStage: pipelineStageKey as PipelineStage,
     };
 
 
@@ -96,7 +104,7 @@ export class DealPage implements OnInit {
 
     } 
 	else {
-		this.dealService.createDeal(payload).subscribe({
+		this.dealService.createDeal(payload, this.authService.userId).subscribe({
 			next: (data) => {
 				this.allDeals.update((currentList) => [...currentList, data]);
 				this.showDealDialog.set(false);

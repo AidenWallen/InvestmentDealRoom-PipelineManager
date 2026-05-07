@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -16,13 +17,15 @@ import { CounterpartyTable } from '../../components/counterparty-table/counterpa
     FormsModule, ReactiveFormsModule,
     ButtonModule, DialogModule,
     FloatLabelModule, InputTextModule,
-    CounterpartyTable,
+    CounterpartyTable, ProgressSpinnerModule,
   ],
   templateUrl: './counterparty-page.html',
 })
 export class CounterpartyPage implements OnInit {
 
   allCounterparties = signal<Counterparty[]>([]);
+  isLoading         = signal(true);
+  loadError         = signal(false);
   searchQuery = signal('');
 
   filteredCounterparties = computed(() => {
@@ -60,8 +63,8 @@ export class CounterpartyPage implements OnInit {
 
   loadAll(): void {
     this.counterpartyService.getCounterparties().subscribe({
-      next: (list) => this.allCounterparties.set(list),
-      error: (err) => console.error('Error loading counterparties:', err),
+      next: (list) => { this.allCounterparties.set(list); this.isLoading.set(false); },
+      error: (err) => { console.error('Error loading counterparties:', err); this.isLoading.set(false); this.loadError.set(true); },
     });
   }
 

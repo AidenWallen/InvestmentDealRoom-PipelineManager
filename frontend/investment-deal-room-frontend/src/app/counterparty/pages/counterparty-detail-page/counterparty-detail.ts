@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavigationHistoryService } from '../../../core/services/navigation-history.service';
@@ -15,6 +16,8 @@ import { Counterparty } from '../../../shared/models/counterparty.model';
 import { Deal } from '../../../shared/models/deal.model';
 import { DealCounterpartyLink } from '../../../shared/models/deal-counterparty-link.model';
 import { DealRole } from '../../../shared/enums/deal-role.enum';
+import { DealType } from '../../../shared/enums/deal-type.enum';
+import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
 import { DeleteConfirmationModal } from '../../../components/delete-confirmation-modal/delete-confirmation-modal';
 
 interface LinkedDeal extends Deal {
@@ -27,13 +30,15 @@ interface LinkedDeal extends Deal {
   imports: [
     FormsModule, ReactiveFormsModule,
     ButtonModule, DialogModule, InputTextModule, SelectModule, TableModule,
-    DeleteConfirmationModal,
+    ProgressSpinnerModule, DeleteConfirmationModal,
   ],
   templateUrl: './counterparty-detail.html',
 })
 export class CounterpartyDetail implements OnInit {
 
   counterparty     = signal<Counterparty | null>(null);
+  isLoading        = signal(true);
+  loadError        = signal(false);
   dealLinks        = signal<DealCounterpartyLink[]>([]);
   allDeals         = signal<Deal[]>([]);
   editMode         = signal(false);
@@ -48,7 +53,10 @@ export class CounterpartyDetail implements OnInit {
     const deals = this.allDeals();
     return links.reduce<LinkedDeal[]>((acc, link) => {
       const deal = deals.find(d => d.id === link.dealId);
-      if (deal) acc.push({ ...deal, dealRole: link.dealRole });
+      if (deal) acc.push({
+        ...deal,
+        dealRole: DealRole[link.dealRole as unknown as keyof typeof DealRole] ?? link.dealRole,
+      });
       return acc;
     }, []);
   });
@@ -114,8 +122,9 @@ export class CounterpartyDetail implements OnInit {
         this.counterparty.set(counterparty);
         this.dealLinks.set(dealLinks);
         this.allDeals.set(deals);
+        this.isLoading.set(false);
       },
-      error: (err) => console.error('Error loading counterparty detail:', err),
+      error: (err) => { console.error('Error loading counterparty detail:', err); this.isLoading.set(false); this.loadError.set(true); },
     });
   }
 
@@ -172,8 +181,9 @@ export class CounterpartyDetail implements OnInit {
     if (this.linkForm.invalid || !counterpartyId) return;
 
     const { dealId, dealRole } = this.linkForm.value;
+    const dealRoleKey = Object.entries(DealRole).find(([, val]) => val === dealRole)?.[0] ?? dealRole;
 
-    this.counterpartyService.linkCounterpartyToDeal(counterpartyId, dealId, dealRole).subscribe({
+    this.counterpartyService.linkCounterpartyToDeal(counterpartyId, dealId, dealRoleKey).subscribe({
       next: (link) => {
         this.dealLinks.update(links => [...links, link]);
         this.showLinkDialog.set(false);
@@ -200,6 +210,14 @@ export class CounterpartyDetail implements OnInit {
       },
       error: (err) => console.error('Error unlinking deal:', err),
     });
+  }
+
+  dealTypeLabel(key: string): string {
+    return DealType[key as keyof typeof DealType] ?? key;
+  }
+
+  pipelineStageLabel(key: string): string {
+    return PipelineStage[key as keyof typeof PipelineStage] ?? key;
   }
 
   deleteCounterparty(): void {

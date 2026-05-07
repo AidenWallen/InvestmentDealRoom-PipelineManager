@@ -15,7 +15,13 @@
 
   <!-- Table -->
   <div class="bg-surface rounded-md shadow-md p-4">
-    <app-counterparty-table [counterparties]="filteredCounterparties()" />
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-16">
+        <p-progressSpinner strokeWidth="2" [style]="{'width':'2rem','height':'2rem'}" />
+      </div>
+    } @else {
+      <app-counterparty-table [counterparties]="filteredCounterparties()" [error]="loadError()" />
+    }
   </div>
 
 

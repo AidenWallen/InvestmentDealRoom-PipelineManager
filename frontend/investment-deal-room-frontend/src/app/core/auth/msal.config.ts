@@ -17,14 +17,14 @@ export const msalInstance = new PublicClientApplication({
 export const msalGuardConfig: MsalGuardConfiguration = {
     interactionType: InteractionType.Redirect,
     authRequest: {
-        scopes: ['api://274d0cbc-6cdd-48b0-b12c-fbe98d970411/access_as_user']
+        scopes: [environment.azureApiScope]
     }
 };
 
 export const msalInterceptorConfig: MsalInterceptorConfiguration = {
   interactionType: InteractionType.Redirect,
   protectedResourceMap: new Map([
-    [`http://localhost:8080/api/v1/**`, ['api://274d0cbc-6cdd-48b0-b12c-fbe98d970411/access_as_user']]
+    [`http://localhost:8080/api/v1/**`, [environment.azureApiScope]]
   ])
 };
 

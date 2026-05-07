@@ -13,9 +13,12 @@ public record DealActivityResponseDto(
     ActivityPayload payload
 ) {
     public static DealActivityResponseDto fromEntity(DealActivity activity) {
+        String typeDescription = activity.getActivityType() != null
+            ? activity.getActivityType().getDescription()
+            : "unknown activity";
         return new DealActivityResponseDto(
             activity.getId(),
-            activity.getActivityType().getDescription(),
+            typeDescription,
             activity.getPerformedByName(),
             activity.getOccurredAt(),
             activity.getPayload()
