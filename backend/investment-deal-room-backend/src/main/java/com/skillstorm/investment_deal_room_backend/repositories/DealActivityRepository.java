@@ -8,6 +8,6 @@ import com.skillstorm.investment_deal_room_backend.models.DealActivity;
 
 @Repository
 public interface DealActivityRepository extends MongoRepository<DealActivity, String> {
-    List<DealActivity> findByDealIdOrderByOccurredAtDesc(String dealId);
+    List<DealActivity> findByDealId(String dealId);
 
 }

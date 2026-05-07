@@ -41,13 +41,11 @@
               [class.cursor-pointer]="isStageSelectable(stage)"
               [class.cursor-default]="!isStageSelectable(stage)"
               (click)="clickStage(stage)"
+              [pTooltip]="stageTooltip(stage)"
+              tooltipPosition="top"
+              [showDelay]="600"
             >
-              <div
-                [class]="stageBubbleClass(stage)"
-                [pTooltip]="stageTooltip(stage)"
-                tooltipPosition="top"
-                [showDelay]="600"
-              >
+              <div [class]="stageBubbleClass(stage)">
                 @if (isPassedStage(stage)) {
                   <i class="pi pi-check" style="font-size: 0.6rem"></i>
                 }
@@ -203,10 +201,7 @@
                   {{ pipelineStageLabel(deal()!.pipelineStage) }}
                 </span>
               </div>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs text-text-tertiary">OWNED BY</span>
-                <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId }}</span>
-              </div>
+
             </form>
           </div>
         </div>
@@ -227,7 +222,7 @@
             }
           </div>
           <button
-            class="text-xs text-accent hover:underline mt-3 p-4 flex items-center gap-1"
+            class="text-xs text-accent hover:underline mt-3 p-4 flex items-center gap-1 cursor-pointer"
             (click)="activeTab.set('Activity')"
           >
             View all activity →

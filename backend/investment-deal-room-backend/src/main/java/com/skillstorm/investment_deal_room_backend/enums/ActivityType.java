@@ -2,6 +2,7 @@ package com.skillstorm.investment_deal_room_backend.enums;
 
 public enum ActivityType {
 
+    DEAL_CREATED("created the deal"),
     DEAL_UPDATED("updated deal details"),
     STAGE_ADVANCED("advanced the stage"),
     STAGE_REVERTED("reverted the stage"),

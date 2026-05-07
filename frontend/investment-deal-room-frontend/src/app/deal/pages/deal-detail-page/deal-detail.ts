@@ -189,11 +189,20 @@ export class DealDetail implements OnInit {
     });
   }
 
+  private refreshActivities(): void {
+    const id = this.deal()?.id;
+    if (!id) return;
+    this.activityFeedService.getActivitiesByDealId(id).subscribe((activities) => this.activities.set(activities));
+  }
+
   advanceStage(toStage: PipelineStage): void {
     const deal = this.deal();
     if (!deal) return;
     this.dealService.updateStage(deal.id!, toStage).subscribe({
-      next: (updated) => this.deal.set(this.normalizeDeal(updated)),
+      next: (updated) => {
+        this.deal.set(this.normalizeDeal(updated));
+        this.refreshActivities();
+      },
       error: (err) => console.error('Stage Update Failed', err),
     });
   }
@@ -288,6 +297,7 @@ export class DealDetail implements OnInit {
       next: (link) => {
         this.counterpartyLinks.update((links) => [...links, link]);
         this.showLinkCounterpartyDialog.set(false);
+        this.refreshActivities();
       },
       error: (err) => console.error('Error linking counterparty:', err),
     });
@@ -307,6 +317,7 @@ export class DealDetail implements OnInit {
         this.counterpartyLinks.update((links) => links.filter((l) => l.counterpartyId !== cpId));
         this.showUnlinkDialog.set(false);
         this.counterpartyToUnlink.set(null);
+        this.refreshActivities();
       },
       error: (err) => console.error('Error unlinking counterparty:', err),
     });
@@ -384,10 +395,11 @@ export class DealDetail implements OnInit {
     return `${base} bg-surface border-border/30 text-text-tertiary/30`;
   }
 
-  stageTooltip(stage: PipelineStage): string | undefined {
+  stageTooltip(stage: PipelineStage): string {
     if (this.isRevertStage(stage)) return 'Revert';
     if (this.isStageSelectable(stage)) return 'Advance';
-    return undefined;
+    if (this.isCurrentStage(stage)) return 'Active stage';
+    return 'Not available';
   }
 
   stageLabelClass(stage: PipelineStage): string {
@@ -427,17 +439,16 @@ export class DealDetail implements OnInit {
 
   activityDescription(activity: DealActivity): string {
     const p = activity.payload;
-    switch (activity.activityType) {
-      case ActivityType.STAGE_ADVANCED:
-      case ActivityType.STAGE_REVERTED:
-        return `${p.fromStage} → ${p.toStage}`;
-      case ActivityType.COUNTERPARTY_LINKED:
-        return `${p.counterpartyName} linked as ${p.counterpartyRole}`;
-      case ActivityType.COUNTERPARTY_UNLINKED:
-        return `${p.counterpartyName} unlinked`;
-      default:
-        return '';
+    if (p?.fromStage && p?.toStage) {
+      return `${this.pipelineStageLabel(p.fromStage)} → ${this.pipelineStageLabel(p.toStage)}`;
     }
+    if (p?.counterpartyName && p?.counterpartyRole) {
+      return `${p.counterpartyName} as ${p.counterpartyRole}`;
+    }
+    if (p?.counterpartyName) {
+      return p.counterpartyName;
+    }
+    return '';
   }
 
   formatDate(dateStr: string): string {

@@ -49,8 +49,9 @@ public class DealController {
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
     public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request,
-            @RequestParam String userId) {
-        DealResponseDto response = dealService.createDeal(request, userId);
+            @RequestParam String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        DealResponseDto response = dealService.createDeal(request, userId, jwt.getClaimAsString("name"));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

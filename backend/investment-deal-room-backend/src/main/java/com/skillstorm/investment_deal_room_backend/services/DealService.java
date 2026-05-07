@@ -42,12 +42,13 @@ public class DealService {
     }
 
     @Transactional
-    public DealResponseDto createDeal(CreateDealRequestDto request, String createdByUserId) {
+    public DealResponseDto createDeal(CreateDealRequestDto request, String createdByUserId, String userName) {
 
         try {
             Deal deal = request.toEntity(createdByUserId);
 
             Deal savedDeal = dealRepository.save(deal);
+            dealActivityService.logDealCreated(savedDeal.getId(), userName);
             return DealResponseDto.fromEntity(savedDeal);
 
         } catch (DuplicateKeyException e) {

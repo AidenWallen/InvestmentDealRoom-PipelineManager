@@ -13,6 +13,9 @@ export class ActivityFeedService {
   getActivitiesByDealId(dealId: string): Observable<DealActivity[]> {
     return this.http
       .get<DealActivity[]>(`${this.URL}/${dealId}/activity`)
-      .pipe(catchError(() => of([])));
+      .pipe(catchError((err) => {
+        console.error('Activity feed fetch failed:', err);
+        return of([]);
+      }));
   }
 }

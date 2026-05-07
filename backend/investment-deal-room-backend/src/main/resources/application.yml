@@ -1,3 +1,6 @@
 spring:
   application:
     name: investment-deal-room-backend
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

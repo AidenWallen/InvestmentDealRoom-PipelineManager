@@ -25,6 +25,18 @@ public class DealActivityService {
         this.dealActivityRepository = dealActivityRepository;
     }
 
+    // Logs when a deal is created
+    public void logDealCreated(String dealId, String userName) {
+        DealActivity activity = DealActivity.builder()
+                .dealId(dealId)
+                .activityType(ActivityType.DEAL_CREATED)
+                .performedByName(userName)
+                .occurredAt(LocalDateTime.now())
+                .payload(ActivityPayload.builder().build())
+                .build();
+        dealActivityRepository.save(activity);
+    }
+
     // Logs a stage transition activity for a deal
     public void logStageTransition(String dealId, String userName,
             PipelineStage fromStage, PipelineStage toStage) {
@@ -80,8 +92,9 @@ public class DealActivityService {
 
     public List<DealActivityResponseDto> getActivitiesFeed(String dealId) {
         try {
-            return dealActivityRepository.findByDealIdOrderByOccurredAtDesc(dealId).stream()
+            return dealActivityRepository.findByDealId(dealId).stream()
                     .filter(a -> a.getActivityType() != null)
+                    .sorted(java.util.Comparator.comparing(DealActivity::getOccurredAt).reversed())
                     .map(DealActivityResponseDto::fromEntity)
                     .toList();
         } catch (Exception e) {
