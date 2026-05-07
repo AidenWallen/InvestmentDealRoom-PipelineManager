@@ -90,7 +90,7 @@ export class DealDetail implements OnInit {
     }, []);
   });
 
-  recentActivities = computed(() => this.activities().slice(0, 5));
+  recentActivities = computed(() => this.activities().slice(0, 3));
 
   counterpartySearch = signal('');
 
