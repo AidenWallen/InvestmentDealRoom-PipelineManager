@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "investment-deal-room-backend": {
+    "investment-deal-room-frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -29,6 +29,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environments.ts",
+                  "with": "src/environments/environments.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -61,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "investment-deal-room-backend:build:production"
+              "buildTarget": "investment-deal-room-frontend:build:production"
             },
             "development": {
-              "buildTarget": "investment-deal-room-backend:build:development"
+              "buildTarget": "investment-deal-room-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
