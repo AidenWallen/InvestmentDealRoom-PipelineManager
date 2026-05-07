@@ -4,14 +4,14 @@ import {
   InteractionType,
   PublicClientApplication,
 } from '@azure/msal-browser';
-import { environment } from '../../../environments/environments.development';
+import { environment } from '../../../environments/environments';
 
 export const msalInstance = new PublicClientApplication({
   auth: {
     clientId: environment.azureClientId,
     // authority:   `https://login.microsoftonline.com/common`,
-    authority: `https://login.microsoftonline.com/${environment.azureTenantId}`,
-    redirectUri: 'http://localhost:4200',
+    authority:   `https://login.microsoftonline.com/${environment.azureTenantId}`,
+    redirectUri: environment.redirectUri,
   },
   cache: {
     cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -27,5 +27,8 @@ export const msalGuardConfig: MsalGuardConfiguration = {
 
 export const msalInterceptorConfig: MsalInterceptorConfiguration = {
   interactionType: InteractionType.Redirect,
-  protectedResourceMap: new Map([[`http://localhost:8080/api/v1/**`, [environment.azureApiScope]]]),
+  protectedResourceMap: new Map([
+    [`${environment.msalProtectedUrl}/**`, [environment.azureApiScope]],
+    [`/api/v1/**`, [environment.azureApiScope]]
+  ])
 };
