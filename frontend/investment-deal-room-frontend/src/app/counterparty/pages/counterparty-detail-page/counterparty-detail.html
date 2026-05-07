@@ -102,70 +102,58 @@
 
     <!-- Linked Deals -->
     <div class="bg-surface border border-border rounded p-4">
-      <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center justify-between mb-3">
         <p class="text-xs text-text-tertiary font-bold">LINKED DEALS</p>
         <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
             (click)="openLinkDialog()">
           <i class="pi pi-link text-xs"></i> Link Deal
         </button>
       </div>
+
       <input
         pInputText
         [ngModel]="dealSearch()"
         (ngModelChange)="dealSearch.set($event)"
         [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
         placeholder="Search deals..."
-        class="mb-4" />
-      <p-table
-        [value]="filteredLinkedDeals()"
-        [sortMode]="'multiple'"
-        [rowHover]="true"
-        selectionMode="single"
-        dataKey="id"
-        (onRowSelect)="onDealRowSelect($event)"
-        class="w-full text-sm">
+        class="mb-3" />
 
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="dealName"      style="min-width: 180px">Deal Name    <p-sortIcon field="dealName" /></th>
-            <th pSortableColumn="dealType"      style="min-width: 130px">Type         <p-sortIcon field="dealType" /></th>
-            <th pSortableColumn="pipelineStage" style="min-width: 140px">Stage        <p-sortIcon field="pipelineStage" /></th>
-            <th pSortableColumn="dealRole"      style="min-width: 120px">Role         <p-sortIcon field="dealRole" /></th>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-deal>
-          <tr [pSelectableRow]="deal" class="cursor-pointer">
-            <td class="font-semibold text-text-primary">{{ deal.dealName }}</td>
-            <td>{{ dealTypeLabel(deal.dealType) }}</td>
-            <td>
-              <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded">
-                {{ pipelineStageLabel(deal.pipelineStage) }}
-              </span>
-            </td>
-            <td>
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
-                  {{ deal.dealRole }}
-                </span>
-                <button class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
-                    (click)="$event.stopPropagation(); unlinkDeal(deal)">
-                  <i class="pi pi-unlink text-xs"></i> Unlink
-                </button>
+      <div class="flex flex-col gap-2">
+        @for (deal of filteredLinkedDeals(); track deal.id) {
+          <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors cursor-pointer"
+              (click)="navigateToDeal(deal)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded bg-elevated flex items-center justify-center text-xs font-bold text-accent">
+                {{ dealInitials(deal.dealName) }}
               </div>
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" class="text-center p-6 text-text-secondary">
-              {{ loadError() ? 'Failed to load data.' : 'No deals linked to this counterparty.' }}
-            </td>
-          </tr>
-        </ng-template>
-
-      </p-table>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-sm font-semibold text-text-primary">{{ deal.dealName }}</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs px-1.5 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                    {{ dealTypeLabel(deal.dealType) }}
+                  </span>
+                  <span class="text-xs px-1.5 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded">
+                    {{ pipelineStageLabel(deal.pipelineStage) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                {{ deal.dealRole }}
+              </span>
+              <button class="text-text-tertiary hover:text-red-400 transition-colors cursor-pointer"
+                  (click)="$event.stopPropagation(); unlinkDeal(deal)">
+                <i class="pi pi-times text-xs"></i>
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <span class="text-text-tertiary text-xs">
+            {{ loadError() ? 'Failed to load data.' : 'No deals linked to this counterparty.' }}
+          </span>
+        }
+      </div>
     </div>
   }
 
