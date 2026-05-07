@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-InvestmentDealRoomBackendApplication<investment-deal-room-backend>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.skillstorm.investment_deal_room_backend.InvestmentDealRoomBackendApplication",
+            "projectName": "investment-deal-room-backend",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,6 +1,8 @@
 package com.skillstorm.investment_deal_room_backend.models;
 
 
+import java.math.BigDecimal;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,19 +18,22 @@ import lombok.NoArgsConstructor;
 @Document(collection = "deals")
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Deal {
+    
     @Id
     private String id;
-
     private String dealName;
     private DealType dealType;
     private String targetCompany;
-    private long estimatedValue;
+    private BigDecimal estimatedValue;
     private Currency currency;
     private PipelineStage pipelineStage;
     private String assignedManagerId;
 
-
+    @Builder.Default
+    private boolean deleted = false;
+    
 }
+ 

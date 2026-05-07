@@ -1,3 +1,160 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap');
 
 @import 'tailwindcss';
+@import "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
+
+@theme {
+    /* Surfaces */
+    --color-bg-canvas:          #000000;
+    --color-bg:                 #050507;
+    --color-surface:            #0d0d10;
+    --color-surface-2:          #131318;
+    --color-elevated:           #1a1a21;
+    --color-bg-hover:           rgba(255, 255, 255, 0.04);
+    --color-bg-active:          rgba(255, 255, 255, 0.07);
+
+    /* Borders */
+    --color-border:             rgba(255, 255, 255, 0.08);
+    --color-border-subtle:      rgba(255, 255, 255, 0.04);
+    --color-border-strong:      rgba(255, 255, 255, 0.14);
+
+    /* Text */
+    --color-text-primary:       #f1f5f9;
+    --color-text-secondary:     #94a3b8;
+    --color-text-tertiary:      #64748b;
+    --color-text-disabled:      #2e3340;
+
+    /* Accent */
+    --color-accent:             #2dd4bf;
+    --color-accent-hover:       #5eead4;
+    --color-accent-soft:        rgba(45, 212, 191, 0.12);
+    --color-accent-strong:      rgba(45, 212, 191, 0.25);
+
+    /* Typography */
+    --font-mono: 'Fira Code', 'Share Tech Mono', 'Courier New', monospace;
+
+    --radius: 4px;
+
+    --shadow-sm:                0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md:                0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-lg:                0 16px 40px rgba(0, 0, 0, 0.7);
+    --shadow-modal:             0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+}
+
+/* Safelist dynamic classes used in routerLinkActive / string bindings */
+@source inline("bg-accent-soft text-accent border-accent bg-surface-2 text-text-primary text-text-tertiary text-text-secondary hover:bg-surface-2 hover:text-text-primary bg-bg-canvas bg-bg border-border");
+
+:root {
+    --p-inputtext-border-color:       var(--color-border);
+    --p-inputtext-focus-border-color: var(--color-accent);
+    --p-inputtext-background:         var(--color-surface);
+    --p-inputtext-color:              var(--color-text-primary);
+    --p-inputtext-placeholder-color:  var(--color-text-tertiary);
+    color-scheme: dark;
+}
+
+
+@layer base {
+
+    ::-webkit-scrollbar              { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track        { background: var(--color-bg); }
+    ::-webkit-scrollbar-thumb        { background: var(--color-border-strong); border-radius: 2px; }
+
+
+    body {
+        font-family: var(--font-mono);
+        background-color: var(--color-bg);
+        color: var(--color-text-primary);
+        font-size: 13px;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--color-text-primary);
+    }
+
+    /* tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    thead {
+        background-color: var(--color-surface-2);
+    }
+
+    tbody tr:hover {
+        background-color: var(--color-surface-2);
+    }
+}
+
+@layer components {
+    /* deal-form */
+    .deal-form input,
+    .deal-form select {
+        @apply bg-white text-black border border-gray-300 rounded px-2 py-1 w-full;
+    }
+
+    .deal-form option {
+        @apply bg-white text-black;
+    }
+
+    .deal-form label {
+        @apply block font-semibold mb-1;
+    }
+
+    .deal-form div {
+        @apply mb-3;
+    }
+
+    .deal-form button {
+        @apply mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer;
+    }
+
+    /* table action buttons */
+    .table-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .table-actions button {
+        background: var(--color-surface-2);
+        color: var(--color-green);
+        border: 1px solid var(--color-border);
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .table-actions button:hover {
+        border-color: var(--color-border-bright);
+        box-shadow: var(--shadow-glow);
+    }
+
+    .table-actions button.delete {
+        color: var(--color-danger);
+        border-color: var(--color-danger-dim);
+    }
+
+    .table-actions button.delete:hover {
+        border-color: var(--color-danger);
+    }
+}

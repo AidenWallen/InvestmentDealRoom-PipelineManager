@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: ${DB_CONNECTION_STRING}
+      database: investment-deal-room-db
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/f947665a-e85c-43ab-8198-2b8c8cbeb643/v2.0
+
+logging:
+  level:
+    org.springframework.security: DEBUG

@@ -1,1 +1,47 @@
-<p>deal-table works!</p>
+<p-table
+  [value]="deals"
+  [sortMode]="'multiple'"
+  scrollDirection="both"
+  [scrollable]="true"
+  scrollHeight="600px"
+  [rowHover]="true"
+  selectionMode="single"
+  [(selection)]="selectedDeal"
+  dataKey="id"
+  (onRowSelect)="onRowSelect($event)"
+  class="w-full font-mono text-sm"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="dealName"      style="min-width: 160px">Name           <p-sortIcon field="dealName" /></th>
+      <th pSortableColumn="dealType"      style="min-width: 130px">Type           <p-sortIcon field="dealType" /></th>
+      <th pSortableColumn="targetCompany"  style="min-width: 160px">Target Company <p-sortIcon field="targetCompany" /></th>
+      <th pSortableColumn="estimatedValue" style="min-width: 150px">Est. Value     <p-sortIcon field="estimatedValue" /></th>
+      <th pSortableColumn="currency"       style="min-width: 110px">Currency       <p-sortIcon field="currency" /></th>
+      <th pSortableColumn="pipelineStage"  style="min-width: 150px">Stage          <p-sortIcon field="pipelineStage" /></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-deal>
+    <tr
+      [pSelectableRow]="deal"
+    >
+      <td>{{deal.dealName }}</td>
+      <td>{{ deal.dealType }}</td>
+      <td>{{ deal.targetCompany }}</td>
+      <td>{{deal.estimatedValue }}</td>
+      <td>{{ deal.currency }}</td>
+      <td>{{ deal.pipelineStage }}</td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6" class="text-center p-6 text-text-secondary">
+        No deals found.
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>

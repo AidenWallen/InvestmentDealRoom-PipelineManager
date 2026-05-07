@@ -1,5 +1,7 @@
 package com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request;
 
+import java.math.BigDecimal;
+
 import com.skillstorm.investment_deal_room_backend.enums.Currency;
 import com.skillstorm.investment_deal_room_backend.enums.DealType;
 import com.skillstorm.investment_deal_room_backend.enums.PipelineStage;
@@ -7,15 +9,16 @@ import com.skillstorm.investment_deal_room_backend.models.Deal;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateDealRequestDto(
     @NotBlank String dealName,
     @NotNull DealType dealType,
     @NotBlank String targetCompany,
-    @NotNull Long estimatedValue,
-    @NotBlank Currency currency,
-    @NotBlank String assignedManagerId,
-    PipelineStage pipelineStage
+    @NotNull @PositiveOrZero BigDecimal estimatedValue,
+    @NotNull Currency currency,
+    // @NotBlank String assignedManagerId,
+    @NotNull PipelineStage pipelineStage
     
 ) {
     public Deal toEntity(String createdByUserId) {
