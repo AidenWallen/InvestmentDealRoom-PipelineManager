@@ -3,19 +3,17 @@ package com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 
 public record CounterpartyResponseDto(
-    String id,
-    String organizationName,
-    String contactName,
-    String contactEmail,
-    String contactPhone
-) {
-    public static CounterpartyResponseDto fromEntity(Counterparty counterparty){
+        String id,
+        String organizationName,
+        String contactName,
+        String contactEmail,
+        String contactPhone) {
+    public static CounterpartyResponseDto fromEntity(Counterparty counterparty) {
         return new CounterpartyResponseDto(
-            counterparty.getId(),
-            counterparty.getOrganizationName(),
-            counterparty.getContactName(),
-            counterparty.getContactEmail(),
-            counterparty.getContactPhone()
-        );
+                counterparty.getId(),
+                counterparty.getOrganizationName(),
+                counterparty.getContactName(),
+                counterparty.getContactEmail(),
+                counterparty.getContactPhone());
     }
 }

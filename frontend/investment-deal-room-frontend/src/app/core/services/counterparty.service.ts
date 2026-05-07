@@ -1,13 +1,13 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Counterparty } from "../../shared/models/counterparty.model";
-import { DealCounterpartyLink } from "../../shared/models/deal-counterparty-link.model";
-import { catchError, Observable, of, throwError } from "rxjs";
-import { environment } from "../../../environments/environments.development";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Counterparty } from '../../shared/models/counterparty.model';
+import { DealCounterpartyLink } from '../../shared/models/deal-counterparty-link.model';
+import { catchError, Observable, of, throwError } from 'rxjs';
+import { environment } from '../../../environments/environments.development';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class CounterpartyService {
-  constructor(private http: HttpClient) {}  
+  constructor(private http: HttpClient) {}
 
   private readonly URL = `${environment.apiBaseUrl}/counterparties`;
 
@@ -19,35 +19,47 @@ export class CounterpartyService {
     return this.http.get<Counterparty>(`${this.URL}/${id}`);
   }
 
-  getDealsByCounterpartyId(counterpartyId: string): Observable<DealCounterpartyLink[]> {
-    return this.http.get<DealCounterpartyLink[]>(`${this.URL}/${counterpartyId}/deals`)
+  getCounterpartiesByDealId(dealId: string): Observable<DealCounterpartyLink[]> {
+    return this.http
+      .get<DealCounterpartyLink[]>(`${environment.apiBaseUrl}/deals/${dealId}/counterparties`)
       .pipe(catchError(() => of([])));
   }
 
-  linkCounterpartyToDeal(counterpartyId: string, dealId: string, dealRole: string): Observable<DealCounterpartyLink> {
-    return this.http.post<DealCounterpartyLink>(`${this.URL}/${counterpartyId}/deals`, { dealId, dealRole });
+  getDealsByCounterpartyId(counterpartyId: string): Observable<DealCounterpartyLink[]> {
+    return this.http
+      .get<DealCounterpartyLink[]>(`${this.URL}/${counterpartyId}/deals`)
+      .pipe(catchError(() => of([])));
+  }
+
+  linkCounterpartyToDeal(
+    counterpartyId: string,
+    dealId: string,
+    dealRole: string,
+  ): Observable<DealCounterpartyLink> {
+    return this.http.post<DealCounterpartyLink>(`${this.URL}/${counterpartyId}/deals`, {
+      dealId,
+      dealRole,
+    });
   }
 
   createCounterparty(counterparty: Counterparty): Observable<Counterparty> {
-    return this.http.post<Counterparty>(
-        `${this.URL}`,
-        counterparty
+    return this.http.post<Counterparty>(`${this.URL}`, counterparty);
+  }
+
+  updateCounterparty(id: string, counterparty: Counterparty): Observable<Counterparty> {
+    return this.http.put<Counterparty>(`${this.URL}/${id}`, counterparty);
+  }
+
+  deleteCounterparty(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.URL}/${id}`).pipe(
+      catchError((err) => {
+        console.error('Error deleting counterparty:', err);
+        return throwError(() => new Error('Failed to delete counterparty'));
+      }),
     );
   }
 
-    updateCounterparty(id: string, counterparty: Counterparty): Observable<Counterparty> {
-      return this.http.put<Counterparty>(`${this.URL}/${id}`, counterparty);
-    }  
-
-    deleteCounterparty(id: string): Observable<void> {
-      return this.http.delete<void>(`${this.URL}/${id}`)
-        .pipe(catchError(err => {
-            console.error('Error deleting counterparty:', err);
-            return throwError(() => new Error('Failed to delete counterparty'));
-        }));
-    }
-
-    unlinkDeal(counterpartyId: string, dealId: string): Observable<void> {
-      return this.http.delete<void>(`${this.URL}/${counterpartyId}/deals/${dealId}`);
-    }
+  unlinkDeal(counterpartyId: string, dealId: string): Observable<void> {
+    return this.http.delete<void>(`${this.URL}/${counterpartyId}/deals/${dealId}`);
+  }
 }

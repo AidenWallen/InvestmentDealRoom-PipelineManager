@@ -27,18 +27,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-
 @RestController
 @RequestMapping("/api/v1/deals")
 public class DealController {
     private final DealService dealService;
- 
+
     public DealController(DealService dealService) {
         this.dealService = dealService;
     }
 
-    
     @GetMapping
     public ResponseEntity<List<DealResponseDto>> getAllDeals() {
         return ResponseEntity.ok(dealService.getAllDeals());
@@ -49,28 +46,29 @@ public class DealController {
         return ResponseEntity.ok(dealService.getDealById(id));
     }
 
-
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
-    public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request, @RequestParam String userId) 
-    {
-        DealResponseDto response = dealService.createDeal(request, userId);
+    public ResponseEntity<DealResponseDto> createDeal(@Valid @RequestBody CreateDealRequestDto request,
+            @RequestParam String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        DealResponseDto response = dealService.createDeal(request, userId, jwt.getClaimAsString("name"));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    
 
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<DealResponseDto> updateDeal(@PathVariable String id, @Valid @RequestBody UpdateDealRequestDto request) {
+    public ResponseEntity<DealResponseDto> updateDeal(@PathVariable String id,
+            @Valid @RequestBody UpdateDealRequestDto request) {
         return ResponseEntity.ok(dealService.updateDeal(id, request));
     }
 
-
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PatchMapping("/{id}/stage")
-    public ResponseEntity<DealResponseDto> updatePipelineStage(@PathVariable String id, @RequestBody UpdatePipelineStageRequestDto request, 
-                                                               @AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.ok(dealService.updatePipelineStage(id, jwt.getClaimAsString("name"), request.pipelineStage()));
+    public ResponseEntity<DealResponseDto> updatePipelineStage(@PathVariable String id,
+            @RequestBody UpdatePipelineStageRequestDto request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity
+                .ok(dealService.updatePipelineStage(id, jwt.getClaimAsString("name"), request.pipelineStage()));
     }
 
     @PreAuthorize("hasRole('DEAL_MANAGER')")

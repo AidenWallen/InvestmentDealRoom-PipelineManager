@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,14 +13,21 @@ import { Deal } from '../../../shared/models/deal.model';
   selector: 'app-deal-form',
   standalone: true,
   templateUrl: './deal-form.html',
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, FloatLabelModule]
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, FloatLabelModule],
 })
-export class DealForm {
+export class DealForm implements OnChanges {
   @Input() form!: FormGroup;
   @Input() selectedDeal!: Deal | null;
 
   @Output() submitDeal = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<void>();
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedDeal'] && this.form) {
+      const ctrl = this.form.get('pipelineStage');
+      this.selectedDeal ? ctrl?.disable({ emitEvent: false }) : ctrl?.enable({ emitEvent: false });
+    }
+  }
 
   dealTypes = Object.values(DealType);
   pipelineStages = Object.values(PipelineStage);

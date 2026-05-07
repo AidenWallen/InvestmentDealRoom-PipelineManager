@@ -15,17 +15,17 @@ export class UserService {
 
   loadDepartment(azureId: string): Observable<User | null> {
     return this.http.get<User>(`${this.URL}/${azureId}/department`).pipe(
-      tap(user => this._department.set(user.department ?? '')),
-      catchError(err => {
+      tap((user) => this._department.set(user.department ?? '')),
+      catchError((err) => {
         if (err.status === 404) return of(null);
         throw err;
-      })
+      }),
     );
   }
 
   updateDepartment(azureId: string, department: string): Observable<User> {
-    return this.http.patch<User>(`${this.URL}/${azureId}/department`, { department }).pipe(
-      tap(user => this._department.set(user.department ?? ''))
-    );
+    return this.http
+      .patch<User>(`${this.URL}/${azureId}/department`, { department })
+      .pipe(tap((user) => this._department.set(user.department ?? '')));
   }
 }

@@ -1,3 +1,11 @@
 spring:
   application:
     name: investment-deal-room-backend
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/f947665a-e85c-43ab-8198-2b8c8cbeb643/v2.0

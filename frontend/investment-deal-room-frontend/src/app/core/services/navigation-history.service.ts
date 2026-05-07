@@ -8,15 +8,22 @@ export class NavigationHistoryService {
   private goingBack = false;
 
   constructor(private router: Router) {
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe((e: NavigationEnd) => {
-      if (this.goingBack) {
-        this.goingBack = false;
-        return;
-      }
-      this.history.push(e.urlAfterRedirects);
-    });
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e: NavigationEnd) => {
+        if (this.goingBack) {
+          this.goingBack = false;
+          this.history.push(e.urlAfterRedirects);
+          return;
+        }
+        const url = e.urlAfterRedirects;
+        const isListPage = url.split('/').filter((s) => s.length > 0).length <= 1;
+        if (isListPage) {
+          this.history = [url];
+        } else {
+          this.history.push(url);
+        }
+      });
   }
 
   back(fallback: string = '/'): void {

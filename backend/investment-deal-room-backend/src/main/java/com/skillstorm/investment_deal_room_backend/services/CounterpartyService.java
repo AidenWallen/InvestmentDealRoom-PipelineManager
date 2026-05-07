@@ -22,40 +22,40 @@ public class CounterpartyService {
 
     private final DealCounterpartyRepository dealCounterpartyRepository;
 
-    public CounterpartyService(CounterpartyRepository counterpartyRepository, DealCounterpartyRepository dealCounterpartyRepository) {
+    public CounterpartyService(CounterpartyRepository counterpartyRepository,
+            DealCounterpartyRepository dealCounterpartyRepository) {
         this.counterpartyRepository = counterpartyRepository;
         this.dealCounterpartyRepository = dealCounterpartyRepository;
     }
 
     @Transactional
     public CounterpartyResponseDto createCounterparty(CreateCounterpartyRequestDto request) {
-        
-        try{
+
+        try {
             Counterparty counterparty = request.toEntity();
             Counterparty savedCounterparty = counterpartyRepository.save(counterparty);
 
             return CounterpartyResponseDto.fromEntity(savedCounterparty);
-        } catch (DuplicateKeyException ex){
+        } catch (DuplicateKeyException ex) {
             throw new CounterpartyAlreadyExistsException(request.organizationName());
         }
     }
 
-    public List<CounterpartyResponseDto> getAllCounterparties(){
+    public List<CounterpartyResponseDto> getAllCounterparties() {
         return counterpartyRepository.findByDeletedFalse()
-            .stream()
-            .map(CounterpartyResponseDto::fromEntity)
-            .toList();
+                .stream()
+                .map(CounterpartyResponseDto::fromEntity)
+                .toList();
     }
 
-    public CounterpartyResponseDto getCounterpartyById(String id){
+    public CounterpartyResponseDto getCounterpartyById(String id) {
         return CounterpartyResponseDto.fromEntity(
-            getCounterpartyEntityById(id)
-        );
+                getCounterpartyEntityById(id));
     }
 
     public final Counterparty getCounterpartyEntityById(String id) {
         return counterpartyRepository.findByIdAndDeletedFalse(id)
-            .orElseThrow(() -> new CounterpartyNotFoundException(id));
+                .orElseThrow(() -> new CounterpartyNotFoundException(id));
     }
 
     @Transactional
@@ -65,10 +65,14 @@ public class CounterpartyService {
 
         Counterparty counterparty = getCounterpartyEntityById(counterpartyId);
 
-        if (request.organizationName() != null) counterparty.setOrganizationName(request.organizationName());
-        if (request.contactName() != null) counterparty.setContactName(request.contactName());
-        if (request.contactEmail() != null) counterparty.setContactEmail(request.contactEmail());
-        if (request.contactPhone() != null) counterparty.setContactPhone(request.contactPhone());
+        if (request.organizationName() != null)
+            counterparty.setOrganizationName(request.organizationName());
+        if (request.contactName() != null)
+            counterparty.setContactName(request.contactName());
+        if (request.contactEmail() != null)
+            counterparty.setContactEmail(request.contactEmail());
+        if (request.contactPhone() != null)
+            counterparty.setContactPhone(request.contactPhone());
 
         try {
             Counterparty updated = counterpartyRepository.save(counterparty);
@@ -76,8 +80,7 @@ public class CounterpartyService {
 
         } catch (DuplicateKeyException e) {
             throw new CounterpartyAlreadyExistsException(
-                counterparty.getOrganizationName()
-            );
+                    counterparty.getOrganizationName());
         }
     }
 

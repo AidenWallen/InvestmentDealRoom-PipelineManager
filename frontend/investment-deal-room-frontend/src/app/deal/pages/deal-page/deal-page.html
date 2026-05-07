@@ -1,48 +1,44 @@
 <div class="min-h-screen p-6 bg-bg-canvas text-text-primary">
-
-  <h1 class="text-2xl font-semibold flex  pb-3">
-      Deal Pipeline
-  </h1>
+  <h1 class="text-2xl font-semibold flex pb-3">Deal Pipeline</h1>
 
   <div class="flex justify-between items-center mb-4 border-t-accent">
-
-    <div class="justify-center flex flex-wrap pb-2 gap-2">
-        <input
-            pInputText
-            [ngModel]="searchQuery()"
-            (ngModelChange)="searchQuery.set($event)"
-            [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
-            placeholder="Search Deals..."
-        />
-
-        <p-select
-            [options]="dealTypes"
-            [ngModel]="filterDealType()"
-            (ngModelChange)="filterDealType.set($event)"
-            placeholder="TYPE"
-
-            [pt]="{ root: 'text-xs font-mono' }"
-        ></p-select>
-
-        <p-select
-            [options]="pipelineStages"
-            [ngModel]="filterPipelineStage()"
-            (ngModelChange)="filterPipelineStage.set($event)"
-            placeholder="STAGE"
-            [pt]="{ root: 'text-xs font-mono' }"
-        ></p-select>
+    <div class="justify-center flex flex-wrap pb-2 gap-2 items-center">
+      <input
+        pInputText
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
+        placeholder="Search Deals..."
+      />
+      <p-select
+        [options]="dealTypes"
+        [ngModel]="filterDealType()"
+        (ngModelChange)="filterDealType.set($event)"
+        placeholder="Type"
+        [showClear]="true"
+        [pt]="{ root: 'text-xs font-mono' }"
+      />
+      <p-select
+        [options]="pipelineStages"
+        [ngModel]="filterPipelineStage()"
+        (ngModelChange)="filterPipelineStage.set($event)"
+        placeholder="Stage"
+        [showClear]="true"
+        [pt]="{ root: 'text-xs font-mono' }"
+      />
     </div>
 
-    <p-button
-      class="px-3  py-2 text-xs  "
-      (click)="handleCreateDeal()">
-      + New Deal
-    </p-button>
-
+    <p-button class="px-3 py-2 text-xs" (click)="handleCreateDeal()"> + New Deal </p-button>
   </div>
 
   <div class="bg-surface rounded-md shadow-md p-4">
-    <app-deal-table [deals]="filteredDeals()" />
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-16">
+        <p-progressSpinner strokeWidth="2" [style]="{ width: '2rem', height: '2rem' }" />
+      </div>
+    } @else {
+      <app-deal-table [deals]="filteredDeals()" [error]="loadError()" />
+    }
   </div>
 
   <!-- Create and Update dialog modal -->
@@ -62,8 +58,4 @@
       (cancel)="showDealDialog.set(false)"
     />
   </p-dialog>
-
-
-
-
 </div>

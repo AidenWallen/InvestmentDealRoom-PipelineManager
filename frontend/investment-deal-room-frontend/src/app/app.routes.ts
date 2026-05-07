@@ -14,9 +14,9 @@ import { ProfilePage } from './user/pages/profile-page/profile-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'deals', pathMatch: 'full' },
-  { path: 'deals',              component: DealPage           },
-  { path: 'deals/:id',          component: DealDetail         },
-  { path: 'counterparties',     component: CounterpartyPage   },
+  { path: 'deals', component: DealPage },
+  { path: 'deals/:id', component: DealDetail },
+  { path: 'counterparties', component: CounterpartyPage },
   { path: 'counterparties/:id', component: CounterpartyDetail },
-  { path: 'profile',           component: ProfilePage        },
+  { path: 'profile', component: ProfilePage },
 ];

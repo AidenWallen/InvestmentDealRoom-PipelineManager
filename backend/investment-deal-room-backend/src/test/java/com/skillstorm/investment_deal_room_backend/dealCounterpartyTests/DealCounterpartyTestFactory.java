@@ -9,23 +9,21 @@ public class DealCounterpartyTestFactory {
 
     public static DealCounterparty buildDealCounterparty() {
         return DealCounterparty.builder()
-            .dealId("0000")
-            .counterpartyId("0000")
-            .dealRole(DealRole.ACQUIRER)
-            .build();
+                .dealId("0000")
+                .counterpartyId("0000")
+                .dealRole(DealRole.ACQUIRER)
+                .build();
     }
 
     public static LinkDealCounterpartyRequestDto buildDealLinkRequest() {
         return new LinkDealCounterpartyRequestDto(
-            "0000",
-            DealRole.ACQUIRER
-        );
+                "0000",
+                DealRole.ACQUIRER);
     }
 
     public static LinkCounterpartyDealRequestDto buildCounterpartyLinkRequest() {
         return new LinkCounterpartyDealRequestDto(
-            "0000",
-            DealRole.ACQUIRER
-        );
+                "0000",
+                DealRole.ACQUIRER);
     }
 }

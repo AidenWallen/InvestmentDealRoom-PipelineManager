@@ -44,7 +44,7 @@
 }
 
 /* Safelist dynamic classes used in routerLinkActive / string bindings */
-@source inline("bg-accent-soft text-accent border-accent bg-surface-2 text-text-primary text-text-tertiary text-text-secondary hover:bg-surface-2 hover:text-text-primary bg-bg-canvas bg-bg border-border");
+@source inline("bg-accent-soft text-accent border-accent bg-surface-2 text-text-primary text-text-tertiary text-text-secondary hover:bg-surface-2 hover:text-text-primary bg-bg-canvas bg-bg border-border ring-4 ring-accent/30 ring-accent/20 ring-red-500/20 hover:ring-4 hover:border-accent hover:border-red-400 hover:text-red-400 hover:text-accent");
 
 :root {
     --p-inputtext-border-color:       var(--color-border);
@@ -157,4 +157,33 @@
     .table-actions button.delete:hover {
         border-color: var(--color-danger);
     }
+}
+
+/* Pipeline stepper stage states */
+.stage-current {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.stage-advance {
+    transition: all 200ms;
+}
+.stage-advance:hover {
+    border-color: var(--color-accent) !important;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-accent) 20%, transparent);
+    color: var(--color-accent) !important;
+}
+.stage-advance:hover + span {
+    color: var(--color-accent);
+}
+
+.stage-revert {
+    transition: all 200ms;
+}
+.stage-revert:hover {
+    border-color: #f87171 !important;
+    box-shadow: 0 0 0 4px color-mix(in oklab, #ef4444 20%, transparent);
+    color: #f87171 !important;
+}
+.stage-revert:hover + span {
+    color: #f87171;
 }

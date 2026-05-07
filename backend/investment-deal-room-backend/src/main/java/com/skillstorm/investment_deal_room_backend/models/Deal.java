@@ -1,6 +1,5 @@
 package com.skillstorm.investment_deal_room_backend.models;
 
-
 import java.math.BigDecimal;
 
 import org.springframework.data.annotation.Id;
@@ -21,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Deal {
-    
+
     @Id
     private String id;
     private String dealName;
@@ -34,6 +33,5 @@ public class Deal {
 
     @Builder.Default
     private boolean deleted = false;
-    
+
 }
- 

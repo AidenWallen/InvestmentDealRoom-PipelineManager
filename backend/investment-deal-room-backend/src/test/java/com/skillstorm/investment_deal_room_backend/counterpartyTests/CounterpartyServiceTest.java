@@ -75,7 +75,7 @@ public class CounterpartyServiceTest {
         CreateCounterpartyRequestDto request = CounterpartyTestFactory.buildCreateRequest();
 
         when(counterpartyRepository.save(any(Counterparty.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(CounterpartyAlreadyExistsException.class, () -> {
             counterpartyService.createCounterparty(request);
@@ -147,7 +147,7 @@ public class CounterpartyServiceTest {
      * TEST UPDATE COUNTERPARTIES
      * 
      */
-    
+
     @Test
     @DisplayName("updateCounterparty: valid request updates and returns CounterpartyResponseDto")
     void updateCounterparty_success() {
@@ -157,13 +157,11 @@ public class CounterpartyServiceTest {
         Counterparty existing = CounterpartyTestFactory.buildCounterparty();
         existing.setId(counterpartyId);
 
-        UpdateCounterpartyRequestDto request =
-            new UpdateCounterpartyRequestDto(
+        UpdateCounterpartyRequestDto request = new UpdateCounterpartyRequestDto(
                 "New Organization Name",
                 "New Contact Name",
                 "new@email.com",
-                "999-999-9999"
-            );
+                "999-999-9999");
 
         when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.of(existing));
@@ -171,8 +169,7 @@ public class CounterpartyServiceTest {
         when(counterpartyRepository.save(any(Counterparty.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CounterpartyResponseDto result =
-            counterpartyService.updateCounterparty(counterpartyId, request);
+        CounterpartyResponseDto result = counterpartyService.updateCounterparty(counterpartyId, request);
 
         assertEquals("New Organization Name", result.organizationName());
 
@@ -188,19 +185,17 @@ public class CounterpartyServiceTest {
         Counterparty existing = CounterpartyTestFactory.buildCounterparty();
         existing.setId(counterpartyId);
 
-        UpdateCounterpartyRequestDto request =
-            new UpdateCounterpartyRequestDto(
+        UpdateCounterpartyRequestDto request = new UpdateCounterpartyRequestDto(
                 "New Organization Name", // duplicate of name already in database
                 null,
                 null,
-                null
-            );
+                null);
 
         when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.of(existing));
 
         when(counterpartyRepository.save(any(Counterparty.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(CounterpartyAlreadyExistsException.class, () -> {
             counterpartyService.updateCounterparty(counterpartyId, request);
@@ -215,13 +210,11 @@ public class CounterpartyServiceTest {
 
         String counterpartyId = "cp-123";
 
-        UpdateCounterpartyRequestDto request =
-            new UpdateCounterpartyRequestDto(
+        UpdateCounterpartyRequestDto request = new UpdateCounterpartyRequestDto(
                 "New Organization Name",
                 null,
                 null,
-                null
-            );
+                null);
 
         when(counterpartyRepository.findByIdAndDeletedFalse(counterpartyId))
                 .thenReturn(Optional.empty());
@@ -243,8 +236,7 @@ public class CounterpartyServiceTest {
     @DisplayName("deleteCounterparty: existing id is soft deleted without error")
     void deleteCounterparty_existingId_deletesSuccessfully() {
 
-        Counterparty counterparty =
-            CounterpartyTestFactory.buildCounterparty();
+        Counterparty counterparty = CounterpartyTestFactory.buildCounterparty();
         counterparty.setId("cp-001");
 
         when(counterpartyRepository.findByIdAndDeletedFalse("cp-001"))
@@ -269,8 +261,7 @@ public class CounterpartyServiceTest {
         when(counterpartyRepository.findByIdAndDeletedFalse("cp-001"))
                 .thenReturn(Optional.empty());
 
-        assertThrows(CounterpartyNotFoundException.class, () ->
-                counterpartyService.deleteCounterparty("cp-001"));
+        assertThrows(CounterpartyNotFoundException.class, () -> counterpartyService.deleteCounterparty("cp-001"));
 
         verify(counterpartyRepository, never()).save(any());
     }

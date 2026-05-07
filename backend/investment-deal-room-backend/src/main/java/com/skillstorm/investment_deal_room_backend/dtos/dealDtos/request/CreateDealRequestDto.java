@@ -12,25 +12,25 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateDealRequestDto(
-    @NotBlank String dealName,
-    @NotNull DealType dealType,
-    @NotBlank String targetCompany,
-    @NotNull @PositiveOrZero BigDecimal estimatedValue,
-    @NotNull Currency currency,
-    // @NotBlank String assignedManagerId,
-    @NotNull PipelineStage pipelineStage
-    
+        @NotBlank String dealName,
+        @NotNull DealType dealType,
+        @NotBlank String targetCompany,
+        @NotNull @PositiveOrZero BigDecimal estimatedValue,
+        @NotNull Currency currency,
+        // @NotBlank String assignedManagerId,
+        @NotNull PipelineStage pipelineStage
+
 ) {
     public Deal toEntity(String createdByUserId) {
         return Deal.builder()
-            .dealName(dealName)
-            .dealType(dealType)
-            .targetCompany(targetCompany)
-            .estimatedValue(estimatedValue)
-            .currency(currency)
-            .assignedManagerId(createdByUserId)
-            .pipelineStage(pipelineStage)
-            .build();
+                .dealName(dealName)
+                .dealType(dealType)
+                .targetCompany(targetCompany)
+                .estimatedValue(estimatedValue)
+                .currency(currency)
+                .assignedManagerId(createdByUserId)
+                .pipelineStage(pipelineStage)
+                .build();
     }
-    
+
 }

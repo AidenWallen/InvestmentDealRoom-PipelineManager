@@ -23,23 +23,23 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/v1")
 public class DealCounterpartyController {
     private final DealCounterpartyService dcpService;
 
-    public DealCounterpartyController(DealCounterpartyService dcpService){
+    public DealCounterpartyController(DealCounterpartyService dcpService) {
         this.dcpService = dcpService;
     }
 
     @GetMapping("/deals/{dealId}/counterparties")
-    public ResponseEntity<List<DealCounterpartyResponseDto>> getCounterpartiesByDealId(@PathVariable String dealId){
+    public ResponseEntity<List<DealCounterpartyResponseDto>> getCounterpartiesByDealId(@PathVariable String dealId) {
         return ResponseEntity.ok(dcpService.getCounterpartiesByDealId(dealId));
     }
 
     @GetMapping("/counterparties/{counterpartyId}/deals")
-    public ResponseEntity<List<DealCounterpartyResponseDto>> getDealsByCounterpartyId(@PathVariable String counterpartyId){
+    public ResponseEntity<List<DealCounterpartyResponseDto>> getDealsByCounterpartyId(
+            @PathVariable String counterpartyId) {
         return ResponseEntity.ok(dcpService.getDealsByCounterpartyId(counterpartyId));
     }
 
@@ -48,8 +48,7 @@ public class DealCounterpartyController {
     public ResponseEntity<DealCounterpartyResponseDto> linkDealToCounterparty(
             @PathVariable String dealId,
             @Valid @RequestBody LinkDealCounterpartyRequestDto request,
-            @AuthenticationPrincipal Jwt jwt
-    ) {
+            @AuthenticationPrincipal Jwt jwt) {
         DealCounterpartyResponseDto response = dcpService.linkDealToCounterparty(dealId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -59,9 +58,9 @@ public class DealCounterpartyController {
     public ResponseEntity<DealCounterpartyResponseDto> linkCounterpartyToDeal(
             @PathVariable String counterpartyId,
             @Valid @RequestBody LinkCounterpartyDealRequestDto request,
-            @AuthenticationPrincipal Jwt jwt
-    ) {
-        DealCounterpartyResponseDto response = dcpService.linkCounterpartyToDeal(counterpartyId, request, jwt.getClaimAsString("name"));
+            @AuthenticationPrincipal Jwt jwt) {
+        DealCounterpartyResponseDto response = dcpService.linkCounterpartyToDeal(counterpartyId, request,
+                jwt.getClaimAsString("name"));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -70,8 +69,7 @@ public class DealCounterpartyController {
     public ResponseEntity<Void> unlinkCounterpartyFromDeal(
             @PathVariable String counterpartyId,
             @PathVariable String dealId,
-            @AuthenticationPrincipal Jwt jwt
-    ) {
+            @AuthenticationPrincipal Jwt jwt) {
         dcpService.unlinkDealCounterparty(dealId, counterpartyId, jwt.getClaimAsString("name"));
         return ResponseEntity.noContent().build();
     }

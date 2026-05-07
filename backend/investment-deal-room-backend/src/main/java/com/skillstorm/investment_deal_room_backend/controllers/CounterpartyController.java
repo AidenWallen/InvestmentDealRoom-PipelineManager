@@ -23,15 +23,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.UpdateCounterpartyRequestDto;
 
-
-
 @RestController
 @RequestMapping("/api/v1/counterparties")
 public class CounterpartyController {
 
     private final CounterpartyService counterpartyService;
 
-    public CounterpartyController(CounterpartyService counterpartyService){
+    public CounterpartyController(CounterpartyService counterpartyService) {
         this.counterpartyService = counterpartyService;
     }
 
@@ -47,14 +45,16 @@ public class CounterpartyController {
 
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PostMapping
-    public ResponseEntity<CounterpartyResponseDto> createCounterparty(@Valid @RequestBody CreateCounterpartyRequestDto request) {
+    public ResponseEntity<CounterpartyResponseDto> createCounterparty(
+            @Valid @RequestBody CreateCounterpartyRequestDto request) {
         CounterpartyResponseDto response = counterpartyService.createCounterparty(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PreAuthorize("hasRole('DEAL_MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<CounterpartyResponseDto> updateCounterparty(@PathVariable String id, @Valid @RequestBody UpdateCounterpartyRequestDto request) {
+    public ResponseEntity<CounterpartyResponseDto> updateCounterparty(@PathVariable String id,
+            @Valid @RequestBody UpdateCounterpartyRequestDto request) {
         return ResponseEntity.ok(counterpartyService.updateCounterparty(id, request));
     }
 

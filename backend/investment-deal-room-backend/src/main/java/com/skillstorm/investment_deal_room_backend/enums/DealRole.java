@@ -7,11 +7,11 @@ public enum DealRole {
     LENDER("Lender");
 
     private final String displayName;
- 
+
     DealRole(String displayName) {
         this.displayName = displayName;
     }
- 
+
     public String getDisplayName() {
         return displayName;
     }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
 
 @Repository
-public interface DealCounterpartyRepository extends MongoRepository<DealCounterparty, String>{
+public interface DealCounterpartyRepository extends MongoRepository<DealCounterparty, String> {
 
     List<DealCounterparty> findByDealId(String dealId);
 

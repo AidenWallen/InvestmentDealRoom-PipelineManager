@@ -1,30 +1,34 @@
 import { MsalGuardConfiguration, MsalInterceptorConfiguration } from '@azure/msal-angular';
-import { BrowserCacheLocation, InteractionType, PublicClientApplication } from '@azure/msal-browser';
-import { environment } from '../../../environments/environments.development';
+import {
+  BrowserCacheLocation,
+  InteractionType,
+  PublicClientApplication,
+} from '@azure/msal-browser';
+import { environment } from '../../../environments/environments';
 
 export const msalInstance = new PublicClientApplication({
   auth: {
-    clientId:    environment.azureClientId,
+    clientId: environment.azureClientId,
     // authority:   `https://login.microsoftonline.com/common`,
     authority:   `https://login.microsoftonline.com/${environment.azureTenantId}`,
-    redirectUri: 'http://localhost:4200',
+    redirectUri: environment.redirectUri,
   },
   cache: {
     cacheLocation: BrowserCacheLocation.LocalStorage,
-  }
+  },
 });
 
 export const msalGuardConfig: MsalGuardConfiguration = {
-    interactionType: InteractionType.Redirect,
-    authRequest: {
-        scopes: ['api://274d0cbc-6cdd-48b0-b12c-fbe98d970411/access_as_user']
-    }
+  interactionType: InteractionType.Redirect,
+  authRequest: {
+    scopes: [environment.azureApiScope],
+  },
 };
 
 export const msalInterceptorConfig: MsalInterceptorConfiguration = {
   interactionType: InteractionType.Redirect,
   protectedResourceMap: new Map([
-    [`http://localhost:8080/api/v1/**`, ['api://274d0cbc-6cdd-48b0-b12c-fbe98d970411/access_as_user']]
+    [`${environment.msalProtectedUrl}/**`, [environment.azureApiScope]],
+    [`/api/v1/**`, [environment.azureApiScope]]
   ])
 };
-

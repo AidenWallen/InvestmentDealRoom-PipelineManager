@@ -13,7 +13,6 @@ export class DealService {
   constructor(private http: HttpClient) {}
 
   private readonly URL = `${environment.apiBaseUrl}/deals`;
-  
 
   getDeals(): Observable<Deal[]> {
     return this.http.get<Deal[]>(this.URL);
@@ -23,32 +22,25 @@ export class DealService {
     return this.http.get<Deal>(`${this.URL}/${id}`);
   }
 
-  createDeal(deal: Deal): Observable<Deal> {
-    return this.http.post<Deal>(
-      `${this.URL}`, deal
-    );
+  createDeal(deal: Deal, userId: string): Observable<Deal> {
+    return this.http.post<Deal>(`${this.URL}?userId=${encodeURIComponent(userId)}`, deal);
   }
 
-  updateDeal(
-    id: string,
-    request: UpdateDealRequest
-  ): Observable<Deal> {
-
+  updateDeal(id: string, request: UpdateDealRequest): Observable<Deal> {
     return this.http.put<Deal>(`${this.URL}/${id}`, request);
   }
 
   updateStage(id: string, toStage: PipelineStage): Observable<Deal> {
-	return this.http.patch<Deal>(`${this.URL}/${id}/stage`, { 
-		pipelineStage: toStage 
-	});
+    const stageKey = Object.entries(PipelineStage).find(([, v]) => v === toStage)?.[0] ?? toStage;
+    return this.http.patch<Deal>(`${this.URL}/${id}/stage`, { pipelineStage: stageKey });
   }
 
   deleteDeal(id: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.URL}/${id}`)
-      .pipe(catchError(err => {
+    return this.http.delete<void>(`${this.URL}/${id}`).pipe(
+      catchError((err) => {
         console.error('Error deleting deal:', err);
         return throwError(() => new Error('Failed to delete deal'));
-      }));
+      }),
+    );
   }
 }

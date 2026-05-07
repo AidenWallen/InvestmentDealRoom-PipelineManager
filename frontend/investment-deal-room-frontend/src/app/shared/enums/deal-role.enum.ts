@@ -1,7 +1,6 @@
-
 export enum DealRole {
-  ACQUIRER = 'ACQUIRER',
-  TARGET   = 'TARGET',
-  ADVISOR  = 'ADVISOR',
-  LENDER   = 'LENDER',
+  ACQUIRER = 'Acquirer',
+  TARGET = 'Target',
+  ADVISOR = 'Advisor',
+  LENDER = 'Lender',
 }

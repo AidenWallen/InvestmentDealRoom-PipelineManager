@@ -8,12 +8,11 @@ import { DialogModule } from 'primeng/dialog';
   templateUrl: './delete-confirmation-modal.html',
 })
 export class DeleteConfirmationModal {
+  visible = input.required<boolean>();
+  recordName = input.required<string>();
+  header = input<string>('Confirm Delete');
+  actionLabel = input<string>('DELETE');
 
-    visible     = input.required<boolean>();
-    recordName  = input.required<string>();
-    header      = input<string>('Confirm Delete');
-    actionLabel = input<string>('DELETE');
-
-    confirmed = output<void>();
-    cancelled = output<void>();
+  confirmed = output<void>();
+  cancelled = output<void>();
 }

@@ -68,15 +68,13 @@ public class DealServiceTest {
 
     private CreateDealRequestDto buildCreateDealRequestDto() {
         return new CreateDealRequestDto(
-            "Project Falcon",
-            DealType.MERGER_ACQUISITION,
-            "Horizon Capital LLC",
-            new BigDecimal("4200000000"),
-            Currency.USD,
-            PipelineStage.PROSPECTING
-        );
+                "Project Falcon",
+                DealType.MERGER_ACQUISITION,
+                "Horizon Capital LLC",
+                new BigDecimal("4200000000"),
+                Currency.USD,
+                PipelineStage.PROSPECTING);
     }
-
 
     /**
      * 
@@ -94,7 +92,6 @@ public class DealServiceTest {
 
         DealResponseDto result = dealService.createDeal(requestDto, "manager-01");
 
-   
         assertNotNull(result);
         assertThat(result.dealName()).isEqualTo(requestDto.dealName());
         assertThat(result.dealType()).isEqualTo(requestDto.dealType());
@@ -114,7 +111,7 @@ public class DealServiceTest {
         CreateDealRequestDto request = buildCreateDealRequestDto();
 
         when(dealRepository.save(any(Deal.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealAlreadyExistsException.class, () -> {
             dealService.createDeal(request, "manager-01");
@@ -122,7 +119,6 @@ public class DealServiceTest {
 
         verify(dealRepository).save(any(Deal.class));
     }
-
 
     /**
      * 
@@ -148,7 +144,7 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("1")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> dealService.getDealById("1"))
-            .isInstanceOf(DealNotFoundException.class);
+                .isInstanceOf(DealNotFoundException.class);
     }
 
     /**
@@ -163,12 +159,11 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1" , PipelineStage.DUE_DILIGENCE);
+        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1", PipelineStage.DUE_DILIGENCE);
 
         assertThat(response.pipelineStage()).isEqualTo(PipelineStage.DUE_DILIGENCE);
         verify(dealRepository).save(deal);
     }
-
 
     @Test
     @DisplayName("advanceStage: PROSPECTING -> CLOSING throws InvalidStageTransitionException")
@@ -176,13 +171,11 @@ public class DealServiceTest {
         Deal deal = buildDeal("deal-01", PipelineStage.PROSPECTING);
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
-        assertThatThrownBy(() ->
-            dealService.updatePipelineStage("deal-01", "user1" , PipelineStage.CLOSING)
-        ).isInstanceOf(InvalidStageTransitionException.class);
+        assertThatThrownBy(() -> dealService.updatePipelineStage("deal-01", "user1", PipelineStage.CLOSING))
+                .isInstanceOf(InvalidStageTransitionException.class);
 
         verify(dealRepository, never()).save(any());
     }
-
 
     @Test
     @DisplayName("advanceStage: CLOSED_WON is terminal,  any transition throws")
@@ -190,22 +183,19 @@ public class DealServiceTest {
         Deal deal = buildDeal("deal-01", PipelineStage.CLOSED_WON);
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
 
-        assertThatThrownBy(() ->
-            dealService.updatePipelineStage("deal-01", "user1" ,PipelineStage.NEGOTIATION)
-        ).isInstanceOf(InvalidStageTransitionException.class);
+        assertThatThrownBy(() -> dealService.updatePipelineStage("deal-01", "user1", PipelineStage.NEGOTIATION))
+                .isInstanceOf(InvalidStageTransitionException.class);
 
         verify(dealRepository, never()).save(any());
     }
-
 
     @Test
     @DisplayName("advanceStage: deal not found throws DealNotFoundException")
     void updateStage_dealNotFound_throwsDealNotFoundException() {
         when(dealRepository.findByIdAndDeletedFalse("bad-id")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-            dealService.updatePipelineStage("bad-id", "user1" ,PipelineStage.DUE_DILIGENCE)
-        ).isInstanceOf(DealNotFoundException.class);
+        assertThatThrownBy(() -> dealService.updatePipelineStage("bad-id", "user1", PipelineStage.DUE_DILIGENCE))
+                .isInstanceOf(DealNotFoundException.class);
     }
 
     @Test
@@ -215,12 +205,11 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("deal-01")).thenReturn(Optional.of(deal));
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1" ,PipelineStage.DUE_DILIGENCE);
+        DealResponseDto response = dealService.updatePipelineStage("deal-01", "user1", PipelineStage.DUE_DILIGENCE);
 
         assertThat(response.pipelineStage()).isEqualTo(PipelineStage.DUE_DILIGENCE);
     }
 
-    
     /**
      * 
      * Tests for updateDeal (partial updates)
@@ -235,8 +224,7 @@ public class DealServiceTest {
         when(dealRepository.save(any(Deal.class))).thenAnswer(inv -> inv.getArgument(0));
 
         UpdateDealRequestDto update = new UpdateDealRequestDto(
-            "Project Phoenix", null, null, null, null
-        );
+                "Project Phoenix", null, null, null, null);
 
         DealResponseDto response = dealService.updateDeal("deal-01", update);
 
@@ -253,8 +241,7 @@ public class DealServiceTest {
 
         // Only update currency, everything else should stay the same
         UpdateDealRequestDto update = new UpdateDealRequestDto(
-            null, null, null, null, Currency.GBP
-        );
+                null, null, null, null, Currency.GBP);
 
         DealResponseDto response = dealService.updateDeal("deal-01", update);
 
@@ -268,9 +255,9 @@ public class DealServiceTest {
     void updateDeal_unknownId_throwsDealNotFoundException() {
         when(dealRepository.findByIdAndDeletedFalse("bad-id")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-            dealService.updateDeal("bad-id", new UpdateDealRequestDto(null,null,null,null,null))
-        ).isInstanceOf(DealNotFoundException.class);
+        assertThatThrownBy(
+                () -> dealService.updateDeal("bad-id", new UpdateDealRequestDto(null, null, null, null, null)))
+                .isInstanceOf(DealNotFoundException.class);
     }
 
     @Test
@@ -280,19 +267,18 @@ public class DealServiceTest {
         String dealId = "deal-123";
 
         UpdateDealRequestDto request = new UpdateDealRequestDto(
-            "Project Phoenix", null, null, null, null
-        );
+                "Project Phoenix", null, null, null, null);
 
         Deal existingDeal = Deal.builder()
-            .id(dealId)
-            .dealName("Old Name")
-            .build();
+                .id(dealId)
+                .dealName("Old Name")
+                .build();
 
         when(dealRepository.findByIdAndDeletedFalse(dealId))
                 .thenReturn(Optional.of(existingDeal));
 
         when(dealRepository.save(any(Deal.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealAlreadyExistsException.class, () -> {
             dealService.updateDeal(dealId, request);
@@ -326,10 +312,9 @@ public class DealServiceTest {
         when(dealRepository.findByIdAndDeletedFalse("bad-id")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> dealService.deleteDeal("bad-id"))
-            .isInstanceOf(DealNotFoundException.class);
+                .isInstanceOf(DealNotFoundException.class);
 
         verify(dealRepository, never()).deleteById(any());
     }
-
 
 }
