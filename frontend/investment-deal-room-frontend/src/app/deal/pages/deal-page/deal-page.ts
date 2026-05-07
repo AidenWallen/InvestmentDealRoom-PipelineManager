@@ -15,6 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DealForm } from '../../components/deal-form/deal-form';
 import { Currency } from '../../../shared/enums/currency.enum';
 import { Deal } from '../../../shared/models/deal.model';
+import { environment } from '../../../../environments/environments.development';
 
 @Component({
   selector: 'app-deal-page',
@@ -24,6 +25,7 @@ import { Deal } from '../../../shared/models/deal.model';
             InputTextModule, SelectModule, FormsModule, ProgressSpinnerModule]
 })
 export class DealPage implements OnInit {
+  
 
   allDeals   = signal<Deal[]>([]);
   isLoading  = signal(true);
@@ -51,6 +53,7 @@ export class DealPage implements OnInit {
 
   
   ngOnInit() {
+    console.log(environment);
     this.loadAll();
     this.form = buildDealForm(this.formBuilder); 
   }

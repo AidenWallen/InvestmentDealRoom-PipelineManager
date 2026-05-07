@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 
 @Configuration
 @EnableMethodSecurity
@@ -49,6 +51,10 @@ public class ProdSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) ->       
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
