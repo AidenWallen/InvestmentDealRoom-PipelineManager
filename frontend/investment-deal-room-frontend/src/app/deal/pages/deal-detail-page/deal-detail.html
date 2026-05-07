@@ -200,8 +200,16 @@
                     }
                 </div>
 
+                <input
+                    pInputText
+                    [ngModel]="counterpartySearch()"
+                    (ngModelChange)="counterpartySearch.set($event)"
+                    [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
+                    placeholder="Search counterparties..."
+                    class="mb-3" />
+
                 <div class="flex flex-col gap-2">
-                    @for (cp of linkedCounterparties(); track cp.id) {
+                    @for (cp of filteredLinkedCounterparties(); track cp.id) {
                         <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors cursor-pointer"
                             (click)="navigateToCounterparty(cp)">
                             <div class="flex items-center gap-3">
@@ -210,7 +218,14 @@
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-sm font-semibold text-text-primary">{{ cp.organizationName }}</span>
-                                    <span class="text-xs text-text-tertiary">{{ cp.contactName }} · {{ cp.contactEmail }}</span>
+                                    <div class="flex items-center gap-3 text-xs text-text-tertiary">
+                                        <span class="flex items-center gap-1">
+                                            <i class="pi pi-user text-xs"></i>{{ cp.contactName }}
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <i class="pi pi-envelope text-xs"></i>{{ cp.contactEmail }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">

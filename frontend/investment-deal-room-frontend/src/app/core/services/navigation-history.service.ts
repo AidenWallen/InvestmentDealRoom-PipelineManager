@@ -13,6 +13,7 @@ export class NavigationHistoryService {
     ).subscribe((e: NavigationEnd) => {
       if (this.goingBack) {
         this.goingBack = false;
+        this.history.push(e.urlAfterRedirects);
         return;
       }
       const url = e.urlAfterRedirects;

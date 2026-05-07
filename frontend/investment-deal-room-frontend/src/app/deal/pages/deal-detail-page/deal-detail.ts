@@ -75,6 +75,18 @@ export class DealDetail implements OnInit {
 
 	recentActivities = computed(() => this.activities().slice(0, 5));
 
+	counterpartySearch = signal('');
+
+	filteredLinkedCounterparties = computed(() => {
+		const query = this.counterpartySearch().trim().toLowerCase();
+		if (!query) return this.linkedCounterparties();
+		return this.linkedCounterparties().filter(cp =>
+			cp.organizationName?.toLowerCase().includes(query) ||
+			cp.contactName?.toLowerCase().includes(query) ||
+			cp.contactEmail?.toLowerCase().includes(query)
+		);
+	});
+
 	dealTypes  = Object.values(DealType);
 	currencies = Object.values(Currency);
 
