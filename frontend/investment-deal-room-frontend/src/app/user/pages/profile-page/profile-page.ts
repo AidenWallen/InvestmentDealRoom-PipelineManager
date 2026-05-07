@@ -17,12 +17,18 @@ import { DealType } from '../../../shared/enums/deal-type.enum';
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [FormsModule, TableModule, ButtonModule, SelectModule, DividerModule, ProgressSpinnerModule],
+  imports: [
+    FormsModule,
+    TableModule,
+    ButtonModule,
+    SelectModule,
+    DividerModule,
+    ProgressSpinnerModule,
+  ],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })
 export class ProfilePage implements OnInit {
-
   userName = '';
   userId = '';
 
@@ -30,15 +36,15 @@ export class ProfilePage implements OnInit {
   saving = signal(false);
   selectedDepartment = signal('');
 
-  allDeals       = signal<Deal[]>([]);
-  dealsLoading   = signal(true);
+  allDeals = signal<Deal[]>([]);
+  dealsLoading = signal(true);
   dealsLoadError = signal(false);
 
   myDeals = computed(() => {
     const uid = this.userId;
     const deals = this.allDeals();
     if (!uid) return deals;
-    return deals.filter(d => d.assignedManagerId === uid);
+    return deals.filter((d) => d.assignedManagerId === uid);
   });
 
   readonly departments = [
@@ -72,8 +78,15 @@ export class ProfilePage implements OnInit {
     }
 
     this.dealService.getDeals().subscribe({
-      next: (deals) => { this.allDeals.set(deals); this.dealsLoading.set(false); },
-      error: (err) => { console.error('Failed to load deals:', err); this.dealsLoading.set(false); this.dealsLoadError.set(true); },
+      next: (deals) => {
+        this.allDeals.set(deals);
+        this.dealsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load deals:', err);
+        this.dealsLoading.set(false);
+        this.dealsLoadError.set(true);
+      },
     });
   }
 
@@ -81,7 +94,7 @@ export class ProfilePage implements OnInit {
     if (!this.userName) return '?';
     return this.userName
       .split(' ')
-      .map(n => n[0] ?? '')
+      .map((n) => n[0] ?? '')
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -102,8 +115,14 @@ export class ProfilePage implements OnInit {
     }
     this.saving.set(true);
     this.userService.updateDepartment(this.userId, this.selectedDepartment()).subscribe({
-      next: () => { this.saving.set(false); this.editMode.set(false); },
-      error: (err) => { console.error('Failed to save department:', err); this.saving.set(false); },
+      next: () => {
+        this.saving.set(false);
+        this.editMode.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to save department:', err);
+        this.saving.set(false);
+      },
     });
   }
 
@@ -130,11 +149,12 @@ export class ProfilePage implements OnInit {
 
   stageClass(stage: string): string {
     const base = 'text-xs px-2 py-0.5 rounded border w-fit';
-    const map: Record<string, string> = {
-      [PipelineStage.CLOSED_WON]:  `${base} bg-green-900/30 text-green-400 border-green-700/50`,
-      [PipelineStage.CLOSED_LOST]: `${base} bg-red-900/30 text-red-400 border-red-700/50`,
-    };
-    return map[stage] ?? `${base} bg-accent-soft text-accent border-accent-strong`;
+    const display = PipelineStage[stage as keyof typeof PipelineStage] ?? stage;
+    if (display === PipelineStage.CLOSED_WON)
+      return `${base} bg-green-900/30 text-green-400 border-green-700/50`;
+    if (display === PipelineStage.CLOSED_LOST)
+      return `${base} bg-red-900/30 text-red-400 border-red-700/50`;
+    return `${base} bg-amber-900/30 text-amber-400 border-amber-700/50`;
   }
 
   formatValue(value: number, currency: string): string {

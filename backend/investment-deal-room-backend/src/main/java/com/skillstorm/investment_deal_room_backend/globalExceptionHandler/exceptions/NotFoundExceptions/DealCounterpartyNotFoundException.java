@@ -3,6 +3,6 @@ package com.skillstorm.investment_deal_room_backend.globalExceptionHandler.excep
 public class DealCounterpartyNotFoundException extends NotFoundException {
 
     public DealCounterpartyNotFoundException(String dealId, String counterpartyId) {
-        super("Link between Deal: '"+dealId+"' and Counterparty: '"+counterpartyId+"' does not exist.");
+        super("Link between Deal: '" + dealId + "' and Counterparty: '" + counterpartyId + "' does not exist.");
     }
 }

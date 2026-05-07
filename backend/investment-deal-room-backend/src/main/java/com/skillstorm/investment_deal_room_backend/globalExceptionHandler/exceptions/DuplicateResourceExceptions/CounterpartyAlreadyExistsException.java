@@ -3,6 +3,6 @@ package com.skillstorm.investment_deal_room_backend.globalExceptionHandler.excep
 public class CounterpartyAlreadyExistsException extends DuplicateResourceException {
 
     public CounterpartyAlreadyExistsException(String organizationName) {
-        super("Counterparty organization name '"+organizationName+"' already exists.");
+        super("Counterparty organization name '" + organizationName + "' already exists.");
     }
 }

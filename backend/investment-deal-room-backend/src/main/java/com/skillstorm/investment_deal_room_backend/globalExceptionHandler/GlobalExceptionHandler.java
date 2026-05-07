@@ -1,6 +1,5 @@
 package com.skillstorm.investment_deal_room_backend.globalExceptionHandler;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,20 +10,19 @@ import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.except
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DuplicateResourceException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.NotFoundException;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    } 
+    }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    } 
-    
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidStageTransitionException.class)
     public ResponseEntity<String> handleInvalidStageTransitionException(InvalidStageTransitionException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -35,12 +33,12 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex) {
 
         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body("Validation failed: " +
-                ex.getBindingResult()
-                    .getAllErrors()
-                    .get(0)
-                    .getDefaultMessage());
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Validation failed: " +
+                        ex.getBindingResult()
+                                .getAllErrors()
+                                .get(0)
+                                .getDefaultMessage());
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
@@ -49,10 +47,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body("Forbidden: insufficient permissions");
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An unexpected error occurred: " + ex.getMessage());
     }
 
 }

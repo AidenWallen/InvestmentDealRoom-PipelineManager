@@ -14,35 +14,39 @@ import { CounterpartyTable } from '../../components/counterparty-table/counterpa
   selector: 'app-counterparty-page',
   standalone: true,
   imports: [
-    FormsModule, ReactiveFormsModule,
-    ButtonModule, DialogModule,
-    FloatLabelModule, InputTextModule,
-    CounterpartyTable, ProgressSpinnerModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    DialogModule,
+    FloatLabelModule,
+    InputTextModule,
+    CounterpartyTable,
+    ProgressSpinnerModule,
   ],
   templateUrl: './counterparty-page.html',
 })
 export class CounterpartyPage implements OnInit {
-
   allCounterparties = signal<Counterparty[]>([]);
-  isLoading         = signal(true);
-  loadError         = signal(false);
+  isLoading = signal(true);
+  loadError = signal(false);
   searchQuery = signal('');
 
   filteredCounterparties = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
     if (!query) return this.allCounterparties();
-    return this.allCounterparties().filter(c =>
-      c.organizationName?.toLowerCase().includes(query) ||
-      c.contactName?.toLowerCase().includes(query) ||
-      c.contactEmail?.toLowerCase().includes(query) ||
-      c.contactPhone?.toLowerCase().includes(query)
+    return this.allCounterparties().filter(
+      (c) =>
+        c.organizationName?.toLowerCase().includes(query) ||
+        c.contactName?.toLowerCase().includes(query) ||
+        c.contactEmail?.toLowerCase().includes(query) ||
+        c.contactPhone?.toLowerCase().includes(query),
     );
   });
 
-  showFormDialog       = signal(false);
-  showDeleteDialog     = signal(false);
+  showFormDialog = signal(false);
+  showDeleteDialog = signal(false);
   selectedCounterparty = signal<Counterparty | null>(null);
-  createError          = signal<string | null>(null);
+  createError = signal<string | null>(null);
 
   form!: FormGroup;
 
@@ -55,16 +59,23 @@ export class CounterpartyPage implements OnInit {
     this.loadAll();
     this.form = this.formBuilder.group({
       organizationName: [null, Validators.required],
-      contactName:      [null, Validators.required],
-      contactEmail:     [null, [Validators.required, Validators.email]],
-      contactPhone:     [null, Validators.pattern(/^\+?[\d\s\-().]{7,15}$/)],
+      contactName: [null, Validators.required],
+      contactEmail: [null, [Validators.required, Validators.email]],
+      contactPhone: [null, Validators.pattern(/^\+?[\d\s\-().]{7,15}$/)],
     });
   }
 
   loadAll(): void {
     this.counterpartyService.getCounterparties().subscribe({
-      next: (list) => { this.allCounterparties.set(list); this.isLoading.set(false); },
-      error: (err) => { console.error('Error loading counterparties:', err); this.isLoading.set(false); this.loadError.set(true); },
+      next: (list) => {
+        this.allCounterparties.set(list);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading counterparties:', err);
+        this.isLoading.set(false);
+        this.loadError.set(true);
+      },
     });
   }
 
@@ -82,11 +93,12 @@ export class CounterpartyPage implements OnInit {
 
     this.counterpartyService.createCounterparty(payload).subscribe({
       next: (created) => {
-        this.allCounterparties.update(list => [...list, created]);
+        this.allCounterparties.update((list) => [...list, created]);
         this.showFormDialog.set(false);
       },
       error: (err) => {
-        const message = typeof err.error === 'string' ? err.error : 'Failed to create counterparty.';
+        const message =
+          typeof err.error === 'string' ? err.error : 'Failed to create counterparty.';
         this.createError.set(message);
       },
     });

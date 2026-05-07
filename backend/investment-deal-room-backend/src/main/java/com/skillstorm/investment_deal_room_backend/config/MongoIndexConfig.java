@@ -25,25 +25,22 @@ public class MongoIndexConfig {
     public InitializingBean initIndexes() {
         return () -> {
             mongoTemplate.indexOps(Counterparty.class).createIndex(
-                new Index()
-                    .on("organizationName", Sort.Direction.ASC)
-                    .unique()
-                    .partial(PartialIndexFilter.of(Criteria.where("deleted").is(false)))
-            );
+                    new Index()
+                            .on("organizationName", Sort.Direction.ASC)
+                            .unique()
+                            .partial(PartialIndexFilter.of(Criteria.where("deleted").is(false))));
 
             mongoTemplate.indexOps(Deal.class).createIndex(
-                new Index()
-                    .on("dealName", Sort.Direction.ASC)
-                    .unique()
-                    .partial(PartialIndexFilter.of(Criteria.where("deleted").is(false)))
-            );
+                    new Index()
+                            .on("dealName", Sort.Direction.ASC)
+                            .unique()
+                            .partial(PartialIndexFilter.of(Criteria.where("deleted").is(false))));
 
             mongoTemplate.indexOps(DealCounterparty.class).createIndex(
-                new Index()
-                    .on("dealId", Sort.Direction.ASC)
-                    .on("counterpartyId", Sort.Direction.ASC)
-                    .unique()
-            );
+                    new Index()
+                            .on("dealId", Sort.Direction.ASC)
+                            .on("counterpartyId", Sort.Direction.ASC)
+                            .unique());
         };
     }
 }

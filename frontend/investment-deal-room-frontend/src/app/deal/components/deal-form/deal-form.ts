@@ -13,7 +13,7 @@ import { Deal } from '../../../shared/models/deal.model';
   selector: 'app-deal-form',
   standalone: true,
   templateUrl: './deal-form.html',
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, FloatLabelModule]
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, FloatLabelModule],
 })
 export class DealForm implements OnChanges {
   @Input() form!: FormGroup;

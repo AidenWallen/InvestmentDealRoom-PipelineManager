@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-
 @Repository
 public interface DealRepository extends MongoRepository<Deal, String> {
-    
+
     // Custom query methods, all should filter out deleted deals
     Optional<Deal> findByIdAndDeletedFalse(String id);
+
     List<Deal> findByDeletedFalse();
+
     List<Deal> findByAssignedManagerIdAndDeletedFalse(String managerId);
 }

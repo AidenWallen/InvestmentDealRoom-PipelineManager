@@ -11,7 +11,6 @@ import { Counterparty } from '../../../shared/models/counterparty.model';
   templateUrl: './counterparty-table.html',
 })
 export class CounterpartyTable {
-
   @Input() counterparties: Counterparty[] = [];
   @Input() error = false;
 

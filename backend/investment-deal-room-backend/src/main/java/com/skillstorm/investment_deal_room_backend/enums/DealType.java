@@ -7,11 +7,11 @@ public enum DealType {
     PRIVATE_PLACEMENT("Private Placement");
 
     private final String displayName;
- 
+
     DealType(String displayName) {
         this.displayName = displayName;
     }
- 
+
     public String getDisplayName() {
         return displayName;
     }

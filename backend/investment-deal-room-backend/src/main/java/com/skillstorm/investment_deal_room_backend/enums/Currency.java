@@ -2,23 +2,23 @@ package com.skillstorm.investment_deal_room_backend.enums;
 
 public enum Currency {
     USD("US Dollar", "$"),
-    EUR("Euro",      "€"),
+    EUR("Euro", "€"),
     GBP("British Pound", "£"),
-    JPY("Japanese Yen",  "¥"),
-    CHF("Swiss Franc",   "CHF"),
-    CAD("Canadian Dollar","CA$"),
-    AUD("Australian Dollar","A$"),
+    JPY("Japanese Yen", "¥"),
+    CHF("Swiss Franc", "CHF"),
+    CAD("Canadian Dollar", "CA$"),
+    AUD("Australian Dollar", "A$"),
     HKD("Hong Kong Dollar", "HK$"),
     SGD("Singapore Dollar", "S$"),
-    CNY("Chinese Yuan",   "¥"),
-    INR("Indian Rupee",   "₹"),
+    CNY("Chinese Yuan", "¥"),
+    INR("Indian Rupee", "₹"),
     BRL("Brazilian Real", "R$"),
-    KRW("South Korean Won","₩"),
-    SEK("Swedish Krona",   "kr"),
+    KRW("South Korean Won", "₩"),
+    SEK("Swedish Krona", "kr"),
     NOK("Norwegian Krone", "kr"),
-    DKK("Danish Krone",    "kr"),
-    AED("UAE Dirham",      "د.إ"),
-    SAR("Saudi Riyal",     "﷼");
+    DKK("Danish Krone", "kr"),
+    AED("UAE Dirham", "د.إ"),
+    SAR("Saudi Riyal", "﷼");
 
     private final String displayName;
     private final String symbol;
@@ -31,7 +31,7 @@ public enum Currency {
     public String getDisplayName() {
         return displayName;
     }
- 
+
     public String getSymbol() {
         return symbol;
     }

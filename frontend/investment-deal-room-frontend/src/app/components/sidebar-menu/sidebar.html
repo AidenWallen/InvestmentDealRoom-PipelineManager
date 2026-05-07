@@ -5,9 +5,7 @@
 >
   <div class="flex items-center px-4 py-5 min-h-15">
     @if (!collapsed()) {
-      <span class="text-accent font-semibold text-base whitespace-nowrap">
-        DealFlow
-      </span>
+      <span class="text-accent font-semibold text-base whitespace-nowrap"> DealFlow </span>
     }
     <button
       class="ml-auto text-text-tertiary hover:text-text-primary p-1 rounded cursor-pointer transition-colors"
@@ -17,7 +15,6 @@
     </button>
   </div>
 
-  
   <nav class="flex flex-col gap-1 px-2">
     @for (item of navItems; track item.route) {
       <a

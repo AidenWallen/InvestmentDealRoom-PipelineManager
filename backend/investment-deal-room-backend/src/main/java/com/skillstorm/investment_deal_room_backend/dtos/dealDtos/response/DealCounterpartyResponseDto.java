@@ -8,17 +8,16 @@ import jakarta.validation.constraints.NotNull;
 
 public record DealCounterpartyResponseDto(
 
-    @NotBlank String dealId,
-    @NotBlank String counterpartyId,
-    @NotNull DealRole dealRole
-    
+        @NotBlank String dealId,
+        @NotBlank String counterpartyId,
+        @NotNull DealRole dealRole
+
 ) {
 
-    public static DealCounterpartyResponseDto fromEntity(DealCounterparty dealCounterparty){
+    public static DealCounterpartyResponseDto fromEntity(DealCounterparty dealCounterparty) {
         return new DealCounterpartyResponseDto(
-            dealCounterparty.getDealId(),
-            dealCounterparty.getCounterpartyId(),
-            dealCounterparty.getDealRole()
-        );
+                dealCounterparty.getDealId(),
+                dealCounterparty.getCounterpartyId(),
+                dealCounterparty.getDealRole());
     }
 }

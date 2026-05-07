@@ -24,5 +24,5 @@ public class DealActivityController {
     public ResponseEntity<List<DealActivityResponseDto>> getDealActivity(@PathVariable String dealId) {
         return ResponseEntity.ok(dealActivityService.getActivitiesFeed(dealId));
     }
-    
+
 }

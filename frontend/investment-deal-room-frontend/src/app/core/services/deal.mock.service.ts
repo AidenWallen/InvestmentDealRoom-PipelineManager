@@ -15,15 +15,25 @@ export class MockDealService {
       targetCompany: 'TechCorp',
       estimatedValue: 500010000,
       currency: Currency.USD,
-      pipelineStage: PipelineStage.DUE_DILIGENCE
-    }
+      pipelineStage: PipelineStage.DUE_DILIGENCE,
+    },
   ];
-  getDealById(id: string) { return of(this.deals.find(d => d.id === id)); }
-  getDeals()   { return of(this.deals); }
-  createDeal(deal: any) { return of({ ...deal, id: crypto.randomUUID() }); }
-  updateDeal(id: string, deal: any) { return of({ id, ...deal }); }
-  deleteDeal(id: string) { return of(void 0); }
+  getDealById(id: string) {
+    return of(this.deals.find((d) => d.id === id));
+  }
+  getDeals() {
+    return of(this.deals);
+  }
+  createDeal(deal: any) {
+    return of({ ...deal, id: crypto.randomUUID() });
+  }
+  updateDeal(id: string, deal: any) {
+    return of({ id, ...deal });
+  }
+  deleteDeal(id: string) {
+    return of(void 0);
+  }
   updateStage(id: string, toStage: PipelineStage) {
-   return of({ ...this.deals.find(d => d.id === id)!, pipelineStage: toStage });
+    return of({ ...this.deals.find((d) => d.id === id)!, pipelineStage: toStage });
   }
 }

@@ -19,14 +19,14 @@ public class UserService {
 
     public UserResponseDto getDepartment(String azureId) {
         User user = userRepository.findById(azureId)
-            .orElseThrow(() -> new UserNotFoundException(azureId));
+                .orElseThrow(() -> new UserNotFoundException(azureId));
         return UserResponseDto.fromEntity(user);
     }
 
     @Transactional
     public UserResponseDto upsertDepartment(String azureId, String department) {
         User user = userRepository.findById(azureId)
-            .orElse(User.builder().azureId(azureId).build());
+                .orElse(User.builder().azureId(azureId).build());
         user.setDepartment(department);
         return UserResponseDto.fromEntity(userRepository.save(user));
     }

@@ -58,13 +58,13 @@ public class DealCounterpartyServiceTest {
 
     @Mock
     private CounterpartyService counterpartyService;
-    
-    @Mock 
+
+    @Mock
     private DealActivityService dealActivityService;
 
     @InjectMocks
     private DealCounterpartyService dcpService;
-    
+
     /**
      * 
      * TEST LINK DEAL TO COUNTERPARTY
@@ -81,23 +81,20 @@ public class DealCounterpartyServiceTest {
         Counterparty counterparty = new Counterparty();
         counterparty.setId("0000");
 
-        DealCounterparty savedDcp =
-            DealCounterpartyTestFactory.buildDealCounterparty();
+        DealCounterparty savedDcp = DealCounterpartyTestFactory.buildDealCounterparty();
 
         when(dealService.getDealEntityById("0000"))
-            .thenReturn(deal);
+                .thenReturn(deal);
 
         when(counterpartyService.getCounterpartyEntityById("0000"))
-            .thenReturn(counterparty);
+                .thenReturn(counterparty);
 
         when(dcpRepository.save(any(DealCounterparty.class)))
-            .thenReturn(savedDcp);
+                .thenReturn(savedDcp);
 
-        LinkDealCounterpartyRequestDto request =
-            DealCounterpartyTestFactory.buildDealLinkRequest();
+        LinkDealCounterpartyRequestDto request = DealCounterpartyTestFactory.buildDealLinkRequest();
 
-        DealCounterpartyResponseDto result =
-            dcpService.linkDealToCounterparty("0000", request);
+        DealCounterpartyResponseDto result = dcpService.linkDealToCounterparty("0000", request);
 
         assertEquals(request.counterpartyId(), result.counterpartyId());
         assertEquals("0000", result.dealId());
@@ -110,23 +107,20 @@ public class DealCounterpartyServiceTest {
     @DisplayName("linkCounterpartyToDeal: valid request should create and return a DealCounterparty")
     void testLinkCounterpartyToDeal() {
 
-        DealCounterparty savedDcp =
-            DealCounterpartyTestFactory.buildDealCounterparty();
+        DealCounterparty savedDcp = DealCounterpartyTestFactory.buildDealCounterparty();
 
         when(counterpartyService.getCounterpartyEntityById("0000"))
-            .thenReturn(new Counterparty());
+                .thenReturn(new Counterparty());
 
         when(dealService.getDealEntityById("0000"))
-            .thenReturn(new Deal());
+                .thenReturn(new Deal());
 
         when(dcpRepository.save(any(DealCounterparty.class)))
-            .thenReturn(savedDcp);
+                .thenReturn(savedDcp);
 
-        LinkCounterpartyDealRequestDto request =
-            DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
+        LinkCounterpartyDealRequestDto request = DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
 
-        DealCounterpartyResponseDto result =
-            dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
+        DealCounterpartyResponseDto result = dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
 
         assertEquals("0000", result.counterpartyId());
         assertEquals(request.dealId(), result.dealId());
@@ -139,11 +133,10 @@ public class DealCounterpartyServiceTest {
     @DisplayName("linkDealToCounterparty: throws exception when deal does not exist")
     void testLinkDealToCounterpartyDealNotFound() {
 
-        LinkDealCounterpartyRequestDto request =
-            DealCounterpartyTestFactory.buildDealLinkRequest();
+        LinkDealCounterpartyRequestDto request = DealCounterpartyTestFactory.buildDealLinkRequest();
 
         when(dealService.getDealEntityById("0000"))
-            .thenThrow(new DealNotFoundException("0000"));
+                .thenThrow(new DealNotFoundException("0000"));
 
         assertThrows(DealNotFoundException.class, () -> {
             dcpService.linkDealToCounterparty("0000", request);
@@ -156,11 +149,10 @@ public class DealCounterpartyServiceTest {
     @DisplayName("linkCounterpartyToDeal: throws exception when counterparty does not exist")
     void testLinkCounterpartyToDealCounterpartyNotFound() {
 
-        LinkCounterpartyDealRequestDto request =
-            DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
+        LinkCounterpartyDealRequestDto request = DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
 
         when(counterpartyService.getCounterpartyEntityById("0000"))
-            .thenThrow(new CounterpartyNotFoundException("0000"));
+                .thenThrow(new CounterpartyNotFoundException("0000"));
 
         assertThrows(CounterpartyNotFoundException.class, () -> {
             dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
@@ -173,17 +165,16 @@ public class DealCounterpartyServiceTest {
     @DisplayName("linkDealToCounterparty: throws exception when link already exists")
     void testLinkDealToCounterpartyDuplicate() {
 
-        LinkDealCounterpartyRequestDto request =
-            DealCounterpartyTestFactory.buildDealLinkRequest();
+        LinkDealCounterpartyRequestDto request = DealCounterpartyTestFactory.buildDealLinkRequest();
 
         when(dealService.getDealEntityById("0000"))
-            .thenReturn(new Deal());
+                .thenReturn(new Deal());
 
         when(counterpartyService.getCounterpartyEntityById("0000"))
-            .thenReturn(new Counterparty());
+                .thenReturn(new Counterparty());
 
         when(dcpRepository.save(any(DealCounterparty.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealCounterpartyAlreadyExistsException.class, () -> {
             dcpService.linkDealToCounterparty("0000", request);
@@ -196,17 +187,16 @@ public class DealCounterpartyServiceTest {
     @DisplayName("linkCounterpartyToDeal: throws exception when link already exists")
     void testLinkCounterpartyToDealDuplicate() {
 
-        LinkCounterpartyDealRequestDto request =
-            DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
+        LinkCounterpartyDealRequestDto request = DealCounterpartyTestFactory.buildCounterpartyLinkRequest();
 
         when(counterpartyService.getCounterpartyEntityById("0000"))
-            .thenReturn(new Counterparty());
+                .thenReturn(new Counterparty());
 
         when(dealService.getDealEntityById("0000"))
-            .thenReturn(new Deal());
+                .thenReturn(new Deal());
 
         when(dcpRepository.save(any(DealCounterparty.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealCounterpartyAlreadyExistsException.class, () -> {
             dcpService.linkCounterpartyToDeal("0000", request, "counterparty-1");
@@ -226,17 +216,16 @@ public class DealCounterpartyServiceTest {
     void testGetCounterpartiesByDealId() {
 
         DealCounterparty dcp1 = DealCounterpartyTestFactory.buildDealCounterparty()
-            .toBuilder().dealId("deal-1").counterpartyId("cp-1").build();
+                .toBuilder().dealId("deal-1").counterpartyId("cp-1").build();
 
         DealCounterparty dcp2 = DealCounterpartyTestFactory.buildDealCounterparty()
-            .toBuilder().dealId("deal-1").counterpartyId("cp-2").build();
+                .toBuilder().dealId("deal-1").counterpartyId("cp-2").build();
 
         List<DealCounterparty> mockList = List.of(dcp1, dcp2);
 
         when(dcpRepository.findByDealId("deal-1")).thenReturn(mockList);
 
-        List<DealCounterpartyResponseDto> result =
-            dcpService.getCounterpartiesByDealId("deal-1");
+        List<DealCounterpartyResponseDto> result = dcpService.getCounterpartiesByDealId("deal-1");
 
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(r -> r.counterpartyId().equals("cp-1")));
@@ -250,17 +239,16 @@ public class DealCounterpartyServiceTest {
     void testGetDealsByCounterpartyId() {
 
         DealCounterparty dcp1 = DealCounterpartyTestFactory.buildDealCounterparty()
-            .toBuilder().counterpartyId("cp-1").dealId("deal-1").build();
+                .toBuilder().counterpartyId("cp-1").dealId("deal-1").build();
 
         DealCounterparty dcp2 = DealCounterpartyTestFactory.buildDealCounterparty()
-            .toBuilder().counterpartyId("cp-1").dealId("deal-2").build();
+                .toBuilder().counterpartyId("cp-1").dealId("deal-2").build();
 
         List<DealCounterparty> mockList = List.of(dcp1, dcp2);
 
         when(dcpRepository.findByCounterpartyId("cp-1")).thenReturn(mockList);
 
-        List<DealCounterpartyResponseDto> result =
-            dcpService.getDealsByCounterpartyId("cp-1");
+        List<DealCounterpartyResponseDto> result = dcpService.getDealsByCounterpartyId("cp-1");
 
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(r -> r.dealId().equals("deal-1")));
@@ -274,11 +262,9 @@ public class DealCounterpartyServiceTest {
     void testGetCounterpartiesByDealIdNotFound() {
 
         when(dcpRepository.findByDealId("deal-1"))
-            .thenReturn(List.of());
+                .thenReturn(List.of());
 
-        assertThrows(DealNotFoundException.class, () ->
-            dcpService.getCounterpartiesByDealId("deal-1")
-        );
+        assertThrows(DealNotFoundException.class, () -> dcpService.getCounterpartiesByDealId("deal-1"));
 
         verify(dcpRepository).findByDealId("deal-1");
     }
@@ -288,11 +274,9 @@ public class DealCounterpartyServiceTest {
     void testGetDealsByCounterpartyIdNotFound() {
 
         when(dcpRepository.findByCounterpartyId("cp-1"))
-            .thenReturn(List.of());
+                .thenReturn(List.of());
 
-        assertThrows(CounterpartyNotFoundException.class, () ->
-            dcpService.getDealsByCounterpartyId("cp-1")
-        );
+        assertThrows(CounterpartyNotFoundException.class, () -> dcpService.getDealsByCounterpartyId("cp-1"));
 
         verify(dcpRepository).findByCounterpartyId("cp-1");
     }
@@ -338,6 +322,5 @@ public class DealCounterpartyServiceTest {
 
         verify(dcpRepository, never()).delete(any());
     }
-
 
 }

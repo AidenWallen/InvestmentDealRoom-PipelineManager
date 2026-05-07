@@ -1,5 +1,4 @@
 <div class="min-h-screen p-6 bg-bg-canvas text-text-primary">
-
   <h1 class="text-2xl font-semibold pb-3">Counterparties</h1>
 
   <div class="flex justify-between items-center mb-4">
@@ -8,7 +7,8 @@
       [ngModel]="searchQuery()"
       (ngModelChange)="searchQuery.set($event)"
       [pt]="{ root: 'p-2 border-2 bg-bg w-96' }"
-      placeholder="Search counterparties..." />
+      placeholder="Search counterparties..."
+    />
 
     <p-button (click)="handleCreate()">+ New Counterparty</p-button>
   </div>
@@ -17,13 +17,12 @@
   <div class="bg-surface rounded-md shadow-md p-4">
     @if (isLoading()) {
       <div class="flex justify-center items-center py-16">
-        <p-progressSpinner strokeWidth="2" [style]="{'width':'2rem','height':'2rem'}" />
+        <p-progressSpinner strokeWidth="2" [style]="{ width: '2rem', height: '2rem' }" />
       </div>
     } @else {
       <app-counterparty-table [counterparties]="filteredCounterparties()" [error]="loadError()" />
     }
   </div>
-
 
   <!-- Create dialog -->
   <p-dialog
@@ -32,38 +31,60 @@
     (visibleChange)="showFormDialog.set($event); createError.set(null)"
     [modal]="true"
     [style]="{ width: '480px' }"
-    [closable]="true">
-
+    [closable]="true"
+  >
     <form
       [formGroup]="form"
       (ngSubmit)="saveCounterparty()"
-      class="flex flex-col gap-4 font-mono text-sm p-1">
-
+      class="flex flex-col gap-4 font-mono text-sm p-1"
+    >
       <p-floatlabel variant="in" class="flex">
         <input
-          pInputText id="organizationName" formControlName="organizationName" class="w-full pt-8 pl-1"
-          [class.ng-invalid]="form.get('organizationName')?.invalid && form.get('organizationName')?.touched" />
+          pInputText
+          id="organizationName"
+          formControlName="organizationName"
+          class="w-full pt-8 pl-1"
+          [class.ng-invalid]="
+            form.get('organizationName')?.invalid && form.get('organizationName')?.touched
+          "
+        />
         <label for="organizationName">Organization Name</label>
       </p-floatlabel>
 
       <p-floatlabel variant="in" class="flex">
         <input
-          pInputText id="contactName" formControlName="contactName" class="w-full pt-8 pl-1"
-          [class.ng-invalid]="form.get('contactName')?.invalid && form.get('contactName')?.touched" />
+          pInputText
+          id="contactName"
+          formControlName="contactName"
+          class="w-full pt-8 pl-1"
+          [class.ng-invalid]="form.get('contactName')?.invalid && form.get('contactName')?.touched"
+        />
         <label for="contactName">Contact Name</label>
       </p-floatlabel>
 
       <p-floatlabel variant="in" class="flex">
         <input
-          pInputText id="contactEmail" formControlName="contactEmail" class="w-full pt-8 pl-1"
-          [class.ng-invalid]="form.get('contactEmail')?.invalid && form.get('contactEmail')?.touched" />
+          pInputText
+          id="contactEmail"
+          formControlName="contactEmail"
+          class="w-full pt-8 pl-1"
+          [class.ng-invalid]="
+            form.get('contactEmail')?.invalid && form.get('contactEmail')?.touched
+          "
+        />
         <label for="contactEmail">Contact Email</label>
       </p-floatlabel>
 
       <p-floatlabel variant="in" class="flex">
         <input
-          pInputText id="contactPhone" formControlName="contactPhone" class="w-full pt-8 pl-1"
-          [class.ng-invalid]="form.get('contactPhone')?.invalid && form.get('contactPhone')?.touched" />
+          pInputText
+          id="contactPhone"
+          formControlName="contactPhone"
+          class="w-full pt-8 pl-1"
+          [class.ng-invalid]="
+            form.get('contactPhone')?.invalid && form.get('contactPhone')?.touched
+          "
+        />
         <label for="contactPhone">Contact Phone</label>
       </p-floatlabel>
 
@@ -75,8 +96,6 @@
         }
         <p-button type="submit" [disabled]="form.invalid">Create</p-button>
       </div>
-
     </form>
   </p-dialog>
-
 </div>

@@ -11,7 +11,8 @@ export class ActivityFeedService {
   constructor(private http: HttpClient) {}
 
   getActivitiesByDealId(dealId: string): Observable<DealActivity[]> {
-    return this.http.get<DealActivity[]>(`${this.URL}/${dealId}/activity`)
+    return this.http
+      .get<DealActivity[]>(`${this.URL}/${dealId}/activity`)
       .pipe(catchError(() => of([])));
   }
 }

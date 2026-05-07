@@ -7,10 +7,10 @@ public enum PipelineStage {
     CLOSING("Closing", false),
     CLOSED_WON("Closed Won", true),
     CLOSED_LOST("Closed Lost", true);
- 
+
     private final String displayName;
     private final boolean terminal;
- 
+
     PipelineStage(String displayName, boolean terminal) {
         this.displayName = displayName;
         this.terminal = terminal;
@@ -23,5 +23,5 @@ public enum PipelineStage {
     public boolean isTerminal() {
         return terminal;
     }
- 
+
 }

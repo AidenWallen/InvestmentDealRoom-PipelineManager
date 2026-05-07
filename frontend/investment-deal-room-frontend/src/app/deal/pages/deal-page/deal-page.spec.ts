@@ -8,9 +8,8 @@ describe('DealPage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DealPage]
-    })
-    .compileComponents();
+      imports: [DealPage],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DealPage);
     component = fixture.componentInstance;

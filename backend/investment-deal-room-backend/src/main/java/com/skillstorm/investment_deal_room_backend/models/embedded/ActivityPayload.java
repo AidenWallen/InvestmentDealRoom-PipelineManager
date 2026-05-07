@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityPayload {
 
-    
     private PipelineStage fromStage;
     private PipelineStage toStage;
 

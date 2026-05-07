@@ -7,5 +7,5 @@ export enum Currency {
   CAD = 'CAD',
   CHF = 'CHF',
   CNY = 'CNY',
-  HKD = 'HKD'
+  HKD = 'HKD',
 }

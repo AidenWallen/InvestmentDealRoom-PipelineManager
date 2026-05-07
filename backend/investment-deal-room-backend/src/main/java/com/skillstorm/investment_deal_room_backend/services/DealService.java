@@ -18,7 +18,6 @@ import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.repositories.DealCounterpartyRepository;
 import com.skillstorm.investment_deal_room_backend.repositories.DealRepository;
 
-
 @Service
 public class DealService {
     private final DealRepository dealRepository;
@@ -27,15 +26,16 @@ public class DealService {
 
     // Define valid pipeline stage transitions
     private static final Map<PipelineStage, List<PipelineStage>> PIPELINE_TRANSITIONS = Map.of(
-        PipelineStage.PROSPECTING, List.of(PipelineStage.DUE_DILIGENCE),
-        PipelineStage.DUE_DILIGENCE, List.of(PipelineStage.NEGOTIATION, PipelineStage.PROSPECTING),
-        PipelineStage.NEGOTIATION, List.of(PipelineStage.CLOSING, PipelineStage.DUE_DILIGENCE),
-        PipelineStage.CLOSING, List.of(PipelineStage.CLOSED_WON, PipelineStage.CLOSED_LOST, PipelineStage.NEGOTIATION),
-        PipelineStage.CLOSED_WON, List.of(),
-        PipelineStage.CLOSED_LOST, List.of()
-    );
+            PipelineStage.PROSPECTING, List.of(PipelineStage.DUE_DILIGENCE),
+            PipelineStage.DUE_DILIGENCE, List.of(PipelineStage.NEGOTIATION, PipelineStage.PROSPECTING),
+            PipelineStage.NEGOTIATION, List.of(PipelineStage.CLOSING, PipelineStage.DUE_DILIGENCE),
+            PipelineStage.CLOSING,
+            List.of(PipelineStage.CLOSED_WON, PipelineStage.CLOSED_LOST, PipelineStage.NEGOTIATION),
+            PipelineStage.CLOSED_WON, List.of(),
+            PipelineStage.CLOSED_LOST, List.of());
 
-    public DealService(DealRepository dealRepository, DealCounterpartyRepository dealCounterpartyRepository, DealActivityService dealActivityService) {
+    public DealService(DealRepository dealRepository, DealCounterpartyRepository dealCounterpartyRepository,
+            DealActivityService dealActivityService) {
         this.dealRepository = dealRepository;
         this.dealCounterpartyRepository = dealCounterpartyRepository;
         this.dealActivityService = dealActivityService;
@@ -55,31 +55,33 @@ public class DealService {
         }
     }
 
-
     public List<DealResponseDto> getAllDeals() {
         List<Deal> deals = dealRepository.findByDeletedFalse();
         return deals.stream()
-            .map(DealResponseDto::fromEntity)
-            .toList();
+                .map(DealResponseDto::fromEntity)
+                .toList();
     }
-
 
     public DealResponseDto getDealById(String id) {
         Deal deal = getDealEntityById(id);
         return DealResponseDto.fromEntity(deal);
     }
 
-
     @Transactional
     public DealResponseDto updateDeal(String id, UpdateDealRequestDto request) {
 
         Deal deal = getDealEntityById(id);
 
-        if (request.dealName() != null) deal.setDealName(request.dealName());
-        if (request.dealType() != null) deal.setDealType(request.dealType());
-        if (request.targetCompany() != null) deal.setTargetCompany(request.targetCompany());
-        if (request.estimatedValue() != null) deal.setEstimatedValue(request.estimatedValue());
-        if (request.currency() != null) deal.setCurrency(request.currency());
+        if (request.dealName() != null)
+            deal.setDealName(request.dealName());
+        if (request.dealType() != null)
+            deal.setDealType(request.dealType());
+        if (request.targetCompany() != null)
+            deal.setTargetCompany(request.targetCompany());
+        if (request.estimatedValue() != null)
+            deal.setEstimatedValue(request.estimatedValue());
+        if (request.currency() != null)
+            deal.setCurrency(request.currency());
 
         try {
             return DealResponseDto.fromEntity(dealRepository.save(deal));
@@ -93,9 +95,9 @@ public class DealService {
         Deal deal = getDealEntityById(id);
         PipelineStage currentStage = deal.getPipelineStage();
 
-
         if (!PIPELINE_TRANSITIONS.get(currentStage).contains(newStage)) {
-            throw new InvalidStageTransitionException("Invalid pipeline stage transition from " + currentStage + " to " + newStage);
+            throw new InvalidStageTransitionException(
+                    "Invalid pipeline stage transition from " + currentStage + " to " + newStage);
         }
 
         dealActivityService.logStageTransition(deal.getId(), userName, currentStage, newStage);
@@ -115,16 +117,16 @@ public class DealService {
         dealCounterpartyRepository.deleteByDealId(id);
     }
 
-
     /**
-     * Helper method to retrieve a Deal entity by ID, throwing an exception if not found.
+     * Helper method to retrieve a Deal entity by ID, throwing an exception if not
+     * found.
+     * 
      * @param id
      * @return
      */
     public final Deal getDealEntityById(String id) {
         return dealRepository.findByIdAndDeletedFalse(id)
-            .orElseThrow(() -> new DealNotFoundException(id));
+                .orElseThrow(() -> new DealNotFoundException(id));
     }
-
 
 }

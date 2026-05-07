@@ -26,71 +26,69 @@ public class DealActivityService {
     }
 
     // Logs a stage transition activity for a deal
-    public void logStageTransition(String dealId, String userName, 
-                                   PipelineStage fromStage, PipelineStage toStage) {
-        
+    public void logStageTransition(String dealId, String userName,
+            PipelineStage fromStage, PipelineStage toStage) {
+
         ActivityType transitionType = determineTransitionType(fromStage, toStage);
 
         DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(transitionType)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .payload(ActivityPayload.builder()
-                .fromStage(fromStage)
-                .toStage(toStage)
-                .build())
-            .build();
+                .dealId(dealId)
+                .activityType(transitionType)
+                .performedByName(userName)
+                .occurredAt(LocalDateTime.now())
+                .payload(ActivityPayload.builder()
+                        .fromStage(fromStage)
+                        .toStage(toStage)
+                        .build())
+                .build();
         dealActivityRepository.save(activity);
     }
 
     // Logs when a counterparty is linked to a deal
-    public void logCounterpartyLink(String dealId, String userName, 
-                                    String counterpartyId, String counterpartyName, DealRole role) {
+    public void logCounterpartyLink(String dealId, String userName,
+            String counterpartyId, String counterpartyName, DealRole role) {
         DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(ActivityType.COUNTERPARTY_LINKED)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .payload(ActivityPayload.builder()
-                .counterpartyId(counterpartyId)
-                .counterpartyName(counterpartyName)
-                .counterpartyRole(role)
-                .build())
-            .build();
+                .dealId(dealId)
+                .activityType(ActivityType.COUNTERPARTY_LINKED)
+                .performedByName(userName)
+                .occurredAt(LocalDateTime.now())
+                .payload(ActivityPayload.builder()
+                        .counterpartyId(counterpartyId)
+                        .counterpartyName(counterpartyName)
+                        .counterpartyRole(role)
+                        .build())
+                .build();
         dealActivityRepository.save(activity);
     }
 
     // Logs when a counterparty is unlinked from a deal
-    public void logCounterpartyUnlink(String dealId, String userName, 
-                                      String counterpartyId, String counterpartyName, DealRole role) {
+    public void logCounterpartyUnlink(String dealId, String userName,
+            String counterpartyId, String counterpartyName, DealRole role) {
         DealActivity activity = DealActivity.builder()
-            .dealId(dealId)
-            .activityType(ActivityType.COUNTERPARTY_UNLINKED)
-            .performedByName(userName)
-            .occurredAt(LocalDateTime.now())
-            .payload(ActivityPayload.builder()
-                .counterpartyId(counterpartyId)
-                .counterpartyName(counterpartyName)
-                .counterpartyRole(role)
-                .build())
-            .build();
+                .dealId(dealId)
+                .activityType(ActivityType.COUNTERPARTY_UNLINKED)
+                .performedByName(userName)
+                .occurredAt(LocalDateTime.now())
+                .payload(ActivityPayload.builder()
+                        .counterpartyId(counterpartyId)
+                        .counterpartyName(counterpartyName)
+                        .counterpartyRole(role)
+                        .build())
+                .build();
         dealActivityRepository.save(activity);
     }
-
 
     public List<DealActivityResponseDto> getActivitiesFeed(String dealId) {
         try {
             return dealActivityRepository.findByDealIdOrderByOccurredAtDesc(dealId).stream()
-                .filter(a -> a.getActivityType() != null)
-                .map(DealActivityResponseDto::fromEntity)
-                .toList();
+                    .filter(a -> a.getActivityType() != null)
+                    .map(DealActivityResponseDto::fromEntity)
+                    .toList();
         } catch (Exception e) {
             log.error("Failed to deserialize activity feed for deal {}: {}", dealId, e.getMessage());
             return List.of();
         }
     }
-
 
     private ActivityType determineTransitionType(PipelineStage from, PipelineStage to) {
         return to.ordinal() > from.ordinal() ? ActivityType.STAGE_ADVANCED : ActivityType.STAGE_REVERTED;

@@ -3,6 +3,6 @@ package com.skillstorm.investment_deal_room_backend.globalExceptionHandler.excep
 public class DealAlreadyExistsException extends DuplicateResourceException {
 
     public DealAlreadyExistsException(String dealName) {
-        super("Deal name '"+dealName+"' already exists.");
+        super("Deal name '" + dealName + "' already exists.");
     }
 }

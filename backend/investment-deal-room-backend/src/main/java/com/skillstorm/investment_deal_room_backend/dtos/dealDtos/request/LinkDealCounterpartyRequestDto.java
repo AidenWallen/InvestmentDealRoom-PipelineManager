@@ -7,15 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record LinkDealCounterpartyRequestDto(
-    @NotBlank String counterpartyId,
-    @NotNull DealRole dealRole
-) {
+        @NotBlank String counterpartyId,
+        @NotNull DealRole dealRole) {
 
-    public DealCounterparty toEntity(String dealId){
+    public DealCounterparty toEntity(String dealId) {
         return DealCounterparty.builder()
-            .dealId(dealId)
-            .counterpartyId(counterpartyId)
-            .dealRole(dealRole)
-            .build();
+                .dealId(dealId)
+                .counterpartyId(counterpartyId)
+                .dealRole(dealRole)
+                .build();
     }
 }
