@@ -3,6 +3,8 @@ package com.skillstorm.investment_deal_room_backend.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealActivityResponseDto;
@@ -15,6 +17,8 @@ import com.skillstorm.investment_deal_room_backend.repositories.DealActivityRepo
 
 @Service
 public class DealActivityService {
+    private static final Logger log = LoggerFactory.getLogger(DealActivityService.class);
+
     private final DealActivityRepository dealActivityRepository;
 
     public DealActivityService(DealActivityRepository dealActivityRepository) {
@@ -76,9 +80,15 @@ public class DealActivityService {
 
 
     public List<DealActivityResponseDto> getActivitiesFeed(String dealId) {
-        return dealActivityRepository.findByDealIdOrderByOccurredAtDesc(dealId).stream()
-            .map(DealActivityResponseDto::fromEntity)
-            .toList();
+        try {
+            return dealActivityRepository.findByDealIdOrderByOccurredAtDesc(dealId).stream()
+                .filter(a -> a.getActivityType() != null)
+                .map(DealActivityResponseDto::fromEntity)
+                .toList();
+        } catch (Exception e) {
+            log.error("Failed to deserialize activity feed for deal {}: {}", dealId, e.getMessage());
+            return List.of();
+        }
     }
 
 

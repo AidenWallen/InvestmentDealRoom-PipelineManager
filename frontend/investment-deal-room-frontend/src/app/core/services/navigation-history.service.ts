@@ -15,7 +15,13 @@ export class NavigationHistoryService {
         this.goingBack = false;
         return;
       }
-      this.history.push(e.urlAfterRedirects);
+      const url = e.urlAfterRedirects;
+      const isListPage = url.split('/').filter(s => s.length > 0).length <= 1;
+      if (isListPage) {
+        this.history = [url];
+      } else {
+        this.history.push(url);
+      }
     });
   }
 

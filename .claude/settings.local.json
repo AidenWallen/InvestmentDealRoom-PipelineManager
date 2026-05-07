@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\EY Training\\\\Project 2\\\\InvestmentDealRoom-PipelineManager\" -Directory | ForEach-Object { $_.Name })"
+    ]
+  }
+}

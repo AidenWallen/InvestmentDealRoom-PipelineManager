@@ -7,7 +7,11 @@
 
   <h1 class="text-lg font-bold text-text-primary mb-4">Counterparty Detail</h1>
 
-  @if (counterparty()) {
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-24">
+      <p-progressSpinner strokeWidth="2" [style]="{'width':'2rem','height':'2rem'}" />
+    </div>
+  } @else if (counterparty()) {
     <div class="bg-surface border border-border rounded p-4 mb-4">
 
       <!-- Header row -->
@@ -133,10 +137,10 @@
         <ng-template pTemplate="body" let-deal>
           <tr [pSelectableRow]="deal" class="cursor-pointer">
             <td class="font-semibold text-text-primary">{{ deal.dealName }}</td>
-            <td>{{ deal.dealType }}</td>
+            <td>{{ dealTypeLabel(deal.dealType) }}</td>
             <td>
               <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded">
-                {{ deal.pipelineStage }}
+                {{ pipelineStageLabel(deal.pipelineStage) }}
               </span>
             </td>
             <td>
@@ -156,7 +160,7 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center p-6 text-text-secondary">
-              No deals linked to this counterparty.
+              {{ loadError() ? 'Failed to load data.' : 'No deals linked to this counterparty.' }}
             </td>
           </tr>
         </ng-template>

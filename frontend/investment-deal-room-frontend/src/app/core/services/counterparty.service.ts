@@ -19,6 +19,11 @@ export class CounterpartyService {
     return this.http.get<Counterparty>(`${this.URL}/${id}`);
   }
 
+  getCounterpartiesByDealId(dealId: string): Observable<DealCounterpartyLink[]> {
+    return this.http.get<DealCounterpartyLink[]>(`${environment.apiBaseUrl}/deals/${dealId}/counterparties`)
+      .pipe(catchError(() => of([])));
+  }
+
   getDealsByCounterpartyId(counterpartyId: string): Observable<DealCounterpartyLink[]> {
     return this.http.get<DealCounterpartyLink[]>(`${this.URL}/${counterpartyId}/deals`)
       .pipe(catchError(() => of([])));

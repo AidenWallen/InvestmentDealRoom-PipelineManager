@@ -30,7 +30,7 @@
   <ng-template pTemplate="emptymessage">
     <tr>
       <td colspan="4" class="text-center p-6 text-text-secondary">
-        No counterparties found.
+        {{ error ? 'Failed to load data.' : 'No counterparties found.' }}
       </td>
     </tr>
   </ng-template>
