@@ -7,28 +7,30 @@
 
     <h1 class="text-lg font-bold text-text-primary mb-4">Deal Detail</h1>
 
+    @if (isLoading()) {
+        <div class="flex justify-center items-center py-24">
+            <p-progressSpinner strokeWidth="2" [style]="{'width':'2rem','height':'2rem'}" />
+        </div>
+    } @else if (deal()) {
 
-    @if (deal()) {
         <div class="bg-surface border border-border rounded p-4 mb-4">
 
             <div class="flex items-center justify-between mb-3">
-                <div class="flex flex-col"> 
-                    <span class="text-xl font-semibold text-text-primary pb-2 ">
+                <div class="flex flex-col">
+                    <span class="text-xl font-semibold text-text-primary pb-2">
                         {{ deal()!.dealName }}
                     </span>
-                    <div class="flex items-center gap-2"> 
+                    <div class="flex items-center gap-2">
                         <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
                             {{ dealTypeLabel(deal()!.dealType) }}
                         </span>
                         <span class="text-xs px-2 py-0.5 bg-amber-600/30 text-amber-400 border border-amber-700/50 rounded">
-                            {{ deal()!.pipelineStage }}
+                            {{ pipelineStageLabel(deal()!.pipelineStage) }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            
-            <!-- Pipeline staging UI component -->
             <div class="mb-4">
                 <p-steps [model]="pipelineStages" [activeIndex]="activeIndex" [readonly]="isClosed()"/>
                 @if (isClosed()) {
@@ -41,44 +43,35 @@
                     </div>
                 } @else if (deal()?.pipelineStage === PipelineStage.CLOSING) {
                     <div class="flex justify-center gap-3 mt-3">
-                        <p-button 
+                        <p-button
                             label="Mark as Won" severity="success" [outlined]="true"
                             size="small" icon="pi pi-check-circle"
                             (onClick)="advanceStage(PipelineStage.CLOSED_WON)" />
-                        <p-button 
+                        <p-button
                             label="Mark as Lost" severity="danger" [outlined]="true"
                             size="small" icon="pi pi-times-circle"
                             (onClick)="advanceStage(PipelineStage.CLOSED_LOST)" />
                     </div>
                 }
             </div>
-        
-        </div>
 
+        </div>
 
         <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)">
             <p-tablist>
                 @for (tab of tabs; track tab) {
-                    <p-tab [value]="tab">
-                        {{ tab }}
-                        @if (tab === 'Counterparties') {
-                            <!-- <p-badge [value]="linkedCounterparties().length.toString()" severity="secondary" class="ml-1" /> -->
-                        }
-                    </p-tab>
+                    <p-tab [value]="tab">{{ tab }}</p-tab>
                 }
             </p-tablist>
         </p-tabs>
 
-
-        @if(activeTab() === 'Overview'){
+        <!-- Overview -->
+        @if (activeTab() === 'Overview') {
             <div class="grid grid-cols-3 pt-2 gap-4">
 
-                <!-- Left: deal info -->
                 <div class="col-span-2">
-                    
                     <div class="bg-surface border border-border rounded p-4">
 
-                        <!-- Header row -->
                         <div class="flex items-center justify-between pb-1 mb-3">
                             <p class="text-xs text-text-tertiary font-bold">DEAL INFORMATION</p>
                             <div class="flex items-center gap-3 text-xs text-text-tertiary">
@@ -114,7 +107,6 @@
                             </div>
                         </div>
 
-                        <!-- Info grid -->
                         <form [formGroup]="form" class="grid grid-cols-2 gap-4 text-sm">
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">DEAL NAME</span>
@@ -159,7 +151,7 @@
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs text-text-tertiary">CURRENT STAGE</span>
                                 <span class="text-xs px-2 py-0.5 bg-amber-900/30 text-amber-400 border border-amber-700/50 rounded w-fit">
-                                    {{ deal()!.pipelineStage }}
+                                    {{ pipelineStageLabel(deal()!.pipelineStage) }}
                                 </span>
                             </div>
                             <div class="flex flex-col gap-1">
@@ -167,25 +159,23 @@
                                 <span class="font-semibold text-text-primary">{{ deal()!.assignedManagerId }}</span>
                             </div>
                         </form>
+
                     </div>
-                    
                 </div>
 
-                
-                <!-- Right: Activity Feed -->
                 <div class="col-span-1 bg-surface border-border rounded flex flex-col gap-4">
-                    <p class="text-xs text-text-tertiary font-bold mb-3 p-4 ">RECENT ACTIVITY</p>
-                    <div class="flex flex-col gap-3"> 
+                    <p class="text-xs text-text-tertiary font-bold mb-3 p-4">RECENT ACTIVITY</p>
+                    <div class="flex flex-col gap-3 px-4">
                         @for (activity of recentActivities(); track activity.id) {
                             <div class="flex flex-col gap-0.5 text-xs">
                                 <div class="text-text-primary">
-                                    <span class="font-bold">{{ activity.performedBy }}</span>
-                                    <span class="text-text-secondary"> Placeholder </span>
+                                    <span class="font-bold">{{ activity.performedByName }}</span>
+                                    <span class="text-text-secondary"> {{ activity.activityType }}</span>
                                 </div>
-                                <span class="text-text-tertiary">
-                                    PH-1 · PH-2 
-                                </span>
+                                <span class="text-text-tertiary">{{ formatDate(activity.occurredAt) }}</span>
                             </div>
+                        } @empty {
+                            <span class="text-text-tertiary text-xs">No recent activity.</span>
                         }
                     </div>
                     <button class="text-xs text-accent hover:underline mt-3 p-4 flex items-center gap-1"
@@ -194,82 +184,133 @@
                     </button>
                 </div>
 
-
-
             </div>
-        } 
+        }
 
+        <!-- Counterparties -->
         @if (activeTab() === 'Counterparties') {
-          <div class="bg-surface border border-border rounded p-4">
-            <div class="flex justify-between items-center mb-3">
-              <p class="text-xs text-text-tertiary font-bold">LINKED COUNTERPARTIES</p>
-              @if (auth.canWrite) {
-                <p-button label="+ LINK" class="text-xs" />
-              }
-            </div>
-
-            @if (true) {
-              <span class="text-text-tertiary text-xs">NO COUNTERPARTIES LINKED</span>
-            }
-
-            <div class="flex flex-col gap-2">
-              @for (i of [1,2, 3, 4]; track i) {
-                <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors">
-                  <div class="flex items-center gap-3">
-                    <!-- Avatar initials -->
-                    <div class="w-8 h-8 rounded bg-elevated flex items-center justify-center text-xs font-bold text-accent">
-                      PH-8
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="text-sm font-semibold text-text-primary"> PH-7 </span>
-                      <span class="text-xs text-text-tertiary"> PH-4 . PH-5</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs px-2 py-0.5 bg-surface-2 border border-border rounded text-text-secondary">
-                        PH-3
-                    </span>
+            <div class="bg-surface border border-border rounded p-4 mt-2">
+                <div class="flex justify-between items-center mb-3">
+                    <p class="text-xs text-text-tertiary font-bold">LINKED COUNTERPARTIES</p>
                     @if (auth.canWrite) {
-                      <button class="text-text-tertiary hover:text-red-400 transition-colors">
-                        <i class="pi pi-times text-xs"></i>
-                      </button>
+                        <button class="text-xs px-2 py-0.5 text-accent border border-accent-strong rounded bg-accent-soft hover:opacity-80 flex items-center gap-1 transition-colors cursor-pointer"
+                            (click)="openLinkCounterpartyDialog()">
+                            <i class="pi pi-link text-xs"></i> Link
+                        </button>
                     }
-                  </div>
                 </div>
-              }
+
+                <div class="flex flex-col gap-2">
+                    @for (cp of linkedCounterparties(); track cp.id) {
+                        <div class="flex items-center justify-between border border-border rounded px-3 py-2.5 hover:border-border-strong transition-colors cursor-pointer"
+                            (click)="navigateToCounterparty(cp)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-elevated flex items-center justify-center text-xs font-bold text-accent">
+                                    {{ initials(cp.organizationName) }}
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-sm font-semibold text-text-primary">{{ cp.organizationName }}</span>
+                                    <span class="text-xs text-text-tertiary">{{ cp.contactName }} · {{ cp.contactEmail }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs px-2 py-0.5 bg-accent-soft text-accent border border-accent-strong rounded">
+                                    {{ cp.dealRole }}
+                                </span>
+                                @if (auth.canWrite) {
+                                    <button class="text-text-tertiary hover:text-red-400 transition-colors cursor-pointer"
+                                        (click)="$event.stopPropagation(); openUnlinkDialog(cp)">
+                                        <i class="pi pi-times text-xs"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    } @empty {
+                        <span class="text-text-tertiary text-xs">No counterparties linked to this deal.</span>
+                    }
+                </div>
             </div>
-          </div>
         }
 
-        <!-- Activity Tab -->
+        <!-- Activity -->
         @if (activeTab() === 'Activity') {
-          <div class="bg-surface border border-border rounded p-4">
-            <p class="text-xs text-text-tertiary font-bold mb-3">ALL ACTIVITY</p>
-            <div class="flex flex-col gap-3">
-              @for (activity of activities(); track activity.id) {
-                <div class="flex gap-3 border-l-2 border-accent pl-3 py-1">
-                  <div class="flex flex-col gap-0.5">
-                    <div class="text-xs text-text-primary">
-                      <span class="font-bold">{{ activity.performedBy }}</span>
-                      <span class="text-text-secondary"> Description </span>
+            <div class="bg-surface border border-border rounded p-4 mt-2">
+                <p class="text-xs text-text-tertiary font-bold mb-3">ALL ACTIVITY</p>
+
+                @if (activities().length === 0) {
+                    <span class="text-text-tertiary text-xs">No activity recorded for this deal.</span>
+                } @else {
+                    <div class="flex flex-col gap-3">
+                        @for (activity of activities(); track activity.id) {
+                            <div class="flex gap-3 border-l-2 border-accent pl-3 py-1">
+                                <div class="flex flex-col gap-0.5">
+                                    <div class="text-xs text-text-primary">
+                                        <span class="font-bold">{{ activity.performedByName }}</span>
+                                        <span class="text-text-secondary"> · {{ activity.activityType }}</span>
+                                    </div>
+                                    <span class="text-xs text-text-tertiary">{{ activityDescription(activity) }}</span>
+                                    <span class="text-xs text-text-tertiary">{{ formatDate(activity.occurredAt) }}</span>
+                                </div>
+                            </div>
+                        }
                     </div>
-                    <span class="text-xs text-text-tertiary">
-                     TimeStamp · Action
-                    </span>
-                  </div>
-                </div>
-              }
+                }
             </div>
-          </div>
         }
+
     }
 </div>
 
 
+<p-dialog
+    header="Link Counterparty"
+    [visible]="showLinkCounterpartyDialog()"
+    (visibleChange)="showLinkCounterpartyDialog.set($event)"
+    [modal]="true"
+    [style]="{ width: '440px' }"
+    [closable]="true">
+    <form [formGroup]="linkCounterpartyForm" (ngSubmit)="linkCounterparty()"
+          class="flex flex-col gap-4 font-mono text-sm p-1">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs text-text-tertiary">COUNTERPARTY</label>
+            <p-select
+                formControlName="counterpartyId"
+                [options]="availableCounterparties()"
+                optionLabel="organizationName"
+                optionValue="id"
+                [filter]="true"
+                filterBy="organizationName"
+                placeholder="Search counterparties..."
+                appendTo="body"
+                class="w-full" />
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs text-text-tertiary">ROLE</label>
+            <p-select
+                formControlName="dealRole"
+                [options]="dealRoleOptions"
+                placeholder="Select role..."
+                appendTo="body"
+                class="w-full" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <p-button type="button" severity="secondary" [outlined]="true"
+                (click)="showLinkCounterpartyDialog.set(false)">Cancel</p-button>
+            <p-button type="submit" [disabled]="linkCounterpartyForm.invalid">Link</p-button>
+        </div>
+    </form>
+</p-dialog>
+
+<app-delete-confirmation-modal
+    [visible]="showUnlinkDialog()"
+    [recordName]="counterpartyToUnlink()?.organizationName ?? ''"
+    header="Confirm Unlink"
+    actionLabel="UNLINK"
+    (confirmed)="confirmUnlink()"
+    (cancelled)="showUnlinkDialog.set(false)" />
 
 <app-delete-confirmation-modal
   [visible]="showDeleteDialog()"
   [recordName]="deal()?.dealName ?? ''"
   (confirmed)="deleteDeal()"
   (cancelled)="showDeleteDialog.set(false)" />
-

@@ -27,19 +27,19 @@
     <tr
       [pSelectableRow]="deal"
     >
-      <td>{{deal.dealName }}</td>
-      <td>{{ deal.dealType }}</td>
+      <td>{{ deal.dealName }}</td>
+      <td>{{ dealTypeLabel(deal.dealType) }}</td>
       <td>{{ deal.targetCompany }}</td>
-      <td>{{deal.estimatedValue }}</td>
+      <td>{{ deal.estimatedValue }}</td>
       <td>{{ deal.currency }}</td>
-      <td>{{ deal.pipelineStage }}</td>
+      <td>{{ pipelineStageLabel(deal.pipelineStage) }}</td>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="emptymessage">
     <tr>
       <td colspan="6" class="text-center p-6 text-text-secondary">
-        No deals found.
+        {{ error ? 'Failed to load data.' : 'No deals found.' }}
       </td>
     </tr>
   </ng-template>

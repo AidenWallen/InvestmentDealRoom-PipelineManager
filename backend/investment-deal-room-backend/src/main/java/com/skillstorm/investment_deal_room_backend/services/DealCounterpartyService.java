@@ -10,9 +10,7 @@ import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkCou
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.request.LinkDealCounterpartyRequestDto;
 import com.skillstorm.investment_deal_room_backend.dtos.dealDtos.response.DealCounterpartyResponseDto;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.DuplicateResourceExceptions.DealCounterpartyAlreadyExistsException;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.CounterpartyNotFoundException;
 import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealCounterpartyNotFoundException;
-import com.skillstorm.investment_deal_room_backend.globalExceptionHandler.exceptions.NotFoundExceptions.DealNotFoundException;
 import com.skillstorm.investment_deal_room_backend.models.Counterparty;
 import com.skillstorm.investment_deal_room_backend.models.Deal;
 import com.skillstorm.investment_deal_room_backend.models.DealCounterparty;
@@ -38,23 +36,13 @@ public class DealCounterpartyService {
     }
 
     public List<DealCounterpartyResponseDto> getCounterpartiesByDealId(String dealId) {
-        List<DealCounterparty> list = dcpRepository.findByDealId(dealId);
-
-        if (list.isEmpty())
-            throw new DealNotFoundException(dealId);
-
-        return list.stream()
+        return dcpRepository.findByDealId(dealId).stream()
                 .map(DealCounterpartyResponseDto::fromEntity)
                 .toList();
     }
 
     public List<DealCounterpartyResponseDto> getDealsByCounterpartyId(String counterpartyId) {
-        List<DealCounterparty> list = dcpRepository.findByCounterpartyId(counterpartyId);
-
-        if (list.isEmpty())
-            throw new CounterpartyNotFoundException(counterpartyId);
-
-        return list.stream()
+        return dcpRepository.findByCounterpartyId(counterpartyId).stream()
                 .map(DealCounterpartyResponseDto::fromEntity)
                 .toList();
     }

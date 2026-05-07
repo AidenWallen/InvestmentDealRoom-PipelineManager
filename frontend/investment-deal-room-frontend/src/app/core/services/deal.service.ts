@@ -23,10 +23,8 @@ export class DealService {
     return this.http.get<Deal>(`${this.URL}/${id}`);
   }
 
-  createDeal(deal: Deal): Observable<Deal> {
-    return this.http.post<Deal>(
-      `${this.URL}`, deal
-    );
+  createDeal(deal: Deal, userId: string): Observable<Deal> {
+    return this.http.post<Deal>(`${this.URL}?userId=${encodeURIComponent(userId)}`, deal);
   }
 
   updateDeal(

@@ -5,17 +5,19 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { DealService } from '../../../core/services/deal.service';
 import { UserService } from '../../services/user';
 import { Deal } from '../../../shared/models/deal.model';
 import { PipelineStage } from '../../../shared/enums/pipeline-stage.enum';
+import { DealType } from '../../../shared/enums/deal-type.enum';
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [FormsModule, TableModule, ButtonModule, SelectModule, DividerModule],
+  imports: [FormsModule, TableModule, ButtonModule, SelectModule, DividerModule, ProgressSpinnerModule],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })
@@ -28,7 +30,9 @@ export class ProfilePage implements OnInit {
   saving = signal(false);
   selectedDepartment = signal('');
 
-  allDeals = signal<Deal[]>([]);
+  allDeals       = signal<Deal[]>([]);
+  dealsLoading   = signal(true);
+  dealsLoadError = signal(false);
 
   myDeals = computed(() => {
     const uid = this.userId;
@@ -68,8 +72,8 @@ export class ProfilePage implements OnInit {
     }
 
     this.dealService.getDeals().subscribe({
-      next: (deals) => this.allDeals.set(deals),
-      error: (err) => console.error('Failed to load deals:', err),
+      next: (deals) => { this.allDeals.set(deals); this.dealsLoading.set(false); },
+      error: (err) => { console.error('Failed to load deals:', err); this.dealsLoading.set(false); this.dealsLoadError.set(true); },
     });
   }
 
@@ -84,9 +88,7 @@ export class ProfilePage implements OnInit {
   }
 
   get displayRole(): string {
-    const role = this.authService.role;
-    if (!role) return 'No Role';
-    return role === 'DealManager' ? 'Deal Manager' : role;
+    return this.authService.role ?? 'No Role';
   }
 
   get displayDepartment(): string {
@@ -116,6 +118,14 @@ export class ProfilePage implements OnInit {
 
   navigateToDeal(deal: Deal): void {
     if (deal.id) this.router.navigate(['/deals', deal.id]);
+  }
+
+  dealTypeLabel(key: string): string {
+    return DealType[key as keyof typeof DealType] ?? key;
+  }
+
+  pipelineStageLabel(key: string): string {
+    return PipelineStage[key as keyof typeof PipelineStage] ?? key;
   }
 
   stageClass(stage: string): string {
