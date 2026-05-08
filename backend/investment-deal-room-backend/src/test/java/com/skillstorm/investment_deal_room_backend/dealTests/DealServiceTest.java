@@ -115,7 +115,6 @@ public class DealServiceTest {
 
         assertThrows(DealAlreadyExistsException.class, () -> {
             dealService.createDeal(request, "manager-01", "Test User");
->>>>>>> main
         });
 
         verify(dealRepository).save(any(Deal.class));
