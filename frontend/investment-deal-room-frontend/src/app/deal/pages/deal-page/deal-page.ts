@@ -111,7 +111,7 @@ export class DealPage implements OnInit {
         error: (err) => console.error(err),
       });
     } else {
-      this.dealService.createDeal(payload, this.auth.userId).subscribe({
+      this.dealService.createDeal(payload).subscribe({
         next: (data) => {
           this.allDeals.update((list) => [...list, data]);
           this.showDealDialog.set(false);
