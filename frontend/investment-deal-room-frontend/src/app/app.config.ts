@@ -17,6 +17,7 @@ import {
 } from '@azure/msal-angular';
 import { msalGuardConfig, msalInstance, msalInterceptorConfig } from './core/auth/msal.config';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -48,5 +49,6 @@ export const appConfig: ApplicationConfig = {
     MsalService,
     MsalGuard,
     MsalBroadcastService,
+    MessageService,
   ],
 };
