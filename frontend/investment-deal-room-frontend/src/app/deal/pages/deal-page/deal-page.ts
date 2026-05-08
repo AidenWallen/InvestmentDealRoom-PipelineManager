@@ -16,6 +16,8 @@ import { DealForm } from '../../components/deal-form/deal-form';
 import { Currency } from '../../../shared/enums/currency.enum';
 import { Deal } from '../../../shared/models/deal.model';
 import { environment } from '../../../../environments/environments.development';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-deal-page',
@@ -30,6 +32,7 @@ import { environment } from '../../../../environments/environments.development';
     SelectModule,
     FormsModule,
     ProgressSpinnerModule,
+    ToastModule,
   ],
 })
 export class DealPage implements OnInit {
@@ -51,8 +54,9 @@ export class DealPage implements OnInit {
 
   constructor(
     private dealService: DealService,
-    private authService: AuthService,
+    public auth: AuthService,
     private formBuilder: FormBuilder,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit() {
@@ -107,10 +111,11 @@ export class DealPage implements OnInit {
         error: (err) => console.error(err),
       });
     } else {
-      this.dealService.createDeal(payload, this.authService.userId).subscribe({
+      this.dealService.createDeal(payload, this.auth.userId).subscribe({
         next: (data) => {
           this.allDeals.update((list) => [...list, data]);
           this.showDealDialog.set(false);
+          this.messageService.add({ severity: 'success', summary: 'Deal created', life: 3000 });
         },
         error: (err) => console.error(err),
       });

@@ -7,7 +7,10 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { CounterpartyService } from '../../../core/services/counterparty.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Counterparty } from '../../../shared/models/counterparty.model';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 import { CounterpartyTable } from '../../components/counterparty-table/counterparty-table';
 
 @Component({
@@ -22,6 +25,7 @@ import { CounterpartyTable } from '../../components/counterparty-table/counterpa
     InputTextModule,
     CounterpartyTable,
     ProgressSpinnerModule,
+    ToastModule,
   ],
   templateUrl: './counterparty-page.html',
 })
@@ -53,6 +57,8 @@ export class CounterpartyPage implements OnInit {
   constructor(
     private counterpartyService: CounterpartyService,
     private formBuilder: FormBuilder,
+    public auth: AuthService,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -95,6 +101,7 @@ export class CounterpartyPage implements OnInit {
       next: (created) => {
         this.allCounterparties.update((list) => [...list, created]);
         this.showFormDialog.set(false);
+        this.messageService.add({ severity: 'success', summary: 'Counterparty created', life: 3000 });
       },
       error: (err) => {
         const message =

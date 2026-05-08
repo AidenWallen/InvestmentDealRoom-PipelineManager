@@ -90,7 +90,7 @@ public class DealServiceTest {
 
         when(dealRepository.save(any(Deal.class))).thenReturn(savedDeal);
 
-        DealResponseDto result = dealService.createDeal(requestDto, "manager-01");
+        DealResponseDto result = dealService.createDeal(requestDto, "manager-01", "Test User");
 
         assertNotNull(result);
         assertThat(result.dealName()).isEqualTo(requestDto.dealName());
@@ -114,7 +114,7 @@ public class DealServiceTest {
                 .thenThrow(DuplicateKeyException.class);
 
         assertThrows(DealAlreadyExistsException.class, () -> {
-            dealService.createDeal(request, "manager-01");
+            dealService.createDeal(request, "manager-01", "Test User");
         });
 
         verify(dealRepository).save(any(Deal.class));

@@ -100,20 +100,21 @@
             <div class="flex items-center justify-between pb-1 mb-3">
               <p class="text-xs text-text-tertiary font-bold">DEAL INFORMATION</p>
               <div class="flex items-center gap-3 text-xs text-text-tertiary">
-                @if (!editMode()) {
-                  <button
-                    class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
-                    (click)="startEdit()"
-                  >
-                    <i class="pi pi-pencil text-xs"></i> Edit
-                  </button>
-                  <button
-                    class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
-                    (click)="openDeleteDialog()"
-                  >
-                    <i class="pi pi-trash text-xs"></i> Delete
-                  </button>
-                } @else {
+                @if (auth.canWrite) {
+                  @if (!editMode()) {
+                    <button
+                      class="text-xs px-2 py-0.5 text-text-secondary border border-border rounded hover:text-text-primary hover:border-text-secondary flex items-center gap-1 transition-colors cursor-pointer"
+                      (click)="startEdit()"
+                    >
+                      <i class="pi pi-pencil text-xs"></i> Edit
+                    </button>
+                    <button
+                      class="text-xs px-2 py-0.5 text-red-400 border border-red-700/50 rounded bg-red-900/20 hover:bg-red-900/40 flex items-center gap-1 transition-colors cursor-pointer"
+                      (click)="openDeleteDialog()"
+                    >
+                      <i class="pi pi-trash text-xs"></i> Delete
+                    </button>
+                  } @else {
                   <div class="flex flex-col items-end gap-1">
                     <div class="flex items-center gap-3">
                       <button
@@ -136,6 +137,7 @@
                       </span>
                     }
                   </div>
+                  }
                 }
               </div>
             </div>
