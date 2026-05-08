@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavigationHistoryService } from '../../../core/services/navigation-history.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -102,6 +103,7 @@ export class CounterpartyDetail implements OnInit {
     private counterpartyService: CounterpartyService,
     private dealService: DealService,
     private formBuilder: FormBuilder,
+    public auth: AuthService,
   ) {}
 
   ngOnInit(): void {
